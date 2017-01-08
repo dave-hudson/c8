@@ -1,7 +1,6 @@
 /*
  * natural.cpp
  */
-#include <cassert>
 #include <cctype>
 
 #include "natural.h"
@@ -202,7 +201,9 @@ namespace c8 {
         /*
          * We should not have a carry!
          */
-        assert(acc == 0);
+        if (acc) {
+            throw std::underflow_error("negative result");
+        }
 
         /*
          * We need to normalize because our result can have zero upper digits.
