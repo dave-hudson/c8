@@ -253,7 +253,17 @@ auto test_add() -> bool {
     s2 << std::hex << a2_2;
     res &= test_check("add 2", p2, "10000000000000001", s2);
 
-// XXX - more tests, covering very large values.
+    /*
+     * Add two very large values.
+     */
+    c8::natural a0_3("10000000000000000000000000000000000000000000000000000000000000000008789"); 
+    c8::natural a1_3("88888880000000000000000000000000000000000000000000000000000000999992000"); 
+    auto t3 = get_start_time_ticks();
+    auto a2_3 = a0_3 + a1_3;
+    auto p3 = get_end_time_ticks() - t3;
+    std::stringstream s3;
+    s3 << a2_3;
+    res &= test_check("add 3", p3, "98888880000000000000000000000000000000000000000000000000000001000000789", s3);
 
     return res;
 }
@@ -276,9 +286,50 @@ auto test_subtract() -> bool {
     s0 << s2_0;
     res &= test_check("sub 0", p0, "50", s0);
 
-// XXX - more tests, covering very large values.
-// XXX - more tests, involving normalizing results.
-// XXX - more tests, exceptions for negative results.
+    /*
+     * Subtract a large value from another large value.
+     */
+    c8::natural s0_1("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::natural s1_1("842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
+    auto t1 = get_start_time_ticks();
+    auto s2_1 = s0_1 - s1_1;
+    auto p1 = get_end_time_ticks() - t1;
+    std::stringstream s1;
+    s1 << s2_1;
+    res &= test_check("sub 1", p1, "5872488729698595999749602411500766185722239445613509099777952305512191704320129156897500143", s1);
+
+    /*
+     * Subtract a large value from another large value, resulting in a very much smaller value.
+     */
+    c8::natural s0_2("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::natural s1_2("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690000");
+    auto t2 = get_start_time_ticks();
+    auto s2_2 = s0_2 - s1_2;
+    auto p2 = get_end_time_ticks() - t2;
+    std::stringstream s2;
+    s2 << s2_2;
+    res &= test_check("sub 2", p2, "897", s2);
+
+    /*
+     * Subtract a large value from a smaller one.  This will throw an exception because there
+     * aren't any negative natural numbers.
+     */
+    c8::natural s0_3(2);
+    c8::natural s1_3(52);
+    auto t3 = get_start_time_ticks();
+    try {
+        auto s2_3 = s0_3 - s1_3;
+        auto p3 = get_end_time_ticks() - t3;
+        std::stringstream s3;
+        s3 << s2_3;
+        res &= test_nocheck("sub 3", p3, "failed to throw exception", false);
+    } catch (const std::underflow_error &e) {
+        auto p3 = get_end_time_ticks() - t3;
+        res &= test_nocheck("sub 3", p3, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p3 = get_end_time_ticks() - t3;
+        res &= test_nocheck("sub 3", p3, "unexpected exception thrown", false);
+    }
 
     return res;
 }
