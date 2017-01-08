@@ -1,8 +1,8 @@
 /*
  * natural.h
  */
-#ifndef __C8_BIGUINT_H
-#define __C8_BIGUINT_H
+#ifndef __C8_NATURAL_H
+#define __C8_NATURAL_H
 
 #include <iostream>
 #include <string>
@@ -15,13 +15,19 @@ namespace c8 {
      * A digit is much larger than a numeral, but the algorithms we use for things like
      * addition, subtraction, multiplication and division all work just the same, whether
      * our digits are 1 bit, 32 bits or range from 0 to 9.
+     *
+     * Other versions that would work here:
+     *
+     * typedef uint16_t natural_digit;
+     * typedef uint32_t natural_double_digit;
+     *
+     * Or:
+     *
+     * typedef uint8_t natural_digit;
+     * typedef uint16_t natural_double_digit;
      */
     typedef uint32_t natural_digit;
     typedef uint64_t natural_double_digit;
-    //typedef uint16_t natural_digit;
-    //typedef uint32_t natural_double_digit;
-    //typedef uint8_t natural_digit;
-    //typedef uint16_t natural_double_digit;
 
     enum class natural_comparison {
         lt,                                 // Less than
@@ -143,5 +149,5 @@ namespace c8 {
     };
 }
 
-#endif /* __C8_BIGUINT_H */
+#endif /* __C8_NATURAL_H */
 
