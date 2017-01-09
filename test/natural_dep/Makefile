@@ -17,7 +17,7 @@ SRCS := natural_dep.cpp
 # Libraries.
 #
 LIBS := \
-    -lnatural
+    -lc8
 
 #
 # Actual heavy lifting for the make.

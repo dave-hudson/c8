@@ -4,19 +4,24 @@
 BASE_PATH := ..
 
 #
-# Define our subdirectories.
+# Library depedencies.
 #
-SUBDIRS := \
-    integer \
-    natural
+DEP_LIBS :=
 
 #
-# Ensure that we reflect the dependencies on the various libraries!
+# Define the target files.
 #
-integer: natural
+TARGET_LIB := libc8.a
+
+#
+# Define the source files for various apps.
+#
+SRCS := \
+	integer/integer.cpp \
+    natural/natural.cpp
 
 #
 # Actual heavy lifting for the make.
 #
-include $(BASE_PATH)/build/dir.mk
+include $(BASE_PATH)/build/lib.mk
 

@@ -17,8 +17,7 @@ SRCS := integer_check.cpp
 # Libraries.
 #
 LIBS := \
-    -linteger \
-    -lnatural
+    -lc8
 
 #
 # Actual heavy lifting for the make.
