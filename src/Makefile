@@ -7,11 +7,13 @@ BASE_PATH := ..
 # Define our subdirectories.
 #
 SUBDIRS := \
+    integer \
     natural
 
 #
 # Ensure that we reflect the dependencies on the various libraries!
 #
+integer: natural
 
 #
 # Actual heavy lifting for the make.

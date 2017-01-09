@@ -7,6 +7,8 @@ BASE_PATH := ..
 # Define our subdirectories.
 #
 SUBDIRS := \
+    integer_check \
+    integer_dep \
 	natural_check \
 	natural_dep
 
