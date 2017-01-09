@@ -362,6 +362,13 @@ namespace c8 {
         }
 
         /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (!v.digits_.size()) {
+            throw std::logic_error("divide_by_zero");
+        }
+
+        /*
          * Normalize the divisor and quotient.  We want our quotient to be aligned such
          * that its top bit is set within a natural_digit.  This may seem a little odd, but
          * we want to ensure that any quotient estimation is as accurate as possible.

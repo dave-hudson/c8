@@ -713,6 +713,26 @@ auto test_divide() -> bool {
     s2b << std::hex << mo2_2;
     res &= test_check("div 2b", p2, "100000000000000000000000", s2b);
 
+    /*
+     * Divide by zero.  This will throw an exception!
+     */
+    c8::natural d0_3(2000);
+    c8::natural d1_3(0);
+    auto t3 = get_start_time_ticks();
+    try {
+        auto d2_3 = d0_3 / d1_3;
+        auto p3 = get_end_time_ticks() - t3;
+        std::stringstream s3;
+        s3 << d2_3;
+        res &= test_nocheck("div 3", p3, "failed to throw exception", false);
+    } catch (const std::logic_error &e) {
+        auto p3 = get_end_time_ticks() - t3;
+        res &= test_nocheck("div 3", p3, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p3 = get_end_time_ticks() - t3;
+        res &= test_nocheck("div 3", p3, "unexpected exception thrown", false);
+    }
+
     return res;
 }
 
