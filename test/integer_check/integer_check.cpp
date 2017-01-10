@@ -572,13 +572,13 @@ auto test_lshift() -> bool {
     s0d << std::hex << l1_0d;
     res &= test_check("lsh 0d", p0d, "1a4f80000000000000000000000000000000000000000000000", s0d);
 
-    c8::integer l0_1("0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
+    c8::integer l0_1("-0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
     auto t1a = get_start_time_ticks();
     auto l1_1a = l0_1 << 69;
     auto p1a = get_end_time_ticks() - t1a;
     std::stringstream s1a;
     s1a << std::hex << l1_1a;
-    res &= test_check("lsh 1a", p1a, "693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000", s1a);
+    res &= test_check("lsh 1a", p1a, "-693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000", s1a);
 
     return res;
 }
@@ -618,13 +618,13 @@ auto test_rshift() -> bool {
     s0d << std::hex << r1_0d;
     res &= test_check("rsh 0d", p0d, "11a4800", s0d);
 
-    c8::integer r0_1("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+    c8::integer r0_1("-0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
     auto t1a = get_start_time_ticks();
     auto r1_1a = r0_1 >> 123;
     auto p1a = get_end_time_ticks() - t1a;
     std::stringstream s1a;
     s1a << std::hex << r1_1a;
-    res &= test_check("rsh 1a", p1a, "d27ca60dd4c8e616bef3a60de4a1e61e277ffbffba61d9e1a", s1a);
+    res &= test_check("rsh 1a", p1a, "-d27ca60dd4c8e616bef3a60de4a1e61e277ffbffba61d9e1a", s1a);
 
     return res;
 }
@@ -694,19 +694,19 @@ auto test_divide() -> bool {
     res &= test_check("div 0b", p0, "10", s0b);
 
     c8::integer d0_1("7829238792751875818917817519758789749174743847389742871867617465710657162");
-    c8::integer d1_1(99999999999999999LL);
+    c8::integer d1_1(-99999999999999999LL);
     auto t1 = get_start_time_ticks();
     auto d2_1 = d0_1 / d1_1;
     auto mo2_1 = d0_1 % d1_1;
     auto p1 = get_end_time_ticks() - t1;
     std::stringstream s1a;
     s1a << d2_1;
-    res &= test_check("div 1a", p1, "78292387927518758972102054472775487212767983201652300846", s1a);
+    res &= test_check("div 1a", p1, "-78292387927518758972102054472775487212767983201652300846", s1a);
     std::stringstream s1b;
     s1b << mo2_1;
     res &= test_check("div 1b", p1, "35600667362958008", s1b);
 
-    c8::integer d0_2("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::integer d0_2("-0x100000000000000000000000000000000000000000000000000000000000000000000000");
     c8::integer d1_2("0x10000000000000001000000000000000100000000");
     auto t2 = get_start_time_ticks();
     auto d2_2 = d0_2 / d1_2;
@@ -714,7 +714,7 @@ auto test_divide() -> bool {
     auto p2 = get_end_time_ticks() - t2;
     std::stringstream s2a;
     s2a << std::hex << d2_2;
-    res &= test_check("div 2a", p2, "ffffffffffffffff000000000000000", s2a);
+    res &= test_check("div 2a", p2, "-ffffffffffffffff000000000000000", s2a);
     std::stringstream s2b;
     s2b << std::hex << mo2_2;
     res &= test_check("div 2b", p2, "100000000000000000000000", s2b);
@@ -740,6 +740,20 @@ auto test_divide() -> bool {
     }
 
     return res;
+
+    c8::integer d0_4(1000000000000000000LL);
+    c8::integer d1_4(99999999999999999LL);
+    auto t4 = get_start_time_ticks();
+    auto d2_4 = d0_4 / d1_4;
+    auto mo2_4 = d0_4 % d1_4;
+    auto p4 = get_end_time_ticks() - t4;
+    std::stringstream s4a;
+    s4a << d2_4;
+    res &= test_check("div 4a", p4, "10", s4a);
+    std::stringstream s4b;
+    s0b << mo2_4;
+    res &= test_check("div 4b", p4, "10", s4b);
+
 }
 
 /*
@@ -748,55 +762,55 @@ auto test_divide() -> bool {
 auto test_print() -> bool {
     bool res = true;
 
-    c8::integer v("0xfedcfedc0123456789");
+    c8::integer v("-0xfedcfedc0123456789");
 
     std::stringstream s0;
     auto t0 = get_start_time_ticks();
     s0 << v;
     auto p0 = get_end_time_ticks() - t0;
-    res &= test_check("prn 0", p0, "4701397401952099592073", s0);
+    res &= test_check("prn 0", p0, "-4701397401952099592073", s0);
 
     std::stringstream s1;
     auto t1 = get_start_time_ticks();
     s1 << std::hex << v;
     auto p1 = get_end_time_ticks() - t1;
-    res &= test_check("prn 1", p1, "fedcfedc0123456789", s1);
+    res &= test_check("prn 1", p1, "-fedcfedc0123456789", s1);
 
     std::stringstream s2;
     auto t2 = get_start_time_ticks();
     s2 << std::uppercase << std::hex << v;
     auto p2 = get_end_time_ticks() - t2;
-    res &= test_check("prn 2", p2, "FEDCFEDC0123456789", s2);
+    res &= test_check("prn 2", p2, "-FEDCFEDC0123456789", s2);
 
     std::stringstream s3;
     auto t3 = get_start_time_ticks();
     s3 << std::oct << v;
     auto p3 = get_end_time_ticks() - t3;
-    res &= test_check("prn 3", p3, "775563766700044321263611", s3);
+    res &= test_check("prn 3", p3, "-775563766700044321263611", s3);
 
     std::stringstream s4;
     auto t4 = get_start_time_ticks();
     s4 << std::showbase << v;
     auto p4 = get_end_time_ticks() - t4;
-    res &= test_check("prn 4", p4, "4701397401952099592073", s4);
+    res &= test_check("prn 4", p4, "-4701397401952099592073", s4);
 
     std::stringstream s5;
     auto t5 = get_start_time_ticks();
     s5 << std::showbase << std::hex << v;
     auto p5 = get_end_time_ticks() - t5;
-    res &= test_check("prn 5", p5, "0xfedcfedc0123456789", s5);
+    res &= test_check("prn 5", p5, "-0xfedcfedc0123456789", s5);
 
     std::stringstream s6;
     auto t6 = get_start_time_ticks();
     s6 << std::showbase << std::uppercase << std::hex << v;
     auto p6 = get_end_time_ticks() - t6;
-    res &= test_check("prn 6", p6, "0XFEDCFEDC0123456789", s6);
+    res &= test_check("prn 6", p6, "-0XFEDCFEDC0123456789", s6);
 
     std::stringstream s7;
     auto t7 = get_start_time_ticks();
     s7 << std::showbase << std::oct << v;
     auto p7 = get_end_time_ticks() - t7;
-    res &= test_check("prn 7", p7, "0775563766700044321263611", s7);
+    res &= test_check("prn 7", p7, "-0775563766700044321263611", s7);
 
     return res;
 }
