@@ -61,7 +61,6 @@ namespace c8 {
         auto divide(const natural &v) const -> natural;
         auto modulus(const natural &v) const -> natural;
         auto compare(const natural &v) const -> natural_comparison;
-        auto normalize() -> void;
         friend auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto operator+(const natural &v) const -> natural {
@@ -145,6 +144,8 @@ namespace c8 {
         }
 
     private:
+        auto normalize() -> void;
+
         std::vector<natural_digit> digits_; // Digits of the natural number
     };
 }
