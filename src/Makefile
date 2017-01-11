@@ -18,7 +18,10 @@ TARGET_LIB := libc8.a
 #
 SRCS := \
 	integer/integer.cpp \
-    natural/natural.cpp
+    natural/natural.cpp \
+    rational/rational.cpp \
+    real10/real10.cpp \
+    real2/real2.cpp
 
 #
 # Actual heavy lifting for the make.
