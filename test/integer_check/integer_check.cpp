@@ -739,10 +739,8 @@ auto test_divide() -> bool {
         res &= test_nocheck("div 3", p3, "unexpected exception thrown", false);
     }
 
-    return res;
-
-    c8::integer d0_4(1000000000000000000LL);
-    c8::integer d1_4(99999999999999999LL);
+    c8::integer d0_4(-1000000000000000000LL);
+    c8::integer d1_4(-99999999999999999LL);
     auto t4 = get_start_time_ticks();
     auto d2_4 = d0_4 / d1_4;
     auto mo2_4 = d0_4 % d1_4;
@@ -751,9 +749,10 @@ auto test_divide() -> bool {
     s4a << d2_4;
     res &= test_check("div 4a", p4, "10", s4a);
     std::stringstream s4b;
-    s0b << mo2_4;
+    s4b << mo2_4;
     res &= test_check("div 4b", p4, "10", s4b);
 
+    return res;
 }
 
 /*
