@@ -27,5 +27,6 @@ include $(BASE_PATH)/build/dir.mk
 
 distclean: realclean
 	$(RM) -f $(BASE_PATH)/lib/*
-	$(RM) -f $(BASE_PATH)/include/*
+	$(RM) -f $(BASE_PATH)/build/*~
+	$(RM) -f $(BASE_PATH)/include/*~
 
