@@ -34,7 +34,7 @@ $(TARGET_LIB): $(OBJS)
 clean:
 	$(RM) -f $(TARGET_LIB)
 	$(RM) -f $(INSTALL_TARGET_LIB)
-	$(RM) -f */*.ii */*.s */*.o */*.d
+	$(RM) -f *.ii *.s *.o *.d
 
 #
 # realclean rule.
@@ -42,5 +42,5 @@ clean:
 .PHONY: realclean
 
 realclean: clean
-	$(RM) -f *~ */*~
+	$(RM) -f *~
 
