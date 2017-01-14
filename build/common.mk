@@ -13,7 +13,7 @@ UNAME := $(shell uname -s)
 AR := ar
 ARFLAGS = rc
 #CCPP := g++
-CCPP := clang++-3.6
+CCPP := clang++
 CPPFLAGS = \
     -fPIC \
     -std=c++14 \
@@ -30,7 +30,7 @@ CPPFLAGS = \
 INSTALL := install
 INSTALLFLAGS =
 #LD := g++
-LD := clang++-3.6
+LD := clang++
 LDFLAGS = $(LDFLAGS_OS) $(LDFLAGS_EXTRA)
 RM := rm
 
