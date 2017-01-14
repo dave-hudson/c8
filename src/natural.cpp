@@ -496,6 +496,38 @@ namespace c8 {
     }
 
     /*
+     * Find the greatest common divisor of this an another natural number.
+     */
+    auto natural::gcd(const natural &v) const -> natural {
+        if (v.iszero()) {
+            return *this;
+        }
+
+        if (iszero()) {
+            return v;
+        }
+
+        natural smaller;
+        natural larger;
+        if (*this < v) {
+            smaller = *this;
+            larger = v;
+        } else {
+            smaller = v;
+            larger = *this;
+        }
+
+        natural mod;
+        while (!smaller.iszero()) {
+            mod = larger % smaller;
+            larger = smaller;
+            smaller = mod;
+        }
+
+        return larger;
+    }
+
+    /*
      * Normalize a natural number (strip any leading zeros)
      */
     auto natural::normalize() -> void {

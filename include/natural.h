@@ -61,7 +61,12 @@ namespace c8 {
         auto divide(const natural &v) const -> natural;
         auto modulus(const natural &v) const -> natural;
         auto compare(const natural &v) const -> natural_comparison;
+        auto gcd(const natural &v) const -> natural;
         friend auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream &;
+
+        auto iszero() const -> bool {
+            return (digits_.size() == 0) ? true : false;
+        }
 
         auto operator+(const natural &v) const -> natural {
             return add(v);
@@ -144,10 +149,18 @@ namespace c8 {
         }
 
     private:
-        auto normalize() -> void;
-
         std::vector<natural_digit> digits_; // Digits of the natural number
+
+        auto normalize() -> void;
     };
+
+    inline auto iszero(const natural &v) -> bool {
+        return v.iszero();
+    }
+
+    inline auto gcd(const natural &v, const natural &u) -> natural {
+        return v.gcd(u);
+    }
 }
 
 #endif /* __C8_NATURAL_H */

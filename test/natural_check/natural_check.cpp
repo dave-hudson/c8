@@ -737,6 +737,51 @@ auto test_divide() -> bool {
 }
 
 /*
+ * Test greatest common divisor.
+ */
+auto test_gcd() -> bool {
+    bool res = true;
+
+    c8::natural g0_0(2000);
+    c8::natural g1_0(56);
+    auto t0 = get_start_time_ticks();
+    c8::natural g2_0 = gcd(g0_0, g1_0);
+    auto p0 = get_end_time_ticks() - t0;
+    std::stringstream s0;
+    s0 << g2_0;
+    res &= test_check("gcd 0", p0, "8", s0);
+
+    c8::natural g0_1("47598475892456783750932574388878478947978888888");
+    c8::natural g1_1("87987922283");
+    auto t1 = get_start_time_ticks();
+    c8::natural g2_1 = gcd(g0_1, g1_1);
+    auto p1 = get_end_time_ticks() - t1;
+    std::stringstream s1;
+    s1 << g2_1;
+    res &= test_check("gcd 1", p1, "1", s1);
+
+    c8::natural g0_2("8888888");
+    c8::natural g1_2("8888888");
+    auto t2 = get_start_time_ticks();
+    c8::natural g2_2 = gcd(g0_2, g1_2);
+    auto p2 = get_end_time_ticks() - t2;
+    std::stringstream s2;
+    s2 << g2_2;
+    res &= test_check("gcd 2", p2, "8888888", s2);
+
+    c8::natural g0_3("2038355020176327696765561949673186971898109715960816150233379221718753632190267");
+    c8::natural g1_3("1957628088684195906794648605131674616575412301467318480917205787195238636855999");
+    auto t3 = get_start_time_ticks();
+    c8::natural g2_3 = gcd(g0_3, g1_3);
+    auto p3 = get_end_time_ticks() - t3;
+    std::stringstream s3;
+    s3 << g2_3;
+    res &= test_check("gcd 3", p3, "20181732873032947492728336135378088830674353623374417329043358630878748833567", s3);
+
+    return res;
+}
+
+/*
  * Test printing.
  */
 auto test_print() -> bool {
@@ -835,6 +880,7 @@ auto main(int argc, char **argv) -> int {
     res &= test_rshift();
     res &= test_multiply();
     res &= test_divide();
+    res &= test_gcd();
     res &= test_print();
 
     if (!res) {
