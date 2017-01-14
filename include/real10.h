@@ -20,7 +20,7 @@ namespace c8 {
          */
         real10() {
             sig_ = 0;
-            exp_ = 1;
+            exp_ = 0;
         }
 
         real10(long long s, long long e) : sig_(s), exp_(e) {
@@ -36,9 +36,7 @@ namespace c8 {
         auto add(const real10 &v) const -> real10;
         auto subtract(const real10 &v) const -> real10;
         auto multiply(const real10 &v) const -> real10;
-        auto divide_modulus(const real10 &v) const -> std::pair<real10, real10>;
         auto divide(const real10 &v) const -> real10;
-        auto modulus(const real10 &v) const -> real10;
         auto compare(const real10 &v) const -> real10_comparison;
         friend auto operator<<(std::ostream &outstr, const real10 &v) -> std::ostream &;
 
@@ -79,14 +77,6 @@ namespace c8 {
 
         auto operator/=(const real10 &v) {
             *this = divide(v);
-        }
-
-        auto operator%(const real10 &v) const -> real10 {
-            return modulus(v);
-        }
-
-        auto operator%=(const real10 &v) {
-            *this = modulus(v);
         }
 
         auto operator==(const real10 &v) const -> bool {

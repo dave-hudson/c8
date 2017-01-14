@@ -36,28 +36,11 @@ namespace c8 {
     }
 
     /*
-     * Divide this real2 by another one, returning the quotient and modulus.
-     */
-    auto real2::divide_modulus(const real2 &v) const -> std::pair<real2, real2> {
-        real2 div_res;
-        real2 mod_res;
-        return std::make_pair(div_res, mod_res);
-    }
-
-    /*
      * Divide this real2 by another one.
      */
     auto real2::divide(const real2 &v) const -> real2 {
-        std::pair<real2, real2> dm = divide_modulus(v);
-        return dm.first;
-    }
-
-    /*
-     * Modulus (divide and return the remainder) this real2 by another one.
-     */
-    auto real2::modulus(const real2 &v) const -> real2 {
-        std::pair<real2, real2> dm = divide_modulus(v);
-        return dm.second;
+        real2 res;
+        return res;
     }
 
     /*
@@ -71,6 +54,8 @@ namespace c8 {
      * << operator to print a real2.
      */
     auto operator<<(std::ostream &outstr, const real2 &v) -> std::ostream & {
+        outstr << v.sig_ << "*2^" << v.exp_;
+
         return outstr;
     }
 }
