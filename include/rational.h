@@ -24,6 +24,11 @@ namespace c8 {
         }
 
         rational(long long n, unsigned long long d) : num_(n), denom_(d) {
+            normalize();
+        }
+
+        rational(integer v) : num_(v) {
+            denom_ = 1;
         }
 
         rational(const std::string &v);
@@ -36,9 +41,7 @@ namespace c8 {
         auto add(const rational &v) const -> rational;
         auto subtract(const rational &v) const -> rational;
         auto multiply(const rational &v) const -> rational;
-        auto divide_modulus(const rational &v) const -> std::pair<rational, rational>;
         auto divide(const rational &v) const -> rational;
-        auto modulus(const rational &v) const -> rational;
         auto compare(const rational &v) const -> rational_comparison;
         friend auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
@@ -81,14 +84,6 @@ namespace c8 {
             *this = divide(v);
         }
 
-        auto operator%(const rational &v) const -> rational {
-            return modulus(v);
-        }
-
-        auto operator%=(const rational &v) {
-            *this = modulus(v);
-        }
-
         auto operator==(const rational &v) const -> bool {
             return compare(v) == rational_comparison::eq;
         }
@@ -116,6 +111,8 @@ namespace c8 {
     private:
         integer num_;                       // Numerator
         natural denom_;                     // Denominator
+
+        auto normalize() -> void;
     };
 }
 

@@ -5,6 +5,18 @@
 
 namespace c8 {
     rational::rational(const std::string &v) {
+        /*
+         * Do we have a '/' character separating a numerator and denominator?
+         */
+        std::size_t pos = v.find(std::string("/"));
+        if (pos == std::string::npos) {
+            num_ = integer(v);
+        } else {
+            num_ = integer(v.substr(0, pos));
+            denom_ = natural(v.substr(pos + 1));
+        }
+
+        normalize();
     }
 
     /*
@@ -12,6 +24,12 @@ namespace c8 {
      */
     auto rational::add(const rational &v) const -> rational {
         rational res;
+
+        res.num_ = (num_ * integer(v.denom_)) + (integer(denom_) * v.num_);
+        res.denom_ = denom_ * v.denom_;
+
+        res.normalize();
+
         return res;
     }
 
@@ -24,6 +42,12 @@ namespace c8 {
      */
     auto rational::subtract(const rational &v) const -> rational {
         rational res;
+
+        res.num_ = (num_ * integer(v.denom_)) - (integer(denom_) * v.num_);
+        res.denom_ = denom_ * v.denom_;
+
+        res.normalize();
+
         return res;
     }
 
@@ -32,39 +56,63 @@ namespace c8 {
      */
     auto rational::multiply(const rational &v) const -> rational {
         rational res;
-        return res;
-    }
 
-    /*
-     * Divide this rational by another one, returning the quotient and modulus.
-     */
-    auto rational::divide_modulus(const rational &v) const -> std::pair<rational, rational> {
-        rational div_res;
-        rational mod_res;
-        return std::make_pair(div_res, mod_res);
+        res.num_ = num_ * v.num_;
+        res.denom_ = denom_ * v.denom_;
+
+        res.normalize();
+
+        return res;
     }
 
     /*
      * Divide this rational by another one.
      */
     auto rational::divide(const rational &v) const -> rational {
-        std::pair<rational, rational> dm = divide_modulus(v);
-        return dm.first;
-    }
+        rational res;
 
-    /*
-     * Modulus (divide and return the remainder) this rational by another one.
-     */
-    auto rational::modulus(const rational &v) const -> rational {
-        std::pair<rational, rational> dm = divide_modulus(v);
-        return dm.second;
+        res.num_ = num_ * integer(v.denom_);
+        integer d = integer(denom_) * v.num_;
+        if (isnegative(d)) {
+            res.num_ = -res.num_;
+        }
+        res.denom_ = abs(d);
+
+        res.normalize();
+
+        return res;
     }
 
     /*
      * Compare a rational with this one.
      */
     auto rational::compare(const rational &v) const -> rational_comparison {
-        return rational_comparison::lt;
+        integer lhs = num_ * integer(v.denom_);
+        integer rhs = v.num_ * integer(denom_);
+
+        auto ures = lhs.compare(rhs);
+        switch (ures) {
+        case integer_comparison::lt:
+            return rational_comparison::lt;
+
+        case integer_comparison::eq:
+            return rational_comparison::eq;
+
+        case integer_comparison::gt:
+            return rational_comparison::gt;
+        }
+    }
+
+    /*
+     * Normalize the data.
+     */
+    auto rational::normalize() -> void {
+        /*
+         * Find the GCD of the numerator and denominator.
+         */
+        natural g = gcd(abs(num_), denom_);
+        num_ /= g;
+        denom_ /= g;
     }
 
     /*
