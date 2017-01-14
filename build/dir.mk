@@ -7,7 +7,7 @@ RM := rm
 # Standard global rules.
 #
 .PHONY: all
-.PHONY: clean 
+.PHONY: clean
 
 all clean: $(SUBDIRS)
 

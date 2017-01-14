@@ -435,7 +435,7 @@ namespace c8 {
             }
 
             remaining -= m;
-            res += natural(q); 
+            res += natural(q);
         }
 
         remaining >>= normalize_shift;
