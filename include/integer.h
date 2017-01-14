@@ -26,6 +26,10 @@ namespace c8 {
             negative_ = (v < 0) ? true : false;
         }
 
+        integer(natural v) : magnitude_(v) {
+            negative_ = false;
+        }
+
         integer(const std::string &v);
         integer(const integer &v) = default;
         integer(integer &&v) = default;
@@ -43,6 +47,14 @@ namespace c8 {
         auto modulus(const integer &v) const -> integer;
         auto compare(const integer &v) const -> integer_comparison;
         friend auto operator<<(std::ostream &outstr, const integer &v) -> std::ostream &;
+
+        auto isnegative() const -> bool {
+            return negative_;
+        }
+
+        auto abs() const -> natural {
+            return magnitude_;
+        }
 
         auto operator+(const integer &v) const -> integer {
             return add(v);
@@ -134,6 +146,14 @@ namespace c8 {
         bool negative_;                     // Is this big integer negative?
         natural magnitude_;                 // The magnitude of the integer
     };
+
+    inline auto isnegative(integer v) -> bool {
+        return v.isnegative();
+    }
+
+    inline auto abs(integer v) -> natural {
+        return v.abs();
+    }
 }
 
 #endif /* __C8_INTEGER_H */
