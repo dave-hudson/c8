@@ -75,7 +75,7 @@ namespace c8 {
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
         if (iszero(abs(v.num_))) {
-            throw std::logic_error("divide_by_zero");
+            throw c8::divide_by_zero();
         }
 
         res.num_ = num_ * integer(v.denom_);

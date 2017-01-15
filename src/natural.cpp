@@ -30,7 +30,7 @@ namespace c8 {
     natural::natural(const std::string &v) {
         std::size_t v_sz = v.size();
         if (v_sz == 0) {
-            throw std::invalid_argument("zero size string");
+            throw invalid_argument("zero size string");
         }
 
         natural res;
@@ -61,11 +61,11 @@ namespace c8 {
             auto c = v[i];
             if (!isdigit(c)) {
                 if (base != 16) {
-                    throw std::invalid_argument("invalid digit");
+                    throw invalid_argument("invalid digit");
                 }
 
                 if (!isxdigit(c)) {
-                    throw std::invalid_argument("invalid digit");
+                    throw invalid_argument("invalid digit");
                 }
 
                 c = static_cast<char>(tolower(c));
@@ -74,7 +74,7 @@ namespace c8 {
 
             if (base == 8) {
                 if (c >= '8') {
-                    throw std::invalid_argument("invalid digit");
+                    throw invalid_argument("invalid digit");
                 }
             }
 
@@ -202,7 +202,7 @@ namespace c8 {
          * We should not have a carry!
          */
         if (acc) {
-            throw std::underflow_error("negative result");
+            throw underflow_error();
         }
 
         /*
@@ -365,7 +365,7 @@ namespace c8 {
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
         if (!v.digits_.size()) {
-            throw std::logic_error("divide_by_zero");
+            throw divide_by_zero();
         }
 
         /*

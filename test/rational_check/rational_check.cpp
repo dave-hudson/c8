@@ -144,7 +144,7 @@ auto test_construct() -> bool {
         c8::natural v6("2323/01185415157637671751");
         auto p6 = get_end_time_ticks() - t6;
         res &= test_nocheck("cons 6", p6, "failed to throw exception", false);
-    } catch (const std::invalid_argument &e) {
+    } catch (const c8::invalid_argument &e) {
         auto p6 = get_end_time_ticks() - t6;
         res &= test_nocheck("cons 6", p6, "exception thrown: " + std::string(e.what()), true);
     } catch (...) {
@@ -558,7 +558,7 @@ auto test_divide() -> bool {
         std::stringstream s3;
         s3 << d2_3;
         res &= test_nocheck("div 3", p3, "failed to throw exception", false);
-    } catch (const std::logic_error &e) {
+    } catch (const c8::divide_by_zero &e) {
         auto p3 = get_end_time_ticks() - t3;
         res &= test_nocheck("div 3", p3, "exception thrown: " + std::string(e.what()), true);
     } catch (...) {

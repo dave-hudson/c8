@@ -9,6 +9,8 @@
 #include <vector>
 #include <cstdint>
 
+#include "exception.h"
+
 namespace c8 {
     /*
      * Define the concepts of a "digit" and a "double digit" (twice the size of a digit.
