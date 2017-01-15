@@ -12,11 +12,7 @@ SUBDIRS := \
 	natural_check \
 	natural_dep \
 	rational_check \
-	rational_dep \
-	scale10_check \
-	scale10_dep \
-	scale2_check \
-	scale2_dep
+	rational_dep
 
 #
 # Actual heavy lifting for the make.
