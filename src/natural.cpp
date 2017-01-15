@@ -398,10 +398,20 @@ namespace c8 {
          * we insert a one and move to the next step.
          */
         if (remaining.digits_[remaining_sz - 1] >= divisor.digits_[divisor_sz - 1]) {
-            natural m = (divisor << static_cast<unsigned int>((remaining_sz - divisor_sz) * natural_digit_bits));
+            unsigned int shift_bits = static_cast<unsigned int>((remaining_sz - divisor_sz) * natural_digit_bits);
+            natural m = divisor << shift_bits;
             if (m <= remaining) {
                 remaining -= m;
                 res = natural(1);
+
+                /*
+                 * When we subtract m we may well reduce the size of our remaining value.
+                 * Account for that, and if it reduces to zero then we're done.
+                 */
+                remaining_sz = remaining.digits_.size();
+                if (!remaining_sz) {
+                    return std::make_pair((res << shift_bits), natural(0));
+                }
             }
         }
 

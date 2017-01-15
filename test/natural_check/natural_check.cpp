@@ -167,6 +167,16 @@ auto test_construct() -> bool {
         res &= test_nocheck("cons 6", p6, "unexpected exception thrown", false);
     }
 
+    /*
+     * Construct with a hexadecimal string.
+     */
+    auto t7 = get_start_time_ticks();
+    c8::natural v7("0x100000000000000000000000");
+    auto p7 = get_end_time_ticks() - t7;
+    std::stringstream s7;
+    s7 << std::hex << v7;
+    res &= test_check("cons 7", p7, "100000000000000000000000", s7);
+
     return res;
 }
 
