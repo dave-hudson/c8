@@ -1,7 +1,7 @@
 /*
- * real2_dep.c
+ * scale10_dep.c
  */
-#include <real2.h>
+#include <scale10.h>
 
 /*
  * Entry point.

@@ -1,12 +1,12 @@
 /*
- * real2_check.c
+ * scale10_check.c
  */
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
 
-#include <real2.h>
+#include <scale10.h>
 
 bool verbose = false;
 

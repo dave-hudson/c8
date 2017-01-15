@@ -20,8 +20,8 @@ SRCS := \
 	integer.cpp \
 	natural.cpp \
 	rational.cpp \
-	real10.cpp \
-	real2.cpp
+	scale10.cpp \
+	scale2.cpp
 
 #
 # Actual heavy lifting for the make.

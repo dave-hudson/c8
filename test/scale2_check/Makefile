@@ -6,12 +6,12 @@ BASE_PATH := ../..
 #
 # Define the target files.
 #
-TARGET_BIN := real2_check
+TARGET_BIN := scale2_check
 
 #
 # Define the source files.
 #
-SRCS := real2_check.cpp
+SRCS := scale2_check.cpp
 
 #
 # Libraries.

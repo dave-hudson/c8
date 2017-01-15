@@ -6,12 +6,12 @@ BASE_PATH := ../..
 #
 # Define the target files.
 #
-TARGET_BIN := real10_check
+TARGET_BIN := scale10_dep
 
 #
 # Define the source files.
 #
-SRCS := real10_check.cpp
+SRCS := scale10_dep.cpp
 
 #
 # Libraries.
