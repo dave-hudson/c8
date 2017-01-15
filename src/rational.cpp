@@ -71,11 +71,19 @@ namespace c8 {
     auto rational::divide(const rational &v) const -> rational {
         rational res;
 
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (iszero(abs(v.num_))) {
+            throw std::logic_error("divide_by_zero");
+        }
+
         res.num_ = num_ * integer(v.denom_);
         integer d = integer(denom_) * v.num_;
         if (isnegative(d)) {
             res.num_ = -res.num_;
         }
+
         res.denom_ = abs(d);
 
         res.normalize();
