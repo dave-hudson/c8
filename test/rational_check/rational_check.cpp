@@ -3,6 +3,7 @@
  */
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <unistd.h>
 
@@ -141,7 +142,7 @@ auto test_construct() -> bool {
      */
     auto t6 = get_start_time_ticks();
     try {
-        c8::natural v6("2323/01185415157637671751");
+        c8::rational v6("2323/01185415157637671751");
         auto p6 = get_end_time_ticks() - t6;
         res &= test_nocheck("cons 6", p6, "failed to throw exception", false);
     } catch (const c8::invalid_argument &e) {
@@ -160,11 +161,27 @@ auto test_construct() -> bool {
     res &= test_check("cons 7", p7, "9/8", s7);
 
     auto t8 = get_start_time_ticks();
-    c8::rational v8(1.0/1048576);
+    c8::rational v8(-1.0/1048576);
     auto p8 = get_end_time_ticks() - t8;
     std::stringstream s8;
     s8 << v8;
-    res &= test_check("cons 8", p8, "1/1048576", s8);
+    res &= test_check("cons 8", p8, "-1/1048576", s8);
+
+    /*
+     * Attempt to construct with an invalid rational using a double precision infinity.
+     */
+    auto t9 = get_start_time_ticks();
+    try {
+        c8::rational v6(std::numeric_limits<double>::quiet_NaN());
+        auto p9 = get_end_time_ticks() - t9;
+        res &= test_nocheck("cons 9", p9, "failed to throw exception", false);
+    } catch (const c8::not_a_number &e) {
+        auto p9 = get_end_time_ticks() - t9;
+        res &= test_nocheck("cons 9", p9, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p9 = get_end_time_ticks() - t9;
+        res &= test_nocheck("cons 9", p9, "unexpected exception thrown", false);
+    }
 
     return res;
 }
