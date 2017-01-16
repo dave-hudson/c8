@@ -13,38 +13,41 @@ namespace c8 {
         bool neg = (vbits & 0x8000000000000000ULL) ? true : false;
         vbits &= 0x7fffffffffffffffULL;
         int64_t exp = static_cast<int64_t>(vbits >> 52) - 1023;
-        uint64_t sig = static_cast<uint64_t>(vbits & 0x000fffffffffffffULL);
+        int64_t sig = static_cast<int64_t>(vbits & 0x000fffffffffffffULL);
 
         /*
-         * Is this a denormalized value?
+         * Is this an infinity or a NaN?
          */
-        if (exp == -1022) {
+        if (exp == 1024) {
+            throw c8::not_a_number();
+        }
+
+        /*
+         * Do we have a normalized value (as opposed to a denormalized one)?  Most
+         * floating point values are normalized.
+         */
+        if (exp != -1022) {
             /*
-             * For zero values the exponent must always be zero too.
-             */
-            num_ = 0;
-            denom_ = 1;
-        } else {
-            /*
-             * For non-denormal numbers we have an implied 52nd bit set.  Set that
-             * explicitly now!
+             * For normal numbers we have an implied 52nd bit set.  Set that
+             * explicitly now!  When we do that though we're also shifting our
+             * exponent by 52 places too.
              */
             sig |= 0x0010000000000000ULL;
             exp -= 52;
+        }
 
-            natural n = natural(sig);
+        if (neg) {
+            sig = -sig;
+        }
 
-            if (exp < 0) {
-                num_ = integer(n);
-                denom_ = natural(1) << static_cast<unsigned int>(-exp);
-            } else {
-                num_ = integer(n << static_cast<unsigned int>(exp));
-                denom_ = natural(1);
-            }
+        integer i = integer(sig);
 
-            if (neg) {
-                num_ = -num_;
-            }
+        if (exp < 0) {
+            num_ = i;
+            denom_ = natural(1) << static_cast<unsigned int>(-exp);
+        } else {
+            num_ = i << static_cast<unsigned int>(exp);
+            denom_ = natural(1);
         }
 
         normalize();
