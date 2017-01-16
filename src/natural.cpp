@@ -88,7 +88,7 @@ namespace c8 {
     /*
      * Return the number of bits required to represent this natural number.
      */
-    auto natural::count_bits() -> unsigned int {
+    auto natural::count_bits() const -> unsigned int {
         /*
          * If we have no digits then this is a simple (special) case.
          */
@@ -558,7 +558,7 @@ namespace c8 {
      * Will this natural number fit in an unsigned long long?
      */
     auto natural::isull() const -> bool {
-        return ((digits_.size() * sizeof(natural_digit)) <= sizeof(unsigned long long)) ? true : false;
+        return (this->count_bits() <= (8 * sizeof(long long))) ? true : false;
     }
 
     /*
@@ -573,6 +573,9 @@ namespace c8 {
             throw overflow_error();
         }
 
+        /*
+         * Convert the value to our result format.
+         */
         unsigned long long res = 0;
         std::size_t sz = digits_.size();
         if (sz > (sizeof(unsigned long long) / sizeof(natural_digit))) {

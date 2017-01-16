@@ -53,7 +53,7 @@ namespace c8 {
         auto operator =(const natural &v) -> natural & = default;
         auto operator =(natural &&v) -> natural & = default;
 
-        auto count_bits() -> unsigned int;
+        auto count_bits() const -> unsigned int;
         auto add(const natural &v) const -> natural;
         auto subtract(const natural &v) const -> natural;
         auto shiftr(unsigned int count) const -> natural;
