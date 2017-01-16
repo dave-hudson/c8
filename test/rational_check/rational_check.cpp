@@ -183,6 +183,16 @@ auto test_construct() -> bool {
         res &= test_nocheck("cons 9", p9, "unexpected exception thrown", false);
     }
 
+    /*
+     * Construct a rational using an imprecise double.
+     */
+    auto t10 = get_start_time_ticks();
+    c8::rational v10(0.1);
+    auto p10 = get_end_time_ticks() - t10;
+    std::stringstream s10;
+    s10 << std::hex << v10;
+    res &= test_check("cons 10", p10, "ccccccccccccd/80000000000000", s10);
+
     return res;
 }
 
