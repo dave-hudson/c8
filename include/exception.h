@@ -15,6 +15,15 @@ namespace c8 {
     };
 
     /*
+     * Exception class to signal an overflow.
+     */
+    class overflow_error : public std::overflow_error {
+    public:
+        overflow_error() : std::overflow_error("overflow error") {
+        }
+    };
+
+    /*
      * Exception class to signal an underflow.
      */
     class underflow_error : public std::underflow_error {
@@ -29,6 +38,15 @@ namespace c8 {
     class divide_by_zero : public std::runtime_error {
     public:
         divide_by_zero() : std::runtime_error("divide by zero") {
+        }
+    };
+
+    /*
+     * Exception class to signal not a number.
+     */
+    class not_a_number : public std::runtime_error {
+    public:
+        not_a_number() : std::runtime_error("not a number") {
         }
     };
 }
