@@ -106,7 +106,7 @@ namespace c8 {
          */
         natural_digit d = digits_[this_sz - 1];
         auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
-        return static_cast<unsigned int>((this_sz + c) * 8 * sizeof(natural_digit)) - static_cast<unsigned int>(__builtin_clz(d));
+        return static_cast<unsigned int>((this_sz + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
     }
 
     /*
@@ -552,6 +552,37 @@ namespace c8 {
 
             digits_.pop_back();
         }
+    }
+
+    /*
+     * Will this natural number fit in an unsigned long long?
+     */
+    auto natural::isull() const -> bool {
+        return ((digits_.size() * sizeof(natural_digit)) <= sizeof(unsigned long long)) ? true : false;
+    }
+
+    /*
+     * Convert this natural number to an unsigned long long.
+     */
+    auto natural::toull() const -> unsigned long long {
+        /*
+         * Will this number fit in an unsigned long long?  If not then throw an
+         * exception.
+         */
+        if (!isull()) {
+            throw overflow_error();
+        }
+
+        unsigned long long res = 0;
+        std::size_t sz = digits_.size();
+        if (sz > (sizeof(unsigned long long) / sizeof(natural_digit))) {
+            sz = sizeof(unsigned long long) / sizeof(natural_digit);
+        }
+        for (unsigned int i = 0; i < sz; i++) {
+            res |= (static_cast<unsigned long long>(digits_[i]) << (i * natural_digit_bits));
+        }
+
+        return res;
     }
 
     /*

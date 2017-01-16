@@ -805,6 +805,108 @@ auto test_gcd() -> bool {
 }
 
 /*
+ * Test isull functionality.
+ */
+auto test_isull() -> bool {
+    bool res = true;
+
+    c8::natural n0(0);
+    auto t0 = get_start_time_ticks();
+    bool b0 = isull(n0);
+    auto p0 = get_end_time_ticks() - t0;
+    std::stringstream s0;
+    s0 << b0;
+    res &= test_check("isull 0", p0, "1", s0);
+
+    c8::natural n1(2000);
+    auto t1 = get_start_time_ticks();
+    bool b1 = isull(n1);
+    auto p1 = get_end_time_ticks() - t1;
+    std::stringstream s1;
+    s1 << b1;
+    res &= test_check("isull 1", p1, "1", s1);
+
+    c8::natural n2("47895748574857485728747548237543205782573485472759047548275024574207");
+    auto t2 = get_start_time_ticks();
+    bool b2 = isull(n2);
+    auto p2 = get_end_time_ticks() - t2;
+    std::stringstream s2;
+    s2 << b2;
+    res &= test_check("isull 2", p2, "0", s2);
+
+    return res;
+}
+
+/*
+ * Test toull functionality.
+ */
+auto test_toull() -> bool {
+    bool res = true;
+
+    c8::natural n0(0);
+    auto t0 = get_start_time_ticks();
+    unsigned long long u0 = toull(n0);
+    auto p0 = get_end_time_ticks() - t0;
+    std::stringstream s0;
+    s0 << u0;
+    res &= test_check("toull 0", p0, "0", s0);
+
+    c8::natural n1(2000);
+    auto t1 = get_start_time_ticks();
+    unsigned long long u1 = toull(n1);
+    auto p1 = get_end_time_ticks() - t1;
+    std::stringstream s1;
+    s1 << u1;
+    res &= test_check("toull 1", p1, "2000", s1);
+
+    c8::natural n2("47895748574857485728747548237543205782573485472759047548275024574207");
+    auto t2 = get_start_time_ticks();
+    try {
+        unsigned long long u2 = toull(n2);
+        auto p2 = get_end_time_ticks() - t2;
+        std::stringstream s2;
+        s2 << u2;
+        res &= test_nocheck("toull 2", p2, "failed to throw exception", false);
+    } catch (const c8::overflow_error &e) {
+        auto p2 = get_end_time_ticks() - t2;
+        res &= test_nocheck("toull 2", p2, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p2 = get_end_time_ticks() - t2;
+        res &= test_nocheck("toull 2", p2, "unexpected exception thrown", false);
+    }
+
+    c8::natural n3(0x123456789a);
+    auto t3 = get_start_time_ticks();
+    unsigned long long u3 = toull(n3);
+    auto p3 = get_end_time_ticks() - t3;
+    std::stringstream s3;
+    s3 << std::hex << u3;
+    res &= test_check("toull 3", p3, "123456789a", s3);
+
+    /*
+     * Construct a natural number that is one bit too large to be able to convert.
+     */
+    c8::natural n4_0(1);
+    c8::natural n4_1 = n4_0 << (sizeof(unsigned long long) * 8);
+    auto t4 = get_start_time_ticks();
+    try {
+        unsigned long long u4 = toull(n4_1);
+        auto p4 = get_end_time_ticks() - t4;
+        std::stringstream s4;
+        s4 << u4;
+        res &= test_nocheck("toull 4", p4, "failed to throw exception", false);
+    } catch (const c8::overflow_error &e) {
+        auto p4 = get_end_time_ticks() - t4;
+        res &= test_nocheck("toull 4", p4, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p4 = get_end_time_ticks() - t4;
+        res &= test_nocheck("toull 4", p4, "unexpected exception thrown", false);
+    }
+
+    return res;
+}
+
+/*
  * Test printing.
  */
 auto test_print() -> bool {
@@ -904,6 +1006,8 @@ auto main(int argc, char **argv) -> int {
     res &= test_multiply();
     res &= test_divide();
     res &= test_gcd();
+    res &= test_isull();
+    res &= test_toull();
     res &= test_print();
 
     if (!res) {

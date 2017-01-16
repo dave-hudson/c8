@@ -64,6 +64,8 @@ namespace c8 {
         auto modulus(const natural &v) const -> natural;
         auto compare(const natural &v) const -> natural_comparison;
         auto gcd(const natural &v) const -> natural;
+        auto isull() const -> bool;
+        auto toull() const -> unsigned long long;
         friend auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto iszero() const -> bool {
@@ -162,6 +164,14 @@ namespace c8 {
 
     inline auto gcd(const natural &v, const natural &u) -> natural {
         return v.gcd(u);
+    }
+
+    inline auto isull(const natural &v) -> bool {
+        return v.isull();
+    }
+
+    inline auto toull(const natural &v) -> unsigned long long {
+        return v.toull();
     }
 }
 
