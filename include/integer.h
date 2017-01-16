@@ -46,6 +46,8 @@ namespace c8 {
         auto divide(const integer &v) const -> integer;
         auto modulus(const integer &v) const -> integer;
         auto compare(const integer &v) const -> integer_comparison;
+        auto isll() const -> bool;
+        auto toll() const -> long long;
         friend auto operator<<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
         auto isnegative() const -> bool {
@@ -153,6 +155,14 @@ namespace c8 {
 
     inline auto abs(integer v) -> natural {
         return v.abs();
+    }
+
+    inline auto isll(const integer &v) -> bool {
+        return v.isll();
+    }
+
+    inline auto toll(const integer &v) -> long long {
+        return v.toll();
     }
 }
 

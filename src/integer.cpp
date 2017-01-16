@@ -216,6 +216,36 @@ namespace c8 {
     }
 
     /*
+     * Will this integer fit in a long long?
+     */
+    auto integer::isll() const -> bool {
+        return (magnitude_.count_bits() <= ((8 * sizeof(long long)) - 1)) ? true : false;
+    }
+
+    /*
+     * Convert this integer to a long long.
+     */
+    auto integer::toll() const -> long long {
+        /*
+         * Will this number fit in a long long?  If not then throw an exception.
+         */
+        if (!isll()) {
+            throw overflow_error();
+        }
+
+        /*
+         * Convert the result, and, if necessary, flip the sign.
+         */
+        long long res = static_cast<long long>(toull(magnitude_));
+
+        if (negative_) {
+            res = -res;
+        }
+
+        return res;
+    }
+
+    /*
      * << operator to print a integer.
      */
     auto operator<<(std::ostream &outstr, const integer &v) -> std::ostream & {
