@@ -23,14 +23,11 @@ namespace c8 {
             denom_ = 1;
         }
 
-        rational(long long n, unsigned long long d) : num_(n), denom_(d) {
+        rational(long long n, unsigned long long d = 1) : num_(n), denom_(d) {
             normalize();
         }
 
-        rational(integer v) : num_(v) {
-            denom_ = 1;
-        }
-
+        rational(double v);
         rational(const std::string &v);
         rational(const rational &v) = default;
         rational(rational &&v) = default;

@@ -152,6 +152,20 @@ auto test_construct() -> bool {
         res &= test_nocheck("cons 6", p6, "unexpected exception thrown", false);
     }
 
+    auto t7 = get_start_time_ticks();
+    c8::rational v7(1.125);
+    auto p7 = get_end_time_ticks() - t7;
+    std::stringstream s7;
+    s7 << v7;
+    res &= test_check("cons 7", p7, "9/8", s7);
+
+    auto t8 = get_start_time_ticks();
+    c8::rational v8(1.0/1048576);
+    auto p8 = get_end_time_ticks() - t8;
+    std::stringstream s8;
+    s8 << v8;
+    res &= test_check("cons 8", p8, "1/1048576", s8);
+
     return res;
 }
 

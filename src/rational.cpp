@@ -4,6 +4,52 @@
 #include "rational.h"
 
 namespace c8 {
+    rational::rational(double v) {
+        /*
+         * Split our double into a significand and an exponent.
+         */
+        uint64_t *vbits_ptr = reinterpret_cast<uint64_t *>(&v);
+        uint64_t vbits = *vbits_ptr;
+        bool neg = (vbits & 0x8000000000000000ULL) ? true : false;
+        vbits &= 0x7fffffffffffffffULL;
+        int64_t exp = static_cast<int64_t>(vbits >> 52) - 1023;
+        uint64_t sig = static_cast<uint64_t>(vbits & 0x000fffffffffffffULL);
+
+        /*
+         * Is this a denormalized value?
+         */
+        if (exp == -1022) {
+            /*
+             * For zero values the exponent must always be zero too.
+             */
+            num_ = 0;
+            denom_ = 1;
+        } else {
+            /*
+             * For non-denormal numbers we have an implied 52nd bit set.  Set that
+             * explicitly now!
+             */
+            sig |= 0x0010000000000000ULL;
+            exp -= 52;
+
+            natural n = natural(sig);
+
+            if (exp < 0) {
+                num_ = integer(n);
+                denom_ = natural(1) << static_cast<unsigned int>(-exp);
+            } else {
+                num_ = integer(n << static_cast<unsigned int>(exp));
+                denom_ = natural(1);
+            }
+
+            if (neg) {
+                num_ = -num_;
+            }
+        }
+
+        normalize();
+    }
+
     rational::rational(const std::string &v) {
         /*
          * Do we have a '/' character separating a numerator and denominator?
