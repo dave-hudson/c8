@@ -173,6 +173,89 @@ namespace c8 {
     }
 
     /*
+     * Convert this rational to a double.
+     */
+    auto rational::todouble() const -> double {
+        /*
+         * Is our value zero?  If it is then handle this as a special case.
+         */
+        natural n = abs(num_);
+        if (iszero(n)) {
+            return 0.0;
+        }
+
+        /*
+         * We need to get a dividend that is sufficiently large that when it's
+         * divided by our denominator that we get 52 bits of result.  We don't
+         * want our division operation to be too expensive either, so one of the
+         * other things we can do is scale our denominator down.
+         */
+        natural d = denom_;
+        int eshift = 0;
+        unsigned int dbits = d.count_bits();
+        if (dbits > 52) {
+            unsigned int s = dbits - 52;
+            eshift -= static_cast<int>(s);
+            dbits = 52;
+            d >>= s;
+        }
+
+        unsigned int nbits = n.count_bits();
+        if (nbits > dbits + 53) {
+            unsigned int s = nbits - (dbits + 53);
+            n >>= s;
+            eshift += static_cast<int>(s);
+        } else {
+            unsigned int s = dbits + 53 - nbits;
+            n <<= s;
+            eshift -= static_cast<int>(s); 
+        }
+
+        /*
+         * Compute the signifcand.
+         */
+        natural sig = n / d;
+
+        /*
+         * Convert the significand to an uin64_t.  It will either have 53 or 54
+         * bits.  If it's 54 bits then shift right by one.  Once we have 53 bits
+         * we can strip bit 52.
+         */
+        uint64_t res = static_cast<uint64_t>(toull(sig));
+        while (res > 0x0020000000000000ULL) {
+            res >>= 1;
+            eshift++;
+        }
+
+        res &= 0x000fffffffffffffULL;
+
+        eshift += 52;
+
+        /*
+         * Will this number fit in a double?  If not then throw an exception.
+         */
+        if (eshift > 1024) {
+            throw overflow_error();
+        }
+
+        if (eshift < -1022) {
+            throw underflow_error();
+        }
+
+        res |= (static_cast<uint64_t>(eshift + 1023) << 52);
+
+        /*
+         * Is our numerator negative?
+         */
+        if (isnegative(num_)) {
+            res |= 0x8000000000000000ULL;
+        }
+
+        double *dbits_ptr = reinterpret_cast<double *>(&res);
+        return *dbits_ptr;
+    }
+
+    /*
      * << operator to print a rational.
      */
     auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream & {

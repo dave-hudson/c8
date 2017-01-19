@@ -27,6 +27,10 @@ namespace c8 {
             normalize();
         }
 
+        rational(integer n, natural d) : num_(n), denom_(d) {
+            normalize();
+        }
+
         rational(double v);
         rational(const std::string &v);
         rational(const rational &v) = default;
@@ -40,6 +44,7 @@ namespace c8 {
         auto multiply(const rational &v) const -> rational;
         auto divide(const rational &v) const -> rational;
         auto compare(const rational &v) const -> rational_comparison;
+        auto todouble() const -> double;
         friend auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
         auto operator+(const rational &v) const -> rational {
@@ -111,6 +116,10 @@ namespace c8 {
 
         auto normalize() -> void;
     };
+
+    inline auto todouble(const rational &v) -> double {
+        return v.todouble();
+    }
 }
 
 #endif /* __C8_RATIONAL_H */
