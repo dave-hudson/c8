@@ -756,39 +756,6 @@ auto test_divide() -> bool {
 }
 
 /*
- * Test isll functionality.
- */
-auto test_isll() -> bool {
-    bool res = true;
-
-    c8::integer i0(0);
-    auto t0 = get_start_time_ticks();
-    bool b0 = isll(i0);
-    auto p0 = get_end_time_ticks() - t0;
-    std::stringstream s0;
-    s0 << b0;
-    res &= test_check("isll 0", p0, "1", s0);
-
-    c8::integer i1(-2000);
-    auto t1 = get_start_time_ticks();
-    bool b1 = isll(i1);
-    auto p1 = get_end_time_ticks() - t1;
-    std::stringstream s1;
-    s1 << b1;
-    res &= test_check("isll 1", p1, "1", s1);
-
-    c8::integer i2("47895748574857485728747548237543205782573485472759047548275024574207");
-    auto t2 = get_start_time_ticks();
-    bool b2 = isll(i2);
-    auto p2 = get_end_time_ticks() - t2;
-    std::stringstream s2;
-    s2 << b2;
-    res &= test_check("isll 2", p2, "0", s2);
-
-    return res;
-}
-
-/*
  * Test toll functionality.
  */
 auto test_toll() -> bool {
@@ -955,7 +922,6 @@ auto main(int argc, char **argv) -> int {
     res &= test_rshift();
     res &= test_multiply();
     res &= test_divide();
-    res &= test_isll();
     res &= test_toll();
     res &= test_print();
 

@@ -216,20 +216,13 @@ namespace c8 {
     }
 
     /*
-     * Will this integer fit in a long long?
-     */
-    auto integer::isll() const -> bool {
-        return (magnitude_.count_bits() <= ((8 * sizeof(long long)) - 1)) ? true : false;
-    }
-
-    /*
      * Convert this integer to a long long.
      */
     auto integer::toll() const -> long long {
         /*
          * Will this number fit in a long long?  If not then throw an exception.
          */
-        if (!isll()) {
+        if (magnitude_.count_bits() > ((8 * sizeof(long long)) - 1)) {
             throw overflow_error();
         }
 
