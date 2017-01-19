@@ -4,6 +4,12 @@
 #include "integer.h"
 
 namespace c8 {
+    /*
+     * Construct an integer using a string.
+     *
+     * The string can have an optional '-' sign to indicate that it's negative,
+     * and then the usual C++-like hex, octal, * or decimal representations.
+     */
     integer::integer(const std::string &v) {
         negative_ = false;
 
@@ -59,7 +65,7 @@ namespace c8 {
      * Subtract another integer from this one.
      *
      * Note that there is a subtle difference between the integer subtract operation
-     * and the natural number version: We don't have to worry about throwing
+     * and the natural number version:  We don't have to worry about throwing
      * exceptions for negative results.
      */
     auto integer::subtract(const integer &v) const -> integer {

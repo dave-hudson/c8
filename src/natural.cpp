@@ -15,6 +15,9 @@ namespace c8 {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
+    /*
+     * Construct a natural number from an unsigned long long integer.
+     */
     natural::natural(unsigned long long v) {
         if (!v) {
             return;
@@ -27,6 +30,12 @@ namespace c8 {
         }
     }
 
+    /*
+     * Construct a natural number from a string.
+     *
+     * The string representation can have the usual C++-like hex, octal, or decimal
+     * representations.
+     */
     natural::natural(const std::string &v) {
         std::size_t v_sz = v.size();
         if (v_sz == 0) {
@@ -506,7 +515,7 @@ namespace c8 {
     }
 
     /*
-     * Find the greatest common divisor of this an another natural number.
+     * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
         if (v.is_zero()) {
