@@ -202,7 +202,7 @@ namespace c8 {
          * We should not have a carry!
          */
         if (acc) {
-            throw underflow_error();
+            throw not_a_number();
         }
 
         /*
@@ -555,13 +555,6 @@ namespace c8 {
     }
 
     /*
-     * Will this natural number fit in an unsigned long long?
-     */
-    auto natural::isull() const -> bool {
-        return (this->count_bits() <= (8 * sizeof(long long))) ? true : false;
-    }
-
-    /*
      * Convert this natural number to an unsigned long long.
      */
     auto natural::toull() const -> unsigned long long {
@@ -569,7 +562,7 @@ namespace c8 {
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
          */
-        if (!isull()) {
+        if (this->count_bits() > (8 * sizeof(long long))) {
             throw overflow_error();
         }
 

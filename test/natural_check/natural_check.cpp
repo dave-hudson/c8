@@ -333,7 +333,7 @@ auto test_subtract() -> bool {
         std::stringstream s3;
         s3 << s2_3;
         res &= test_nocheck("sub 3", p3, "failed to throw exception", false);
-    } catch (const c8::underflow_error &e) {
+    } catch (const c8::not_a_number &e) {
         auto p3 = get_end_time_ticks() - t3;
         res &= test_nocheck("sub 3", p3, "exception thrown: " + std::string(e.what()), true);
     } catch (...) {
@@ -805,39 +805,6 @@ auto test_gcd() -> bool {
 }
 
 /*
- * Test isull functionality.
- */
-auto test_isull() -> bool {
-    bool res = true;
-
-    c8::natural n0(0);
-    auto t0 = get_start_time_ticks();
-    bool b0 = isull(n0);
-    auto p0 = get_end_time_ticks() - t0;
-    std::stringstream s0;
-    s0 << b0;
-    res &= test_check("isull 0", p0, "1", s0);
-
-    c8::natural n1(2000);
-    auto t1 = get_start_time_ticks();
-    bool b1 = isull(n1);
-    auto p1 = get_end_time_ticks() - t1;
-    std::stringstream s1;
-    s1 << b1;
-    res &= test_check("isull 1", p1, "1", s1);
-
-    c8::natural n2("47895748574857485728747548237543205782573485472759047548275024574207");
-    auto t2 = get_start_time_ticks();
-    bool b2 = isull(n2);
-    auto p2 = get_end_time_ticks() - t2;
-    std::stringstream s2;
-    s2 << b2;
-    res &= test_check("isull 2", p2, "0", s2);
-
-    return res;
-}
-
-/*
  * Test toull functionality.
  */
 auto test_toull() -> bool {
@@ -1006,7 +973,6 @@ auto main(int argc, char **argv) -> int {
     res &= test_multiply();
     res &= test_divide();
     res &= test_gcd();
-    res &= test_isull();
     res &= test_toull();
     res &= test_print();
 
