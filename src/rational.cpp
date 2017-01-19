@@ -123,7 +123,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (iszero(abs(v.num_))) {
+        if (is_zero(abs(v.num_))) {
             throw c8::divide_by_zero();
         }
 
@@ -175,12 +175,12 @@ namespace c8 {
     /*
      * Convert this rational to a double.
      */
-    auto rational::todouble() const -> double {
+    auto rational::to_double() const -> double {
         /*
          * Is our value zero?  If it is then handle this as a special case.
          */
         natural n = abs(num_);
-        if (iszero(n)) {
+        if (is_zero(n)) {
             return 0.0;
         }
 
@@ -221,7 +221,7 @@ namespace c8 {
          * bits.  If it's 54 bits then shift right by one.  Once we have 53 bits
          * we can strip bit 52.
          */
-        uint64_t res = static_cast<uint64_t>(toull(sig));
+        uint64_t res = static_cast<uint64_t>(to_unsigned_long_long(sig));
         while (res > 0x0020000000000000ULL) {
             res >>= 1;
             eshift++;

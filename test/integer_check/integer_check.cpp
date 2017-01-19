@@ -756,14 +756,14 @@ auto test_divide() -> bool {
 }
 
 /*
- * Test toll functionality.
+ * Test to_long_long functionality.
  */
-auto test_toll() -> bool {
+auto test_to_long_long() -> bool {
     bool res = true;
 
     c8::integer i0(0);
     auto t0 = get_start_time_ticks();
-    long long l0 = toll(i0);
+    long long l0 = to_long_long(i0);
     auto p0 = get_end_time_ticks() - t0;
     std::stringstream s0;
     s0 << l0;
@@ -771,7 +771,7 @@ auto test_toll() -> bool {
 
     c8::integer i1(-3000);
     auto t1 = get_start_time_ticks();
-    long long l1 = toll(i1);
+    long long l1 = to_long_long(i1);
     auto p1 = get_end_time_ticks() - t1;
     std::stringstream s1;
     s1 << l1;
@@ -780,7 +780,7 @@ auto test_toll() -> bool {
     c8::integer i2("47895748574857485728747548237543205782573485472759047548275024574207");
     auto t2 = get_start_time_ticks();
     try {
-        long long l2 = toll(i2);
+        long long l2 = to_long_long(i2);
         auto p2 = get_end_time_ticks() - t2;
         std::stringstream s2;
         s2 << l2;
@@ -795,7 +795,7 @@ auto test_toll() -> bool {
 
     c8::integer i3(-12345678987654321LL);
     auto t3 = get_start_time_ticks();
-    long long l3 = toll(i3);
+    long long l3 = to_long_long(i3);
     auto p3 = get_end_time_ticks() - t3;
     std::stringstream s3;
     s3 << l3;
@@ -808,7 +808,7 @@ auto test_toll() -> bool {
     c8::integer i4_1 = i4_0 << ((sizeof(unsigned long long) * 8) - 1);
     auto t4 = get_start_time_ticks();
     try {
-        long long l4 = toll(i4_1);
+        long long l4 = to_long_long(i4_1);
         auto p4 = get_end_time_ticks() - t4;
         std::stringstream s4;
         s4 << l4;
@@ -922,7 +922,7 @@ auto main(int argc, char **argv) -> int {
     res &= test_rshift();
     res &= test_multiply();
     res &= test_divide();
-    res &= test_toll();
+    res &= test_to_long_long();
     res &= test_print();
 
     if (!res) {

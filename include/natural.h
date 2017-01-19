@@ -64,10 +64,10 @@ namespace c8 {
         auto modulus(const natural &v) const -> natural;
         auto compare(const natural &v) const -> natural_comparison;
         auto gcd(const natural &v) const -> natural;
-        auto toull() const -> unsigned long long;
+        auto to_unsigned_long_long() const -> unsigned long long;
         friend auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
-        auto iszero() const -> bool {
+        auto is_zero() const -> bool {
             return (digits_.size() == 0) ? true : false;
         }
 
@@ -157,16 +157,16 @@ namespace c8 {
         auto normalize() -> void;
     };
 
-    inline auto iszero(const natural &v) -> bool {
-        return v.iszero();
+    inline auto is_zero(const natural &v) -> bool {
+        return v.is_zero();
     }
 
     inline auto gcd(const natural &v, const natural &u) -> natural {
         return v.gcd(u);
     }
 
-    inline auto toull(const natural &v) -> unsigned long long {
-        return v.toull();
+    inline auto to_unsigned_long_long(const natural &v) -> unsigned long long {
+        return v.to_unsigned_long_long();
     }
 }
 

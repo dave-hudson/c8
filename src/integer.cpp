@@ -218,7 +218,7 @@ namespace c8 {
     /*
      * Convert this integer to a long long.
      */
-    auto integer::toll() const -> long long {
+    auto integer::to_long_long() const -> long long {
         /*
          * Will this number fit in a long long?  If not then throw an exception.
          */
@@ -229,7 +229,7 @@ namespace c8 {
         /*
          * Convert the result, and, if necessary, flip the sign.
          */
-        long long res = static_cast<long long>(toull(magnitude_));
+        long long res = static_cast<long long>(to_unsigned_long_long(magnitude_));
 
         if (negative_) {
             res = -res;

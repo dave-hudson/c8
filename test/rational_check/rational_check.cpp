@@ -620,14 +620,14 @@ auto test_divide() -> bool {
 }
 
 /*
- * Test todouble functionality.
+ * Test to_double functionality.
  */
-auto test_todouble() -> bool {
+auto test_to_double() -> bool {
     bool res = true;
 
     c8::rational r0(0, 1);
     auto t0 = get_start_time_ticks();
-    double d0 = todouble(r0);
+    double d0 = to_double(r0);
     auto p0 = get_end_time_ticks() - t0;
     std::stringstream s0;
     s0 << d0;
@@ -635,7 +635,7 @@ auto test_todouble() -> bool {
 
     c8::rational r1(-3000, 59);
     auto t1 = get_start_time_ticks();
-    double d1 = todouble(r1);
+    double d1 = to_double(r1);
     auto p1 = get_end_time_ticks() - t1;
     std::stringstream s1;
     s1 << d1;
@@ -643,7 +643,7 @@ auto test_todouble() -> bool {
 
     c8::rational r2("47895748574857485728747548237543205782573485472759047548275024574207/389275892758257298");
     auto t2 = get_start_time_ticks();
-    double d2 = todouble(r2);
+    double d2 = to_double(r2);
     auto p2 = get_end_time_ticks() - t2;
     std::stringstream s2;
     s2 << d2;
@@ -651,7 +651,7 @@ auto test_todouble() -> bool {
 
     c8::rational r3(0.1);
     auto t3 = get_start_time_ticks();
-    double d3 = todouble(r3);
+    double d3 = to_double(r3);
     auto p3 = get_end_time_ticks() - t3;
     std::stringstream s3;
     s3 << d3;
@@ -661,7 +661,7 @@ auto test_todouble() -> bool {
     c8::rational r4(i4 << 2048, c8::natural(1));
     auto t4 = get_start_time_ticks();
     try {
-        double d4 = todouble(r4);
+        double d4 = to_double(r4);
         auto p4 = get_end_time_ticks() - t4;
         std::stringstream s4;
         s4 << d4;
@@ -723,7 +723,7 @@ auto main(int argc, char **argv) -> int {
     res &= test_compare();
     res &= test_multiply();
     res &= test_divide();
-    res &= test_todouble();
+    res &= test_to_double();
     res &= test_print();
 
     if (!res) {

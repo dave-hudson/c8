@@ -509,11 +509,11 @@ namespace c8 {
      * Find the greatest common divisor of this an another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
-        if (v.iszero()) {
+        if (v.is_zero()) {
             return *this;
         }
 
-        if (iszero()) {
+        if (is_zero()) {
             return v;
         }
 
@@ -528,7 +528,7 @@ namespace c8 {
         }
 
         natural mod;
-        while (!smaller.iszero()) {
+        while (!smaller.is_zero()) {
             mod = larger % smaller;
             larger = smaller;
             smaller = mod;
@@ -557,7 +557,7 @@ namespace c8 {
     /*
      * Convert this natural number to an unsigned long long.
      */
-    auto natural::toull() const -> unsigned long long {
+    auto natural::to_unsigned_long_long() const -> unsigned long long {
         /*
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
