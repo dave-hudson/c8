@@ -11,6 +11,7 @@ SUBDIRS := \
     integer_dep \
 	natural_check \
 	natural_dep \
+	natural_perf \
 	rational_check \
 	rational_dep \
 	rational_perf
