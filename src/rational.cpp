@@ -4,12 +4,25 @@
 #include "rational.h"
 
 namespace c8 {
+    /*
+     * Construct a rational from an IEEE754 double precision floating point value.
+     */
     rational::rational(double v) {
         /*
-         * Split our double into a significand and an exponent.
+         * Convert our double into a bit representation.
+         *
+         * Note: As currently written the code only works for a little-endian CPU.
          */
         uint64_t *vbits_ptr = reinterpret_cast<uint64_t *>(&v);
         uint64_t vbits = *vbits_ptr;
+
+        /*
+         * With a double precisions IEEE754 floating point value we have:
+         *
+         * bits 0-51:   Significand
+         * bits 52-62:  Exponent
+         * bit 63:      Sign
+         */
         bool neg = (vbits & 0x8000000000000000ULL) ? true : false;
         vbits &= 0x7fffffffffffffffULL;
         int64_t exp = static_cast<int64_t>(vbits >> 52) - 1023;
@@ -40,6 +53,11 @@ namespace c8 {
             sig = -sig;
         }
 
+        /*
+         * Create our numerator and denominator.  If our exponent is negative then
+         * we scale our denominator up, but if the exponent is positive then we
+         * scan our numerator instead.
+         */
         integer i = integer(sig);
 
         if (exp < 0) {
@@ -53,6 +71,14 @@ namespace c8 {
         normalize();
     }
 
+    /*
+     * Construct a rational using a string.
+     *
+     * The string can have an optional '-' sign to indicate that it's negative,
+     * and then the usual C++-like hex, octal, * or decimal representations.
+     * The numerator and denominator are separated by a '/', and there are no
+     * optional spaces.
+     */
     rational::rational(const std::string &v) {
         /*
          * Do we have a '/' character separating a numerator and denominator?
@@ -84,10 +110,6 @@ namespace c8 {
 
     /*
      * Subtract another rational from this one.
-     *
-     * Note that there is a subtle difference between the rational subtract operation
-     * and the natural number version: We don't have to worry about throwing
-     * exceptions for negative results.
      */
     auto rational::subtract(const rational &v) const -> rational {
         rational res;
@@ -208,7 +230,7 @@ namespace c8 {
         } else {
             unsigned int s = dbits + 53 - nbits;
             n <<= s;
-            eshift -= static_cast<int>(s); 
+            eshift -= static_cast<int>(s);
         }
 
         /*
@@ -251,6 +273,11 @@ namespace c8 {
             res |= 0x8000000000000000ULL;
         }
 
+        /*
+         * Convert our result bitmap into a double representation.
+         *
+         * Note: As currently written the code only works for a little-endian CPU.
+         */
         double *dbits_ptr = reinterpret_cast<double *>(&res);
         return *dbits_ptr;
     }
