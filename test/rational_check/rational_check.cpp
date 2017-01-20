@@ -678,6 +678,31 @@ auto test_to_double() -> bool {
 }
 
 /*
+ * Test to_parts functionality.
+ */
+auto test_to_parts() -> bool {
+    bool res = true;
+
+    c8::rational r0(0, 1);
+    auto t0 = get_start_time_ticks();
+    auto x0 = to_parts(r0);
+    auto p0 = get_end_time_ticks() - t0;
+    std::stringstream s0;
+    s0 << x0.first << ',' << x0.second;
+    res &= test_check("toparts 0", p0, "0,1", s0);
+
+    c8::rational r1(-3000, 58);
+    auto t1 = get_start_time_ticks();
+    auto x1 = to_parts(r1);
+    auto p1 = get_end_time_ticks() - t1;
+    std::stringstream s1;
+    s1 << x1.first << ',' << x1.second;
+    res &= test_check("toparts 1", p1, "-1500,29", s1);
+
+    return res;
+}
+
+/*
  * Test printing.
  */
 auto test_print() -> bool {
@@ -724,6 +749,7 @@ auto main(int argc, char **argv) -> int {
     res &= test_multiply();
     res &= test_divide();
     res &= test_to_double();
+    res &= test_to_parts();
     res &= test_print();
 
     if (!res) {

@@ -47,6 +47,10 @@ namespace c8 {
         auto to_double() const -> double;
         friend auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
+        auto to_parts() const -> std::pair<integer, natural> {
+            return std::make_pair(num_, denom_);
+        }
+
         auto operator+(const rational &v) const -> rational {
             return add(v);
         }
@@ -119,6 +123,10 @@ namespace c8 {
 
     inline auto to_double(const rational &v) -> double {
         return v.to_double();
+    }
+
+    inline auto to_parts(const rational &v) -> std::pair<integer, natural> {
+        return v.to_parts();
     }
 }
 
