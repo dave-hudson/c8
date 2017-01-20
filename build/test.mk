@@ -4,18 +4,17 @@
 include $(BASE_PATH)/build/common.mk
 
 #
-# Host-specific options
-#
-ifeq ($(UNAME),Linux)
-    LDFLAGS_OS := -Wl,-rpath $(LIB_PATH)
-endif
-
-#
 # all rule.
 #
 .PHONY: all
 
 all: $(TARGET_BIN)
+
+#
+# For our test programs we don't want to use dynamic libraries because static
+# linking makes things a little more predictable.
+#
+LDFLAGS_EXTRA := -static
 
 LIB_DEPS1 := $(patsubst -l%,lib%.a,$(LIBS))
 LIB_DEPS := $(patsubst %,$(LIB_PATH)/%,$(LIB_DEPS1))
