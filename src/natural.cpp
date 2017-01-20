@@ -399,8 +399,6 @@ namespace c8 {
          */
         std::size_t remaining_sz = remaining.digits_.size();
         std::size_t divisor_sz = divisor.digits_.size();
-        natural rdigits;
-        rdigits.digits_.reserve(remaining_sz);
 
         /*
          * Is the first digit of our dividend larger than that of the divisor?  If it is then
