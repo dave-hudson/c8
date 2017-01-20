@@ -708,6 +708,56 @@ auto test_to_parts() -> bool {
 auto test_print() -> bool {
     bool res = true;
 
+    c8::rational v("-0xfedcfedc0123456789/65689");
+
+    std::stringstream s0;
+    auto t0 = get_start_time_ticks();
+    s0 << v;
+    auto p0 = get_end_time_ticks() - t0;
+    res &= test_check("prn 0", p0, "-4701397401952099592073/65689", s0);
+
+    std::stringstream s1;
+    auto t1 = get_start_time_ticks();
+    s1 << std::hex << v;
+    auto p1 = get_end_time_ticks() - t1;
+    res &= test_check("prn 1", p1, "-fedcfedc0123456789/10099", s1);
+
+    std::stringstream s2;
+    auto t2 = get_start_time_ticks();
+    s2 << std::uppercase << std::hex << v;
+    auto p2 = get_end_time_ticks() - t2;
+    res &= test_check("prn 2", p2, "-FEDCFEDC0123456789/10099", s2);
+
+    std::stringstream s3;
+    auto t3 = get_start_time_ticks();
+    s3 << std::oct << v;
+    auto p3 = get_end_time_ticks() - t3;
+    res &= test_check("prn 3", p3, "-775563766700044321263611/200231", s3);
+
+    std::stringstream s4;
+    auto t4 = get_start_time_ticks();
+    s4 << std::showbase << v;
+    auto p4 = get_end_time_ticks() - t4;
+    res &= test_check("prn 4", p4, "-4701397401952099592073/65689", s4);
+
+    std::stringstream s5;
+    auto t5 = get_start_time_ticks();
+    s5 << std::showbase << std::hex << v;
+    auto p5 = get_end_time_ticks() - t5;
+    res &= test_check("prn 5", p5, "-0xfedcfedc0123456789/0x10099", s5);
+
+    std::stringstream s6;
+    auto t6 = get_start_time_ticks();
+    s6 << std::showbase << std::uppercase << std::hex << v;
+    auto p6 = get_end_time_ticks() - t6;
+    res &= test_check("prn 6", p6, "-0XFEDCFEDC0123456789/0X10099", s6);
+
+    std::stringstream s7;
+    auto t7 = get_start_time_ticks();
+    s7 << std::showbase << std::oct << v;
+    auto p7 = get_end_time_ticks() - t7;
+    res &= test_check("prn 7", p7, "-0775563766700044321263611/0200231", s7);
+
     return res;
 }
 
