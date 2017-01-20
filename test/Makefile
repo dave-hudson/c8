@@ -12,7 +12,8 @@ SUBDIRS := \
 	natural_check \
 	natural_dep \
 	rational_check \
-	rational_dep
+	rational_dep \
+	rational_perf
 
 #
 # Actual heavy lifting for the make.
