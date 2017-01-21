@@ -47,11 +47,11 @@ namespace c8 {
 
         natural(unsigned long long v);
         natural(const std::string &v);
-        natural(const natural &v) = default;
-        natural(natural &&v) = default;
-        ~natural() = default;
-        auto operator =(const natural &v) -> natural & = default;
-        auto operator =(natural &&v) -> natural & = default;
+        natural(const natural &v);
+        natural(natural &&v);
+        ~natural();
+        auto operator =(const natural &v) -> natural &;
+        auto operator =(natural &&v) -> natural &;
 
         auto count_bits() const -> unsigned int;
         auto add(const natural &v) const -> natural;

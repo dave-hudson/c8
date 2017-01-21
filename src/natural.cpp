@@ -91,7 +91,65 @@ namespace c8 {
             res += natural(static_cast<unsigned long long>(c - '0'));
         }
 
-        *this = res;
+        *this = std::move(res);
+    }
+
+    /*
+     * Copy constructor.
+     */
+    natural::natural(const natural &v) {
+        digits_ = v.digits_;
+    }
+
+    /*
+     * Move constructor.
+     */
+    natural::natural(natural &&v) {
+        digits_ = std::move(v.digits_);
+    }
+
+    /*
+     * Destructor.
+     */
+    natural::~natural() {
+    }
+
+    /*
+     * Copy assignment operator.
+     */
+    auto natural::operator =(const natural &v) -> natural & {
+        /*
+         * Are we assigning to ourself?  If we are then we don't need to do anything.
+         */
+        if (this == &v) {
+            return *this;
+        }
+
+        /*
+         * Copy the contents of v.
+         */
+        digits_ = v.digits_;
+
+        return *this;
+    }
+
+    /*
+     * Move assignment operator.
+     */
+    auto natural::operator =(natural &&v) -> natural & {
+        /*
+         * Are we assigning to ourself?  If we are then we don't need to do anything.
+         */
+        if (this == &v) {
+            return *this;
+        }
+
+        /*
+         * Move the contents of v.
+         */
+        digits_ = std::move(v.digits_);
+
+        return *this;
     }
 
     /*
@@ -367,7 +425,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         if (*this < v) {
-            return std::make_pair(res, *this);
+            return std::make_pair(std::move(res), *this);
         }
 
         /*
@@ -457,7 +515,7 @@ namespace c8 {
 
         remaining >>= normalize_shift;
 
-        return std::make_pair(res, remaining);
+        return std::make_pair(std::move(res), std::move(remaining));
     }
 
     /*
@@ -465,7 +523,7 @@ namespace c8 {
      */
     auto natural::divide(const natural &v) const -> natural {
         std::pair<natural, natural> dm = divide_modulus(v);
-        return dm.first;
+        return std::move(dm.first);
     }
 
     /*
@@ -473,7 +531,7 @@ namespace c8 {
      */
     auto natural::modulus(const natural &v) const -> natural {
         std::pair<natural, natural> dm = divide_modulus(v);
-        return dm.second;
+        return std::move(dm.second);
     }
 
     /*
