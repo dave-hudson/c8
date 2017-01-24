@@ -462,12 +462,17 @@ namespace c8 {
          * Is the first digit of our dividend larger than that of the divisor?  If it is then
          * we insert a one and move to the next step.
          */
+        res.digits_.reserve(remaining_sz - divisor_sz + 1);
+        for (std::size_t i = 0; i < (remaining_sz - divisor_sz + 1); i++) {
+            res.digits_.emplace_back(0);
+        }
+
         if (remaining.digits_[remaining_sz - 1] >= divisor.digits_[divisor_sz - 1]) {
             unsigned int shift_bits = static_cast<unsigned int>((remaining_sz - divisor_sz) * natural_digit_bits);
             natural m = divisor << shift_bits;
             if (m <= remaining) {
                 remaining -= m;
-                res = natural(1);
+                res.digits_[remaining_sz - divisor_sz] = 1;
 
                 /*
                  * When we subtract m we may well reduce the size of our remaining value.
@@ -475,7 +480,7 @@ namespace c8 {
                  */
                 remaining_sz = remaining.digits_.size();
                 if (!remaining_sz) {
-                    return std::make_pair((res << shift_bits), natural(0));
+                    return std::make_pair(res, natural(0));
                 }
             }
         }
@@ -484,7 +489,6 @@ namespace c8 {
          * Now we run a long divide algorithm.
          */
         for (std::size_t i = remaining_sz - 1; i > (divisor_sz - 1); i--) {
-            res <<= natural_digit_bits;
             if (remaining < divisor) {
                 continue;
             }
@@ -497,7 +501,8 @@ namespace c8 {
             natural_double_digit d = static_cast<natural_double_digit>((d_hi << natural_digit_bits) + d_lo);
             natural_double_digit q = d / static_cast<natural_double_digit>(divisor.digits_[divisor_sz - 1]);
             natural q1{q};
-            natural m = (q1 << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits)) * divisor;
+            natural dm = divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
+            natural m = q1 * dm;
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
@@ -505,15 +510,20 @@ namespace c8 {
              * significant digit.  This may mean we reduce our estimate slightly.
              */
             while (m > remaining) {
-                m -= (divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits));
+                m -= dm;
                 q--;
             }
 
             remaining -= m;
-            res += natural(q);
+            res.digits_[i - divisor_sz] = static_cast<natural_digit>(q);
         }
 
         remaining >>= normalize_shift;
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
 
         return std::make_pair(std::move(res), std::move(remaining));
     }
