@@ -54,14 +54,12 @@ namespace c8 {
         auto operator =(natural &&v) -> natural &;
 
         auto count_bits() const -> unsigned int;
-        auto add(const natural &v) const -> natural;
-        auto subtract(const natural &v) const -> natural;
-        auto shiftr(unsigned int count) const -> natural;
-        auto shiftl(unsigned int count) const -> natural;
-        auto multiply(const natural &v) const -> natural;
+        auto operator +(const natural &v) const -> natural;
+        auto operator -(const natural &v) const -> natural;
+        auto operator >>(unsigned int count) const -> natural;
+        auto operator <<(unsigned int count) const -> natural;
+        auto operator *(const natural &v) const -> natural;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
-        auto divide(const natural &v) const -> natural;
-        auto modulus(const natural &v) const -> natural;
         auto compare(const natural &v) const -> natural_comparison;
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
@@ -71,60 +69,42 @@ namespace c8 {
             return (digits_.size() == 0) ? true : false;
         }
 
-        auto operator +(const natural &v) const -> natural {
-            return add(v);
-        }
-
         auto operator +=(const natural &v) {
-            *this = add(v);
-        }
-
-        auto operator -(const natural &v) const -> natural {
-            return subtract(v);
+            *this = *this + v;
         }
 
         auto operator -=(const natural &v) {
-            *this = subtract(v);
-        }
-
-        auto operator >>(unsigned int count) const -> natural {
-            return shiftr(count);
+            *this = *this - v;
         }
 
         auto operator >>=(unsigned int count) {
-            *this = shiftr(count);
-        }
-
-        auto operator <<(unsigned int count) const -> natural {
-            return shiftl(count);
+            *this = *this >> count;
         }
 
         auto operator <<=(unsigned int count) {
-            *this = shiftl(count);
-        }
-
-        auto operator *(const natural &v) const -> natural {
-            return multiply(v);
+            *this = *this << count;
         }
 
         auto operator *=(const natural &v) {
-            *this = multiply(v);
+            *this = *this * v;
         }
 
         auto operator /(const natural &v) const -> natural {
-            return divide(v);
+            std::pair<natural, natural> dm = divide_modulus(v);
+            return std::move(dm.first);
         }
 
         auto operator /=(const natural &v) {
-            *this = divide(v);
+            *this = *this / v;
         }
 
         auto operator %(const natural &v) const -> natural {
-            return modulus(v);
+            std::pair<natural, natural> dm = divide_modulus(v);
+            return std::move(dm.second);
         }
 
         auto operator %=(const natural &v) {
-            *this = modulus(v);
+            *this = *this % v;
         }
 
         auto operator ==(const natural &v) const -> bool {

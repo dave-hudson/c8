@@ -97,7 +97,7 @@ namespace c8 {
     /*
      * Add another rational to this one.
      */
-    auto rational::add(const rational &v) const -> rational {
+    auto rational::operator +(const rational &v) const -> rational {
         rational res;
 
         res.num_ = (num_ * integer(v.denom_)) + (integer(denom_) * v.num_);
@@ -111,7 +111,7 @@ namespace c8 {
     /*
      * Subtract another rational from this one.
      */
-    auto rational::subtract(const rational &v) const -> rational {
+    auto rational::operator -(const rational &v) const -> rational {
         rational res;
 
         res.num_ = (num_ * integer(v.denom_)) - (integer(denom_) * v.num_);
@@ -125,7 +125,7 @@ namespace c8 {
     /*
      * Multiply another rational with this one.
      */
-    auto rational::multiply(const rational &v) const -> rational {
+    auto rational::operator *(const rational &v) const -> rational {
         rational res;
 
         res.num_ = num_ * v.num_;
@@ -139,7 +139,7 @@ namespace c8 {
     /*
      * Divide this rational by another one.
      */
-    auto rational::divide(const rational &v) const -> rational {
+    auto rational::operator /(const rational &v) const -> rational {
         rational res;
 
         /*

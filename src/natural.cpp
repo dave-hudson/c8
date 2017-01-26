@@ -179,7 +179,7 @@ namespace c8 {
     /*
      * Add another natural number to this one.
      */
-    auto natural::add(const natural &v) const -> natural {
+    auto natural::operator +(const natural &v) const -> natural {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
@@ -236,7 +236,7 @@ namespace c8 {
     /*
      * Subtract another natural number from this one.
      */
-    auto natural::subtract(const natural &v) const -> natural {
+    auto natural::operator -(const natural &v) const -> natural {
         std::size_t this_sz = digits_.size();
         std::size_t v_sz = v.digits_.size();
 
@@ -283,7 +283,7 @@ namespace c8 {
     /*
      * Left shift this natural number by a bit count.
      */
-    auto natural::shiftl(unsigned int count) const -> natural {
+    auto natural::operator <<(unsigned int count) const -> natural {
         std::size_t this_sz = digits_.size();
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
@@ -319,7 +319,7 @@ namespace c8 {
     /*
      * Right shift this natural number by a bit count.
      */
-    auto natural::shiftr(unsigned int count) const -> natural {
+    auto natural::operator >>(unsigned int count) const -> natural {
         std::size_t this_sz = digits_.size();
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
@@ -356,7 +356,7 @@ namespace c8 {
     /*
      * Multiply this natural number with another one.
      */
-    auto natural::multiply(const natural &v) const -> natural {
+    auto natural::operator *(const natural &v) const -> natural {
         /*
          * If either value is zero then our result is zero.
          */
@@ -559,22 +559,6 @@ namespace c8 {
         res.normalize();
 
         return std::make_pair(std::move(res), std::move(remaining));
-    }
-
-    /*
-     * Divide this natural number by another one.
-     */
-    auto natural::divide(const natural &v) const -> natural {
-        std::pair<natural, natural> dm = divide_modulus(v);
-        return std::move(dm.first);
-    }
-
-    /*
-     * Modulus (divide and return the remainder) this natural number by another one.
-     */
-    auto natural::modulus(const natural &v) const -> natural {
-        std::pair<natural, natural> dm = divide_modulus(v);
-        return std::move(dm.second);
     }
 
     /*

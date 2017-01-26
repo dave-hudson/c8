@@ -39,10 +39,10 @@ namespace c8 {
         auto operator =(const rational &v) -> rational & = default;
         auto operator =(rational &&v) -> rational & = default;
 
-        auto add(const rational &v) const -> rational;
-        auto subtract(const rational &v) const -> rational;
-        auto multiply(const rational &v) const -> rational;
-        auto divide(const rational &v) const -> rational;
+        auto operator +(const rational &v) const -> rational;
+        auto operator -(const rational &v) const -> rational;
+        auto operator *(const rational &v) const -> rational;
+        auto operator /(const rational &v) const -> rational;
         auto compare(const rational &v) const -> rational_comparison;
         auto to_double() const -> double;
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
@@ -51,16 +51,8 @@ namespace c8 {
             return std::make_pair(num_, denom_);
         }
 
-        auto operator +(const rational &v) const -> rational {
-            return add(v);
-        }
-
         auto operator +=(const rational &v) {
-            *this = add(v);
-        }
-
-        auto operator -(const rational &v) const -> rational {
-            return subtract(v);
+            *this = *this + v;
         }
 
         auto operator -() const -> rational {
@@ -71,23 +63,15 @@ namespace c8 {
         }
 
         auto operator -=(const rational &v) {
-            *this = subtract(v);
-        }
-
-        auto operator *(const rational &v) const -> rational {
-            return multiply(v);
+            *this = *this - v;
         }
 
         auto operator *=(const rational &v) {
-            *this = multiply(v);
-        }
-
-        auto operator /(const rational &v) const -> rational {
-            return divide(v);
+            *this = *this * v;
         }
 
         auto operator /=(const rational &v) {
-            *this = divide(v);
+            *this = *this / v;
         }
 
         auto operator ==(const rational &v) const -> bool {

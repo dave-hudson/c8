@@ -28,7 +28,7 @@ namespace c8 {
     /*
      * Add another integer to this one.
      */
-    auto integer::add(const integer &v) const -> integer {
+    auto integer::operator +(const integer &v) const -> integer {
         /*
          * If our two numbers have the same sign then we just add and retain the
          * sign for this number.
@@ -68,7 +68,7 @@ namespace c8 {
      * and the natural number version:  We don't have to worry about throwing
      * exceptions for negative results.
      */
-    auto integer::subtract(const integer &v) const -> integer {
+    auto integer::operator -(const integer &v) const -> integer {
         /*
          * If we're subtracting a negative number from a positive, or a positive from
          * a negative, then we add the magnitudes of both and retain the sign of this one.
@@ -104,7 +104,7 @@ namespace c8 {
     /*
      * Left shift this integer by a number of bits.
      */
-    auto integer::shiftl(unsigned int count) const -> integer {
+    auto integer::operator <<(unsigned int count) const -> integer {
         integer res;
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ << count;
@@ -114,7 +114,7 @@ namespace c8 {
     /*
      * Right shift this integer by a number of bits.
      */
-    auto integer::shiftr(unsigned int count) const -> integer {
+    auto integer::operator >>(unsigned int count) const -> integer {
         integer res;
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ >> count;
@@ -124,7 +124,7 @@ namespace c8 {
     /*
      * Multiply another integer with this one.
      */
-    auto integer::multiply(const integer &v) const -> integer {
+    auto integer::operator *(const integer &v) const -> integer {
         integer res;
         res.negative_ = negative_ ^ v.negative_;
         res.magnitude_ = magnitude_ * v.magnitude_;
@@ -144,22 +144,6 @@ namespace c8 {
         integer mod_res;
         mod_res.magnitude_ = dm.second;
         return std::make_pair(div_res, mod_res);
-    }
-
-    /*
-     * Divide this integer by another one.
-     */
-    auto integer::divide(const integer &v) const -> integer {
-        std::pair<integer, integer> dm = divide_modulus(v);
-        return dm.first;
-    }
-
-    /*
-     * Modulus (divide and return the remainder) this integer by another one.
-     */
-    auto integer::modulus(const integer &v) const -> integer {
-        std::pair<integer, integer> dm = divide_modulus(v);
-        return dm.second;
     }
 
     /*

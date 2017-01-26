@@ -37,14 +37,12 @@ namespace c8 {
         auto operator =(const integer &v) -> integer & = default;
         auto operator =(integer &&v) -> integer & = default;
 
-        auto add(const integer &v) const -> integer;
-        auto subtract(const integer &v) const -> integer;
-        auto shiftr(unsigned int count) const -> integer;
-        auto shiftl(unsigned int count) const -> integer;
-        auto multiply(const integer &v) const -> integer;
+        auto operator +(const integer &v) const -> integer;
+        auto operator -(const integer &v) const -> integer;
+        auto operator >>(unsigned int count) const -> integer;
+        auto operator <<(unsigned int count) const -> integer;
+        auto operator *(const integer &v) const -> integer;
         auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
-        auto divide(const integer &v) const -> integer;
-        auto modulus(const integer &v) const -> integer;
         auto compare(const integer &v) const -> integer_comparison;
         auto to_long_long() const -> long long;
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
@@ -57,16 +55,8 @@ namespace c8 {
             return magnitude_;
         }
 
-        auto operator +(const integer &v) const -> integer {
-            return add(v);
-        }
-
         auto operator +=(const integer &v) {
-            *this = add(v);
-        }
-
-        auto operator -(const integer &v) const -> integer {
-            return subtract(v);
+            *this = *this + v;
         }
 
         auto operator -() const -> integer {
@@ -76,47 +66,37 @@ namespace c8 {
         }
 
         auto operator -=(const integer &v) {
-            *this = subtract(v);
-        }
-
-        auto operator >>(unsigned int count) const -> integer {
-            return shiftr(count);
+            *this = *this - v;
         }
 
         auto operator >>=(unsigned int count) {
-            *this = shiftr(count);
-        }
-
-        auto operator <<(unsigned int count) const -> integer {
-            return shiftl(count);
+            *this = *this >> count;
         }
 
         auto operator <<=(unsigned int count) {
-            *this = shiftl(count);
-        }
-
-        auto operator *(const integer &v) const -> integer {
-            return multiply(v);
+            *this = *this << count;
         }
 
         auto operator *=(const integer &v) {
-            *this = multiply(v);
+            *this = *this * v;
         }
 
         auto operator /(const integer &v) const -> integer {
-            return divide(v);
+            std::pair<integer, integer> dm = divide_modulus(v);
+            return dm.first;
         }
 
         auto operator /=(const integer &v) {
-            *this = divide(v);
+            *this = *this / v;
         }
 
         auto operator %(const integer &v) const -> integer {
-            return modulus(v);
+            std::pair<integer, integer> dm = divide_modulus(v);
+            return dm.second;
         }
 
         auto operator %=(const integer &v) {
-            *this = modulus(v);
+            *this = *this % v;
         }
 
         auto operator ==(const integer &v) const -> bool {
