@@ -63,6 +63,7 @@ namespace c8 {
         auto compare(const natural &v) const -> natural_comparison;
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
+        auto reserve(std::size_t new_digits) -> void;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto is_zero() const -> bool {

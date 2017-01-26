@@ -202,7 +202,7 @@ namespace c8 {
         }
 
         natural res;
-        res.digits_.reserve(larger_sz);
+        res.reserve(larger_sz + 1);
 
         /*
          * Add the parts together until we run out of digits in the smaller part.
@@ -212,7 +212,7 @@ namespace c8 {
             auto a = smaller->digits_[i];
             auto b = larger->digits_[i];
             acc = acc + (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(b));
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
@@ -222,13 +222,18 @@ namespace c8 {
         for (std::size_t i = smaller_sz; i < larger_sz; i++) {
             auto b = larger->digits_[i];
             acc = acc + static_cast<natural_double_digit>(b);
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[larger_sz] = static_cast<natural_digit>(acc);
         }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
 
         return res;
     }
@@ -241,7 +246,7 @@ namespace c8 {
         std::size_t v_sz = v.digits_.size();
 
         natural res;
-        res.digits_.reserve(this_sz);
+        res.reserve(this_sz);
 
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
@@ -251,7 +256,7 @@ namespace c8 {
             auto a = digits_[i];
             auto b = v.digits_[i];
             acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(b)) - acc;
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -261,7 +266,7 @@ namespace c8 {
         for (std::size_t i = v_sz; i < this_sz; i++) {
             auto a = digits_[i];
             acc = static_cast<natural_double_digit>(a) - acc;
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -289,14 +294,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         natural res;
-        res.digits_.reserve(this_sz + trailing_digits + 1);
-
-        /*
-         * Insert as many whole digits as we need to pad the result.
-         */
-        for (std::size_t i = 0; i < trailing_digits; i++) {
-            res.digits_.emplace_back(0);
-        }
+        res.reserve(this_sz + trailing_digits + 1);
 
         /*
          * Shift the original value by the remaining number of bits that we
@@ -305,13 +303,18 @@ namespace c8 {
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
             acc |= (static_cast<natural_double_digit>(digits_[i]) << digit_shift);
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[trailing_digits + i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[trailing_digits + this_sz] = static_cast<natural_digit>(acc);
         }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
 
         return res;
     }
@@ -334,7 +337,7 @@ namespace c8 {
             return res;
         }
 
-        res.digits_.reserve(this_sz - trailing_digits);
+        res.reserve(this_sz - trailing_digits);
 
         /*
          * Shift the original value and insert in the result.
@@ -342,13 +345,18 @@ namespace c8 {
         natural_double_digit acc = static_cast<natural_double_digit>(digits_[trailing_digits]) >> digit_shift;
         for (std::size_t i = trailing_digits + 1; i < this_sz; i++) {
             acc |= (static_cast<natural_double_digit>(digits_[i]) << (natural_digit_bits - digit_shift));
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[i - (trailing_digits + 1)] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_.emplace_back(static_cast<natural_digit>(acc));
+            res.digits_[this_sz - (trailing_digits + 1)] = static_cast<natural_digit>(acc);
         }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
 
         return res;
     }
@@ -378,7 +386,7 @@ namespace c8 {
         std::size_t res_sz = this_sz + v_sz;
 
         natural res;
-        res.digits_.reserve(res_sz);
+        res.reserve(res_sz);
 
         /*
          * Comba multiply.
@@ -404,7 +412,7 @@ namespace c8 {
                 c2 += static_cast<natural_digit>((d1 >> natural_digit_bits));
             }
 
-            res.digits_.emplace_back(c0);
+            res.digits_[i] = c0;
         }
 
         /*
@@ -462,10 +470,7 @@ namespace c8 {
          * Is the first digit of our dividend larger than that of the divisor?  If it is then
          * we insert a one and move to the next step.
          */
-        res.digits_.reserve(remaining_sz - divisor_sz + 1);
-        for (std::size_t i = 0; i < (remaining_sz - divisor_sz + 1); i++) {
-            res.digits_.emplace_back(0);
-        }
+        res.reserve(remaining_sz - divisor_sz + 1);
 
         /*
          * Now we run a long divide algorithm.
@@ -643,6 +648,21 @@ namespace c8 {
             }
 
             digits_.pop_back();
+        }
+    }
+
+    /*
+     * Expand the number of digits in this natural number.
+     */
+    auto natural::reserve(std::size_t new_digits) -> void {
+        auto old_sz = digits_.size();
+        if (old_sz >= new_digits) {
+            return;
+        }
+
+        digits_.reserve(new_digits);
+        for (std::size_t i = old_sz; i < new_digits; i++) {
+            digits_.emplace_back(0);
         }
     }
 
