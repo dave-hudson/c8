@@ -467,42 +467,74 @@ namespace c8 {
             res.digits_.emplace_back(0);
         }
 
-        if (remaining.digits_[remaining_sz - 1] >= divisor.digits_[divisor_sz - 1]) {
-            unsigned int shift_bits = static_cast<unsigned int>((remaining_sz - divisor_sz) * natural_digit_bits);
-            natural m = divisor << shift_bits;
-            if (m <= remaining) {
-                remaining -= m;
-                res.digits_[remaining_sz - divisor_sz] = 1;
-
-                /*
-                 * When we subtract m we may well reduce the size of our remaining value.
-                 * Account for that, and if it reduces to zero then we're done.
-                 */
-                remaining_sz = remaining.digits_.size();
-                if (!remaining_sz) {
-                    return std::make_pair(res, natural(0));
-                }
-            }
-        }
-
         /*
          * Now we run a long divide algorithm.
          */
-        for (std::size_t i = remaining_sz - 1; i > (divisor_sz - 1); i--) {
-            if (remaining < divisor) {
+        std::size_t i = remaining_sz;
+        natural_double_digit upper_div_digit = static_cast<natural_double_digit>(divisor.digits_[divisor_sz - 1]);
+        while (remaining >= divisor) {
+            /*
+             * Iterate through our dividend from the most significant digit to the least.
+             */
+            i--;
+
+            /*
+             * During the course of an earlier iteration we may have reduced the size of
+             * our remaining dividend by more than one digit.  If so then move on to the next
+             * digit.
+             */
+            if (i >= remaining.digits_.size()) {
                 continue;
+            }
+
+            /*
+             * We know that our divisor has been shifted so that the most significant digit has
+             * its top bit set.  This means that the quotient for our next digit can only be 0 or 1.
+             */
+            natural_double_digit d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
+            if (d_hi >= upper_div_digit) {
+                natural m = divisor << static_cast<unsigned int>((i - divisor_sz + 1) * natural_digit_bits);
+
+                /*
+                 * Was the result 1?
+                 */
+                if (remaining >= m) {
+                    remaining -= m;
+                    res.digits_[i - divisor_sz + 1] = static_cast<natural_digit>(1);
+
+                    /*
+                     * In reducing the remaining divisor we may have affected our ability to
+                     * continue this particular iteration.  If we have, then move on to the
+                     * next digit.
+                     */
+                    if (i >= remaining.digits_.size()) {
+                        continue;
+                    }
+
+                    /*
+                     * If we have fewer digits left then the size of the divisor then there's nothing
+                     * left to do.
+                     */
+                    if (i < divisor_sz) {
+                        break;
+                    }
+
+                    /*
+                     * Having reduced our remaining divident we changed its upper most digit
+                     * so we need to fetch the new version.
+                     */
+                    d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
+                }
             }
 
             /*
              * Estimate the next digit of the result.
              */
-            natural_double_digit d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
             natural_double_digit d_lo = static_cast<natural_double_digit>(remaining.digits_[i - 1]);
             natural_double_digit d = static_cast<natural_double_digit>((d_hi << natural_digit_bits) + d_lo);
-            natural_double_digit q = d / static_cast<natural_double_digit>(divisor.digits_[divisor_sz - 1]);
-            natural q1{q};
+            natural_double_digit q = d / upper_div_digit;
             natural dm = divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
-            natural m = q1 * dm;
+            natural m = natural(q) * dm;
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
@@ -515,6 +547,7 @@ namespace c8 {
             }
 
             remaining -= m;
+
             res.digits_[i - divisor_sz] = static_cast<natural_digit>(q);
         }
 
