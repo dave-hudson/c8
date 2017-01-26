@@ -675,6 +675,15 @@ auto test_multiply() -> bool {
     s3 << mu2_3;
     res &= test_check("mul 3", p3, "15241578753238836750495351562566681945008382873376009755225118122311263526910001371743100137174310012193273126047859425087639153757049236500533455762536198787501905199875019052100", s3);
 
+    c8::natural mu0_4("0x1000000000000000100000000000000100000000");
+    c8::natural mu1_4("0xabcdef12");
+    auto t4 = get_start_time_ticks();
+    auto mu2_4 = mu0_4 * mu1_4;
+    auto p4 = get_end_time_ticks() - t4;
+    std::stringstream s4;
+    s4 << std::hex << mu2_4;
+    res &= test_check("mul 4", p4, "abcdef1200000000abcdef120000000abcdef1200000000", s4);
+
     return res;
 }
 
@@ -755,6 +764,19 @@ auto test_divide() -> bool {
     std::stringstream s4b;
     s4b << std::hex << mo2_4;
     res &= test_check("div 4b", p4, "0", s4b);
+
+    c8::natural d0_5("0x10000000000000001000000000000000100000000");
+    c8::natural d1_5("1");
+    auto t5 = get_start_time_ticks();
+    auto d2_5 = d0_5 / d1_5;
+    auto mo2_5 = d0_5 % d1_5;
+    auto p5 = get_end_time_ticks() - t5;
+    std::stringstream s5a;
+    s5a << std::hex << d2_5;
+    res &= test_check("div 5a", p5, "10000000000000001000000000000000100000000", s5a);
+    std::stringstream s5b;
+    s5b << std::hex << mo2_5;
+    res &= test_check("div 5b", p5, "0", s5b);
 
     return res;
 }
