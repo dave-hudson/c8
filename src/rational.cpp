@@ -285,7 +285,7 @@ namespace c8 {
     /*
      * << operator to print a rational.
      */
-    auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream & {
+    auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream & {
         outstr << v.num_ << '/' << v.denom_;
 
         return outstr;

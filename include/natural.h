@@ -65,89 +65,89 @@ namespace c8 {
         auto compare(const natural &v) const -> natural_comparison;
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
-        friend auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream &;
+        friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto is_zero() const -> bool {
             return (digits_.size() == 0) ? true : false;
         }
 
-        auto operator+(const natural &v) const -> natural {
+        auto operator +(const natural &v) const -> natural {
             return add(v);
         }
 
-        auto operator+=(const natural &v) {
+        auto operator +=(const natural &v) {
             *this = add(v);
         }
 
-        auto operator-(const natural &v) const -> natural {
+        auto operator -(const natural &v) const -> natural {
             return subtract(v);
         }
 
-        auto operator-=(const natural &v) {
+        auto operator -=(const natural &v) {
             *this = subtract(v);
         }
 
-        auto operator>>(unsigned int count) const -> natural {
+        auto operator >>(unsigned int count) const -> natural {
             return shiftr(count);
         }
 
-        auto operator>>=(unsigned int count) {
+        auto operator >>=(unsigned int count) {
             *this = shiftr(count);
         }
 
-        auto operator<<(unsigned int count) const -> natural {
+        auto operator <<(unsigned int count) const -> natural {
             return shiftl(count);
         }
 
-        auto operator<<=(unsigned int count) {
+        auto operator <<=(unsigned int count) {
             *this = shiftl(count);
         }
 
-        auto operator*(const natural &v) const -> natural {
+        auto operator *(const natural &v) const -> natural {
             return multiply(v);
         }
 
-        auto operator*=(const natural &v) {
+        auto operator *=(const natural &v) {
             *this = multiply(v);
         }
 
-        auto operator/(const natural &v) const -> natural {
+        auto operator /(const natural &v) const -> natural {
             return divide(v);
         }
 
-        auto operator/=(const natural &v) {
+        auto operator /=(const natural &v) {
             *this = divide(v);
         }
 
-        auto operator%(const natural &v) const -> natural {
+        auto operator %(const natural &v) const -> natural {
             return modulus(v);
         }
 
-        auto operator%=(const natural &v) {
+        auto operator %=(const natural &v) {
             *this = modulus(v);
         }
 
-        auto operator==(const natural &v) const -> bool {
+        auto operator ==(const natural &v) const -> bool {
             return compare(v) == natural_comparison::eq;
         }
 
-        auto operator!=(const natural &v) const -> bool {
+        auto operator !=(const natural &v) const -> bool {
             return compare(v) != natural_comparison::eq;
         }
 
-        auto operator>(const natural &v) const -> bool {
+        auto operator >(const natural &v) const -> bool {
             return compare(v) == natural_comparison::gt;
         }
 
-        auto operator>=(const natural &v) const -> bool {
+        auto operator >=(const natural &v) const -> bool {
             return compare(v) != natural_comparison::lt;
         }
 
-        auto operator<(const natural &v) const -> bool {
+        auto operator <(const natural &v) const -> bool {
             return compare(v) == natural_comparison::lt;
         }
 
-        auto operator<=(const natural &v) const -> bool {
+        auto operator <=(const natural &v) const -> bool {
             return compare(v) != natural_comparison::gt;
         }
 

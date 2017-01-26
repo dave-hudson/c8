@@ -47,7 +47,7 @@ namespace c8 {
         auto modulus(const integer &v) const -> integer;
         auto compare(const integer &v) const -> integer_comparison;
         auto to_long_long() const -> long long;
-        friend auto operator<<(std::ostream &outstr, const integer &v) -> std::ostream &;
+        friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
         auto isnegative() const -> bool {
             return negative_;
@@ -57,89 +57,89 @@ namespace c8 {
             return magnitude_;
         }
 
-        auto operator+(const integer &v) const -> integer {
+        auto operator +(const integer &v) const -> integer {
             return add(v);
         }
 
-        auto operator+=(const integer &v) {
+        auto operator +=(const integer &v) {
             *this = add(v);
         }
 
-        auto operator-(const integer &v) const -> integer {
+        auto operator -(const integer &v) const -> integer {
             return subtract(v);
         }
 
-        auto operator-() const -> integer {
+        auto operator -() const -> integer {
             integer res = *this;
             res.negative_ ^= true;
             return res;
         }
 
-        auto operator-=(const integer &v) {
+        auto operator -=(const integer &v) {
             *this = subtract(v);
         }
 
-        auto operator>>(unsigned int count) const -> integer {
+        auto operator >>(unsigned int count) const -> integer {
             return shiftr(count);
         }
 
-        auto operator>>=(unsigned int count) {
+        auto operator >>=(unsigned int count) {
             *this = shiftr(count);
         }
 
-        auto operator<<(unsigned int count) const -> integer {
+        auto operator <<(unsigned int count) const -> integer {
             return shiftl(count);
         }
 
-        auto operator<<=(unsigned int count) {
+        auto operator <<=(unsigned int count) {
             *this = shiftl(count);
         }
 
-        auto operator*(const integer &v) const -> integer {
+        auto operator *(const integer &v) const -> integer {
             return multiply(v);
         }
 
-        auto operator*=(const integer &v) {
+        auto operator *=(const integer &v) {
             *this = multiply(v);
         }
 
-        auto operator/(const integer &v) const -> integer {
+        auto operator /(const integer &v) const -> integer {
             return divide(v);
         }
 
-        auto operator/=(const integer &v) {
+        auto operator /=(const integer &v) {
             *this = divide(v);
         }
 
-        auto operator%(const integer &v) const -> integer {
+        auto operator %(const integer &v) const -> integer {
             return modulus(v);
         }
 
-        auto operator%=(const integer &v) {
+        auto operator %=(const integer &v) {
             *this = modulus(v);
         }
 
-        auto operator==(const integer &v) const -> bool {
+        auto operator ==(const integer &v) const -> bool {
             return compare(v) == integer_comparison::eq;
         }
 
-        auto operator!=(const integer &v) const -> bool {
+        auto operator !=(const integer &v) const -> bool {
             return compare(v) != integer_comparison::eq;
         }
 
-        auto operator>(const integer &v) const -> bool {
+        auto operator >(const integer &v) const -> bool {
             return compare(v) == integer_comparison::gt;
         }
 
-        auto operator>=(const integer &v) const -> bool {
+        auto operator >=(const integer &v) const -> bool {
             return compare(v) != integer_comparison::lt;
         }
 
-        auto operator<(const integer &v) const -> bool {
+        auto operator <(const integer &v) const -> bool {
             return compare(v) == integer_comparison::lt;
         }
 
-        auto operator<=(const integer &v) const -> bool {
+        auto operator <=(const integer &v) const -> bool {
             return compare(v) != integer_comparison::gt;
         }
 

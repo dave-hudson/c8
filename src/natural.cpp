@@ -692,7 +692,7 @@ namespace c8 {
     /*
      * << operator to print a natural.
      */
-    auto operator<<(std::ostream &outstr, const natural &v) -> std::ostream & {
+    auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream & {
         std::size_t v_sz = v.digits_.size();
         if (v_sz == 0) {
             outstr << '0';

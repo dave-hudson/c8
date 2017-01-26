@@ -247,7 +247,7 @@ namespace c8 {
     /*
      * << operator to print a integer.
      */
-    auto operator<<(std::ostream &outstr, const integer &v) -> std::ostream & {
+    auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream & {
         if (v.negative_) {
             outstr << '-';
         }

@@ -45,72 +45,72 @@ namespace c8 {
         auto divide(const rational &v) const -> rational;
         auto compare(const rational &v) const -> rational_comparison;
         auto to_double() const -> double;
-        friend auto operator<<(std::ostream &outstr, const rational &v) -> std::ostream &;
+        friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
         auto to_parts() const -> std::pair<integer, natural> {
             return std::make_pair(num_, denom_);
         }
 
-        auto operator+(const rational &v) const -> rational {
+        auto operator +(const rational &v) const -> rational {
             return add(v);
         }
 
-        auto operator+=(const rational &v) {
+        auto operator +=(const rational &v) {
             *this = add(v);
         }
 
-        auto operator-(const rational &v) const -> rational {
+        auto operator -(const rational &v) const -> rational {
             return subtract(v);
         }
 
-        auto operator-() const -> rational {
+        auto operator -() const -> rational {
             rational res = *this;
             res.num_ = -num_;
             res.denom_ = denom_;
             return res;
         }
 
-        auto operator-=(const rational &v) {
+        auto operator -=(const rational &v) {
             *this = subtract(v);
         }
 
-        auto operator*(const rational &v) const -> rational {
+        auto operator *(const rational &v) const -> rational {
             return multiply(v);
         }
 
-        auto operator*=(const rational &v) {
+        auto operator *=(const rational &v) {
             *this = multiply(v);
         }
 
-        auto operator/(const rational &v) const -> rational {
+        auto operator /(const rational &v) const -> rational {
             return divide(v);
         }
 
-        auto operator/=(const rational &v) {
+        auto operator /=(const rational &v) {
             *this = divide(v);
         }
 
-        auto operator==(const rational &v) const -> bool {
+        auto operator ==(const rational &v) const -> bool {
             return compare(v) == rational_comparison::eq;
         }
 
-        auto operator!=(const rational &v) const -> bool {
+        auto operator !=(const rational &v) const -> bool {
             return compare(v) != rational_comparison::eq;
         }
 
-        auto operator>(const rational &v) const -> bool {
+        auto operator >(const rational &v) const -> bool {
             return compare(v) == rational_comparison::gt;
         }
 
-        auto operator>=(const rational &v) const -> bool {
+        auto operator >=(const rational &v) const -> bool {
             return compare(v) != rational_comparison::lt;
         }
 
-        auto operator<(const rational &v) const -> bool {
+        auto operator <(const rational &v) const -> bool {
             return compare(v) == rational_comparison::lt;
         }
 
-        auto operator<=(const rational &v) const -> bool {
+        auto operator <=(const rational &v) const -> bool {
             return compare(v) != rational_comparison::gt;
         }
 
