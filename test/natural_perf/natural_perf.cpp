@@ -9,7 +9,7 @@
  * Multiply test.
  */
 auto multiply_test(const c8::natural &r1, const c8::natural &r2) -> c8::natural {
-    return r1 / r2;
+    return r1 * r2;
 }
 
 /*
