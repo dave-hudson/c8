@@ -43,6 +43,9 @@ namespace c8 {
          * Constructors.
          */
         natural() {
+            num_digits_ = 0;
+            digits_size_ = 0;
+            digits_ = nullptr;
         }
 
         natural(unsigned long long v);
@@ -55,7 +58,9 @@ namespace c8 {
 
         auto count_bits() const -> unsigned int;
         auto operator +(const natural &v) const -> natural;
+        auto operator +=(const natural &v) -> void;
         auto operator -(const natural &v) const -> natural;
+        auto operator -=(const natural &v) -> void;
         auto operator >>(unsigned int count) const -> natural;
         auto operator <<(unsigned int count) const -> natural;
         auto operator *(const natural &v) const -> natural;
@@ -64,18 +69,11 @@ namespace c8 {
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
         auto reserve(std::size_t new_digits) -> void;
+        auto expand(std::size_t new_digits) -> void;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto is_zero() const -> bool {
-            return (digits_.size() == 0) ? true : false;
-        }
-
-        auto operator +=(const natural &v) {
-            *this = *this + v;
-        }
-
-        auto operator -=(const natural &v) {
-            *this = *this - v;
+            return (num_digits_ == 0) ? true : false;
         }
 
         auto operator >>=(unsigned int count) {
@@ -133,7 +131,9 @@ namespace c8 {
         }
 
     private:
-        std::vector<natural_digit> digits_; // Digits of the natural number
+        natural_digit *digits_;             // Digits of the natural number
+        std::size_t digits_size_;           // Number of digits_ allocated
+        std::size_t num_digits_;            // The number of digits
 
         auto normalize() -> void;
     };
