@@ -275,6 +275,30 @@ auto test_add() -> bool {
     s3 << a2_3;
     res &= test_check("add 3", p3, "98888880000000000000000000000000000000000000000000000000000001000000789", s3);
 
+    /*
+     * Add a 1 digit value and a digit.
+     */
+    c8::natural a0_4("13");
+    c8::natural_digit a1_4 = 42;
+    auto t4 = get_start_time_ticks();
+    auto a2_4 = a0_4 + a1_4;
+    auto p4 = get_end_time_ticks() - t4;
+    std::stringstream s4;
+    s4 << a2_4;
+    res &= test_check("add 4", p4, "55", s4);
+
+    /*
+     * Add a 3 digit value and a 1 digit value, causing an overflow to 3 digits.
+     */
+    c8::natural a0_5("0xffffffffffffffffffffffff");
+    c8::natural_digit a1_5 = 2;
+    auto t5 = get_start_time_ticks();
+    auto a2_5 = a0_5 + a1_5;
+    auto p5 = get_end_time_ticks() - t5;
+    std::stringstream s5;
+    s5 << std::hex << a2_5;
+    res &= test_check("add 5", p5, "1000000000000000000000001", s5);
+
     return res;
 }
 

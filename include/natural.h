@@ -57,7 +57,9 @@ namespace c8 {
         auto operator =(natural &&v) -> natural &;
 
         auto count_bits() const -> unsigned int;
+        auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
+        auto operator +=(natural_digit v) -> void;
         auto operator +=(const natural &v) -> void;
         auto operator -(const natural &v) const -> natural;
         auto operator -=(const natural &v) -> void;

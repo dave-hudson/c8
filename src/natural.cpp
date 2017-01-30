@@ -101,7 +101,7 @@ namespace c8 {
             }
 
             res *= bbase;
-            res += natural(static_cast<unsigned long long>(c - '0'));
+            res += static_cast<natural_digit>(c - '0');
         }
 
         *this = std::move(res);
@@ -233,6 +233,50 @@ namespace c8 {
     }
 
     /*
+     * Add a natural digit to this one.
+     */
+    auto natural::operator +(natural_digit v) const -> natural {
+        /*
+         * Is this number zero?  If yes then just construct the result.
+         */
+        if (is_zero()) {
+            return natural(v);
+        }
+
+        std::size_t this_sz = num_digits_;
+
+        natural res;
+        res.reserve(this_sz + 1);
+
+        /*
+         * Add the first digit.
+         */
+        auto a = digits_[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
+        res.digits_[0] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        /*
+         * Add the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = acc + static_cast<natural_double_digit>(a);
+            res.digits_[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        res.num_digits_ = this_sz;
+
+        if (acc) {
+            res.digits_[this_sz] = static_cast<natural_digit>(acc);
+            res.num_digits_++;
+        }
+
+        return res;
+    }
+
+    /*
      * Add another natural number to this one.
      */
     auto natural::operator +(const natural &v) const -> natural {
@@ -290,6 +334,49 @@ namespace c8 {
         }
 
         return res;
+    }
+
+    /*
+     * Add a natural digit to this number.
+     */
+    auto natural::operator +=(natural_digit v) -> void {
+        std::size_t this_sz = num_digits_;
+
+        expand(this_sz + 1);
+
+        /*
+         * Is this number zero?  If yes then just construct the result.
+         */
+        if (is_zero()) {
+            digits_[0] = v;
+            num_digits_ = 1;
+            return;
+        }
+
+        /*
+         * Add the first digit.
+         */
+        natural_digit a = digits_[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
+        digits_[0] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        /*
+         * Add the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = acc + static_cast<natural_double_digit>(a);
+            digits_[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        num_digits_ = this_sz;
+
+        if (acc) {
+            digits_[this_sz] = static_cast<natural_digit>(acc);
+            num_digits_++;
+        }
     }
 
     /*
@@ -906,7 +993,7 @@ namespace c8 {
         std::vector<char> res;
         natural b10{base};
         auto rem = v;
-        while (rem != natural(0)) {
+        while (!is_zero(rem)) {
             std::pair<natural, natural> qm = rem.divide_modulus(b10);
             natural mod = qm.second;
             if (mod.num_digits_ == 0) {
