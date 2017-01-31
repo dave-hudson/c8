@@ -61,7 +61,7 @@ namespace c8 {
          * Is our first character a '0'?  If it is then we may have an octal or hex number.
          */
         std::size_t idx = 0;
-        unsigned long base = 10;
+        natural_digit base = 10;
         if (v[0] == '0') {
             idx = 1;
             base = 8;
@@ -73,8 +73,6 @@ namespace c8 {
                 }
             }
         }
-
-        natural bbase{base};
 
         /*
          * We now know the base we're using and the starting index.
@@ -100,7 +98,7 @@ namespace c8 {
                 }
             }
 
-            res *= bbase;
+            res *= base;
             res += static_cast<natural_digit>(c - '0');
         }
 
@@ -236,14 +234,14 @@ namespace c8 {
      * Add a natural digit to this one.
      */
     auto natural::operator +(natural_digit v) const -> natural {
+        std::size_t this_sz = num_digits_;
+
         /*
          * Is this number zero?  If yes then just construct the result.
          */
-        if (is_zero()) {
+        if (!this_sz) {
             return natural(v);
         }
-
-        std::size_t this_sz = num_digits_;
 
         natural res;
         res.reserve(this_sz + 1);
@@ -347,7 +345,7 @@ namespace c8 {
         /*
          * Is this number zero?  If yes then just construct the result.
          */
-        if (is_zero()) {
+        if (!this_sz) {
             digits_[0] = v;
             num_digits_ = 1;
             return;
@@ -437,6 +435,60 @@ namespace c8 {
     }
 
     /*
+     * Subtract a natural digit from this natural number.
+     */
+    auto natural::operator -(natural_digit v) const -> natural {
+        std::size_t this_sz = num_digits_;
+        natural res;
+
+        /*
+         * Is this number zero?  If yes, then it's either an exception or a zero result.
+         */
+        if (!this_sz) {
+            if (!v) {
+                return res;
+            }
+
+            throw not_a_number();
+        }
+
+        res.reserve(this_sz);
+        res.num_digits_ = this_sz;
+
+        /*
+         * Subtract the digits from this number's lowest digit.
+         */
+        auto a = digits_[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(v));
+        res.digits_[0] = static_cast<natural_digit>(acc);
+        acc = (acc >> natural_digit_bits) & 1;
+
+        /*
+         * Subtract the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = static_cast<natural_double_digit>(a) - acc;
+            res.digits_[i] = static_cast<natural_digit>(acc);
+            acc = (acc >> natural_digit_bits) & 1;
+        }
+
+        /*
+         * We should not have a carry!
+         */
+        if (acc) {
+            throw not_a_number();
+        }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
+
+        return res;
+    }
+
+    /*
      * Subtract another natural number from this one.
      */
     auto natural::operator -(const natural &v) const -> natural {
@@ -482,6 +534,54 @@ namespace c8 {
         res.normalize();
 
         return res;
+    }
+
+    /*
+     * Subtract a natural digit from this natural number.
+     */
+    auto natural::operator -=(natural_digit v) -> void {
+        std::size_t this_sz = num_digits_;
+
+        /*
+         * Is this number zero?  If yes, then it's either an exception or a zero result.
+         */
+        if (!this_sz) {
+            if (!v) {
+                return;
+            }
+
+            throw not_a_number();
+        }
+
+        /*
+         * Subtract the digits from this number's lowest digit.
+         */
+        auto a = digits_[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(v));
+        digits_[0] = static_cast<natural_digit>(acc);
+        acc = (acc >> natural_digit_bits) & 1;
+
+        /*
+         * Subtract the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = static_cast<natural_double_digit>(a) - acc;
+            digits_[i] = static_cast<natural_digit>(acc);
+            acc = (acc >> natural_digit_bits) & 1;
+        }
+
+        /*
+         * We should not have a carry!
+         */
+        if (acc) {
+            throw not_a_number();
+        }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        normalize();
     }
 
     /*
@@ -606,6 +706,56 @@ namespace c8 {
     }
 
     /*
+     * Multiply this natural number with a single digit.
+     */
+    auto natural::operator *(natural_digit v) const -> natural {
+        /*
+         * If either value is zero then our result is zero.
+         */
+        std::size_t this_sz = num_digits_;
+        if (!this_sz) {
+            natural res;
+            return res;
+        }
+
+        if (!v) {
+            natural res;
+            return res;
+        }
+
+        /*
+         * Estimate our output size in digits.
+         */
+        std::size_t res_sz = this_sz + 1;
+
+        natural res;
+        res.reserve(res_sz);
+        res.num_digits_ = res_sz;
+
+        /*
+         * Long multiply.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+            res.digits_[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        if (acc) {
+            res.digits_[this_sz] = static_cast<natural_digit>(acc);
+        }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
+
+        return res;
+    }
+
+    /*
      * Multiply this natural number with another one.
      */
     auto natural::operator *(const natural &v) const -> natural {
@@ -667,6 +817,93 @@ namespace c8 {
         res.normalize();
 
         return res;
+    }
+
+    /*
+     * Multiply this natural number with a single digit.
+     */
+    auto natural::operator *=(natural_digit v) -> void {
+        /*
+         * If either value is zero then our result is zero.
+         */
+        std::size_t this_sz = num_digits_;
+        if (!this_sz) {
+            return;
+        }
+
+        if (!v) {
+            num_digits_ = 0;
+            return;
+        }
+
+        /*
+         * Estimate our output size in digits.
+         */
+        std::size_t res_sz = this_sz + 1;
+
+        expand(res_sz);
+        num_digits_ = res_sz;
+
+        /*
+         * Long multiply.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < this_sz; i++) {
+            auto a = digits_[i];
+            acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+            digits_[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        if (acc) {
+            digits_[this_sz] = static_cast<natural_digit>(acc);
+        }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        normalize();
+    }
+
+    /*
+     * Divide this natural number by a natural digit, returning the quotient and modulus.
+     */
+    auto natural::divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit> {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (!v) {
+            throw divide_by_zero();
+        }
+
+        std::size_t this_sz = num_digits_;
+
+        /*
+         * Is the first digit of our dividend larger than that of the divisor?  If it is then
+         * we insert a one and move to the next step.
+         */
+        natural res;
+        res.reserve(this_sz);
+        res.num_digits_ = this_sz;
+
+        /*
+         * Now we run a long divide algorithm.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < this_sz; i++) {
+            auto a = digits_[this_sz - 1 - i];
+            acc = (acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
+            natural_double_digit q = acc / v;
+            acc = acc % v;
+            res.digits_[this_sz - 1 - i] = static_cast<natural_digit>(q);
+        }
+
+        /*
+         * We need to normalize because our result can have zero upper digits.
+         */
+        res.normalize();
+
+        return std::make_pair(std::move(res), static_cast<natural_digit>(acc));
     }
 
     /*
@@ -772,7 +1009,7 @@ namespace c8 {
                     }
 
                     /*
-                     * Having reduced our remaining divident we changed its upper most digit
+                     * Having reduced our remaining dividend we changed its upper most digit
                      * so we need to fetch the new version.
                      */
                     d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
@@ -785,7 +1022,16 @@ namespace c8 {
             natural_double_digit d_lo = static_cast<natural_double_digit>(remaining.digits_[i - 1]);
             natural_double_digit d = static_cast<natural_double_digit>((d_hi << natural_digit_bits) + d_lo);
             natural_double_digit q = d / upper_div_digit;
-            natural m = (natural(q) * divisor) << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
+
+            /*
+             * Our result can't actually be bigger than a digit, but the estimate might be.
+             * If this happens then shrink the estimate!
+             */
+            if ((q >> natural_digit_bits)) {
+                q--;
+            }
+
+            natural m = (divisor * static_cast<natural_digit>(q)) << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
@@ -968,7 +1214,7 @@ namespace c8 {
             return outstr;
         }
 
-        unsigned long base = 10;
+        natural_digit base = 10;
         auto flags = outstr.flags();
         if (flags & std::ios_base::hex) {
             base = 16;
@@ -991,16 +1237,11 @@ namespace c8 {
         }
 
         std::vector<char> res;
-        natural b10{base};
         auto rem = v;
         while (!is_zero(rem)) {
-            std::pair<natural, natural> qm = rem.divide_modulus(b10);
-            natural mod = qm.second;
-            if (mod.num_digits_ == 0) {
-                res.emplace_back('0');
-            } else {
-                res.emplace_back(digits[mod.digits_[0]]);
-            }
+            std::pair<natural, natural_digit> qm = rem.divide_modulus(base);
+            natural_digit mod = qm.second;
+            res.emplace_back(digits[mod]);
 
             rem = qm.first;
         }

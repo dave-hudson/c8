@@ -365,6 +365,59 @@ auto test_subtract() -> bool {
         res &= test_nocheck("sub 3", p3, "unexpected exception thrown", false);
     }
 
+    /*
+     * Subtract a digit from another 1 digit value.
+     */
+    c8::natural s0_4(53);
+    auto t4 = get_start_time_ticks();
+    auto s2_4 = s0_4 - 15;
+    auto p4 = get_end_time_ticks() - t4;
+    std::stringstream s4;
+    s4 << s2_4;
+    res &= test_check("sub 4", p4, "38", s4);
+
+    /*
+     * Subtract a larger value from a smaller one.  This will throw an exception because there
+     * aren't any negative natural numbers.
+     */
+    c8::natural s0_5(100);
+    auto t5 = get_start_time_ticks();
+    try {
+        auto s2_5 = s0_5 - 127;
+        auto p5 = get_end_time_ticks() - t5;
+        std::stringstream s5;
+        s5 << s2_5;
+        res &= test_nocheck("sub 5", p5, "failed to throw exception", false);
+    } catch (const c8::not_a_number &e) {
+        auto p5 = get_end_time_ticks() - t5;
+        res &= test_nocheck("sub 5", p5, "exception thrown: " + std::string(e.what()), true);
+    } catch (...) {
+        auto p5 = get_end_time_ticks() - t5;
+        res &= test_nocheck("sub 5", p5, "unexpected exception thrown", false);
+    }
+
+    /*
+     * Subtract a digit from another 1 digit value.
+     */
+    c8::natural s0_6(0);
+    auto t6 = get_start_time_ticks();
+    auto s2_6 = s0_6 - 0;
+    auto p6 = get_end_time_ticks() - t6;
+    std::stringstream s6;
+    s6 << s2_6;
+    res &= test_check("sub 6", p6, "0", s6);
+
+    /*
+     * Subtract a digit from a large value.
+     */
+    c8::natural s0_7("0x1000000000000000000000000");
+    auto t7 = get_start_time_ticks();
+    auto s2_7 = s0_7 - 1;
+    auto p7 = get_end_time_ticks() - t7;
+    std::stringstream s7;
+    s7 << std::hex << s2_7;
+    res &= test_check("sub 7", p7, "ffffffffffffffffffffffff", s7);
+
     return res;
 }
 
@@ -801,6 +854,22 @@ auto test_divide() -> bool {
     std::stringstream s5b;
     s5b << std::hex << mo2_5;
     res &= test_check("div 5b", p5, "0", s5b);
+
+    /*
+     * Trigger a divide that exercises a corner case in the divide estimation logic.
+     */
+    c8::natural d0_6("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
+    c8::natural d1_6("0x10000000000000000000000010000000000000000");
+    auto t6 = get_start_time_ticks();
+    auto d2_6 = d0_6 / d1_6;
+    auto mo2_6 = d0_6 % d1_6;
+    auto p6 = get_end_time_ticks() - t6;
+    std::stringstream s6a;
+    s6a << std::hex << d2_6;
+    res &= test_check("div 6a", p6, "1000000000000000000000000ffffffff", s6a);
+    std::stringstream s6b;
+    s6b << std::hex << mo2_6;
+    res &= test_check("div 6b", p6, "ffffffffffffffff000000010000000000000000", s6b);
 
     return res;
 }
