@@ -59,17 +59,17 @@ namespace c8 {
         auto count_bits() const -> unsigned int;
         auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
-        auto operator +=(natural_digit v) -> void;
-        auto operator +=(const natural &v) -> void;
+        auto operator +=(natural_digit v) -> natural &;
+        auto operator +=(const natural &v) -> natural &;
         auto operator -(natural_digit v) const -> natural;
         auto operator -(const natural &v) const -> natural;
-        auto operator -=(natural_digit v) -> void;
-        auto operator -=(const natural &v) -> void;
+        auto operator -=(natural_digit v) -> natural &;
+        auto operator -=(const natural &v) -> natural &;
         auto operator >>(unsigned int count) const -> natural;
         auto operator <<(unsigned int count) const -> natural;
         auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
-        auto operator *=(natural_digit v) -> void;
+        auto operator *=(natural_digit v) -> natural &;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto compare(const natural &v) const -> natural_comparison;
@@ -83,16 +83,19 @@ namespace c8 {
             return (num_digits_ == 0) ? true : false;
         }
 
-        auto operator >>=(unsigned int count) -> void {
+        auto operator >>=(unsigned int count) -> natural & {
             *this = *this >> count;
+            return *this;
         }
 
-        auto operator <<=(unsigned int count) -> void {
+        auto operator <<=(unsigned int count) -> natural & {
             *this = *this << count;
+            return *this;
         }
 
-        auto operator *=(const natural &v) -> void {
+        auto operator *=(const natural &v) -> natural & {
             *this = *this * v;
+            return *this;
         }
 
         auto operator /(natural_digit v) const -> natural {
@@ -105,12 +108,14 @@ namespace c8 {
             return std::move(dm.first);
         }
 
-        auto operator /=(natural_digit v) -> void {
+        auto operator /=(natural_digit v) -> natural & {
             *this = *this / v;
+            return *this;
         }
 
-        auto operator /=(const natural &v) -> void {
+        auto operator /=(const natural &v) -> natural & {
             *this = *this / v;
+            return *this;
         }
 
         auto operator %(natural_digit v) const -> natural_digit {
@@ -123,12 +128,14 @@ namespace c8 {
             return std::move(dm.second);
         }
 
-        auto operator %=(natural_digit v) -> void {
+        auto operator %=(natural_digit v) -> natural & {
             *this = *this % v;
+            return *this;
         }
 
-        auto operator %=(const natural &v) -> void {
+        auto operator %=(const natural &v) -> natural & {
             *this = *this % v;
+            return *this;
         }
 
         auto operator ==(const natural &v) const -> bool {

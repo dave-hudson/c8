@@ -337,7 +337,7 @@ namespace c8 {
     /*
      * Add a natural digit to this number.
      */
-    auto natural::operator +=(natural_digit v) -> void {
+    auto natural::operator +=(natural_digit v) -> natural & {
         std::size_t this_sz = num_digits_;
 
         expand(this_sz + 1);
@@ -348,7 +348,7 @@ namespace c8 {
         if (!this_sz) {
             digits_[0] = v;
             num_digits_ = 1;
-            return;
+            return *this;
         }
 
         /*
@@ -375,12 +375,14 @@ namespace c8 {
             digits_[this_sz] = static_cast<natural_digit>(acc);
             num_digits_++;
         }
+
+        return *this;
     }
 
     /*
      * Add another natural number to this one.
      */
-    auto natural::operator +=(const natural &v) -> void {
+    auto natural::operator +=(const natural &v) -> natural & {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
@@ -432,6 +434,8 @@ namespace c8 {
             digits_[larger_sz] = static_cast<natural_digit>(acc);
             num_digits_++;
         }
+
+        return *this;
     }
 
     /*
@@ -539,7 +543,7 @@ namespace c8 {
     /*
      * Subtract a natural digit from this natural number.
      */
-    auto natural::operator -=(natural_digit v) -> void {
+    auto natural::operator -=(natural_digit v) -> natural & {
         std::size_t this_sz = num_digits_;
 
         /*
@@ -547,7 +551,7 @@ namespace c8 {
          */
         if (!this_sz) {
             if (!v) {
-                return;
+                return *this;
             }
 
             throw not_a_number();
@@ -582,12 +586,14 @@ namespace c8 {
          * We need to normalize because our result can have zero upper digits.
          */
         normalize();
+
+        return *this;
     }
 
     /*
      * Subtract another natural number from this one.
      */
-    auto natural::operator -=(const natural &v) -> void {
+    auto natural::operator -=(const natural &v) -> natural & {
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
@@ -624,6 +630,8 @@ namespace c8 {
          * We need to normalize because our result can have zero upper digits.
          */
         normalize();
+
+        return *this;
     }
 
     /*
@@ -825,18 +833,18 @@ namespace c8 {
     /*
      * Multiply this natural number with a single digit.
      */
-    auto natural::operator *=(natural_digit v) -> void {
+    auto natural::operator *=(natural_digit v) -> natural & {
         /*
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
         if (!this_sz) {
-            return;
+            return *this;
         }
 
         if (!v) {
             num_digits_ = 0;
-            return;
+            return *this;
         }
 
         /*
@@ -866,6 +874,8 @@ namespace c8 {
          * We need to normalize because our result can have zero upper digits.
          */
         normalize();
+
+        return *this;
     }
 
     /*
