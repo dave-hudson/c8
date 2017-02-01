@@ -1238,7 +1238,7 @@ namespace c8 {
             natural_digit mod = qm.second;
             res.emplace_back(digits[mod]);
 
-            rem = qm.first;
+            rem = std::move(qm.first);
         }
 
         std::size_t res_sz = res.size();
