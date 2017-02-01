@@ -737,11 +737,9 @@ namespace c8 {
         /*
          * Estimate our output size in digits.
          */
-        std::size_t res_sz = this_sz + 1;
-
         natural res;
-        res.reserve(res_sz);
-        res.num_digits_ = res_sz;
+        res.reserve(this_sz + 1);
+        res.num_digits_ = this_sz;
 
         /*
          * Long multiply.
@@ -756,12 +754,8 @@ namespace c8 {
 
         if (acc) {
             res.digits_[this_sz] = static_cast<natural_digit>(acc);
+            res.num_digits_++;
         }
-
-        /*
-         * We need to normalize because our result can have zero upper digits.
-         */
-        res.normalize();
 
         return res;
     }
@@ -850,10 +844,8 @@ namespace c8 {
         /*
          * Estimate our output size in digits.
          */
-        std::size_t res_sz = this_sz + 1;
-
-        expand(res_sz);
-        num_digits_ = res_sz;
+        expand(this_sz + 1);
+        num_digits_ = this_sz;
 
         /*
          * Long multiply.
@@ -868,12 +860,8 @@ namespace c8 {
 
         if (acc) {
             digits_[this_sz] = static_cast<natural_digit>(acc);
+            num_digits_++;
         }
-
-        /*
-         * We need to normalize because our result can have zero upper digits.
-         */
-        normalize();
 
         return *this;
     }
