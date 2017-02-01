@@ -1114,11 +1114,10 @@ namespace c8 {
             larger = *this;
         }
 
-        natural mod;
         while (!smaller.is_zero()) {
-            mod = larger % smaller;
-            larger = smaller;
-            smaller = mod;
+            natural mod = larger % smaller;
+            larger = std::move(smaller);
+            smaller = std::move(mod);
         }
 
         return larger;
