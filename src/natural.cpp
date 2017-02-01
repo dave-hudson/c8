@@ -636,7 +636,7 @@ namespace c8 {
 
         natural res;
         res.reserve(this_sz + trailing_digits + 1);
-        res.num_digits_ = trailing_digits + this_sz;
+        res.num_digits_ = this_sz + trailing_digits;
 
         /*
          * Are we shifting by whole digits?
@@ -652,13 +652,16 @@ namespace c8 {
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(digits_[i]) << digit_shift);
-            res.digits_[trailing_digits + i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
+            acc |= (static_cast<natural_double_digit>(digits_[this_sz - 1 - i]) << digit_shift);
+            res.digits_[trailing_digits + this_sz - i] = static_cast<natural_digit>(acc >> natural_digit_bits);
+            acc <<= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_[trailing_digits + this_sz] = static_cast<natural_digit>(acc);
+            res.digits_[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        }
+
+        if (res.digits_[trailing_digits + this_sz]) {
             res.num_digits_++;
         }
 
@@ -689,9 +692,9 @@ namespace c8 {
          * Shift the original value and insert in the result.
          */
         natural_double_digit acc = static_cast<natural_double_digit>(digits_[trailing_digits]) >> digit_shift;
-        for (std::size_t i = trailing_digits + 1; i < this_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(digits_[i]) << (natural_digit_bits - digit_shift));
-            res.digits_[i - (trailing_digits + 1)] = static_cast<natural_digit>(acc);
+        for (std::size_t i = 0; i < this_sz - (trailing_digits + 1); i++) {
+            acc |= (static_cast<natural_double_digit>(digits_[i + trailing_digits + 1]) << (natural_digit_bits - digit_shift));
+            res.digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
@@ -931,16 +934,11 @@ namespace c8 {
          * that its top bit is set within a natural_digit.  This may seem a little odd, but
          * we want to ensure that any quotient estimation is as accurate as possible.
          */
-        natural remaining = *this;
-        natural divisor = v;
-        auto divisor_bits = divisor.count_bits();
+        auto divisor_bits = v.count_bits();
         auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
-        unsigned int normalize_shift = 0;
-        if (divisor_digit_bits != (natural_digit_bits - 1)) {
-            normalize_shift = static_cast<unsigned int>(natural_digit_bits - divisor_digit_bits);
-            remaining <<= normalize_shift;
-            divisor <<= normalize_shift;
-        }
+        unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
+        natural remaining = *this << normalize_shift;
+        natural divisor = v << normalize_shift;
 
         /*
          * We know that our result is at least 1.  Start by estimating the first digit
