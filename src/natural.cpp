@@ -895,7 +895,7 @@ namespace c8 {
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
             auto a = digits_[this_sz - 1 - i];
-            acc = (acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
+            acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
             natural_double_digit q = acc / v;
             acc = acc % v;
             res.digits_[this_sz - 1 - i] = static_cast<natural_digit>(q);
