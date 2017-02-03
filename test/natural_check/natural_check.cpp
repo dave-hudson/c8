@@ -1367,6 +1367,104 @@ static auto usage(const char *name) -> void {
     std::cerr << "  -v  Verbose reporting (optional)\n\n";
 }
 
+typedef bool (*test)();
+
+/*
+ * List of tests to run.
+ */
+test tests[] = {
+    test_construct_0,
+    test_construct_1,
+    test_construct_2,
+    test_construct_3,
+    test_construct_4,
+    test_construct_5,
+    test_construct_6,
+    test_construct_7,
+    test_count_bits_0,
+    test_count_bits_1,
+    test_count_bits_2,
+    test_count_bits_3,
+    test_add_0,
+    test_add_1,
+    test_add_2,
+    test_add_3,
+    test_add_4,
+    test_add_5,
+    test_subtract_0,
+    test_subtract_1,
+    test_subtract_2,
+    test_subtract_3,
+    test_subtract_4,
+    test_subtract_5,
+    test_subtract_6,
+    test_subtract_7,
+    test_compare_0a,
+    test_compare_0b,
+    test_compare_0c,
+    test_compare_0d,
+    test_compare_0e,
+    test_compare_0f,
+    test_compare_1a,
+    test_compare_1b,
+    test_compare_1c,
+    test_compare_1d,
+    test_compare_1e,
+    test_compare_1f,
+    test_compare_2a,
+    test_compare_2b,
+    test_compare_2c,
+    test_compare_2d,
+    test_compare_2e,
+    test_compare_2f,
+    test_compare_3a,
+    test_compare_3b,
+    test_compare_3c,
+    test_compare_3d,
+    test_compare_3e,
+    test_compare_3f,
+    test_lshift_0,
+    test_lshift_1,
+    test_lshift_2,
+    test_lshift_3,
+    test_lshift_4,
+    test_rshift_0,
+    test_rshift_1,
+    test_rshift_2,
+    test_rshift_3,
+    test_rshift_4,
+    test_multiply_0,
+    test_multiply_1,
+    test_multiply_2,
+    test_multiply_3,
+    test_multiply_4,
+    test_divide_0,
+    test_divide_1,
+    test_divide_2,
+    test_divide_3,
+    test_divide_4,
+    test_divide_5,
+    test_divide_6,
+    test_gcd_0,
+    test_gcd_1,
+    test_gcd_2,
+    test_gcd_3,
+    test_to_unsigned_long_long_0,
+    test_to_unsigned_long_long_1,
+    test_to_unsigned_long_long_2,
+    test_to_unsigned_long_long_3,
+    test_to_unsigned_long_long_4,
+    test_print_0,
+    test_print_1,
+    test_print_2,
+    test_print_3,
+    test_print_4,
+    test_print_5,
+    test_print_6,
+    test_print_7,
+    nullptr
+};
+
 /*
  * Entry point.
  */
@@ -1387,97 +1485,16 @@ auto main(int argc, char **argv) -> int {
         }
     }
 
+    /*
+     * Run the tests.
+     */
     bool res = true;
 
-    res &= test_construct_0();
-    res &= test_construct_1();
-    res &= test_construct_2();
-    res &= test_construct_3();
-    res &= test_construct_4();
-    res &= test_construct_5();
-    res &= test_construct_6();
-    res &= test_construct_7();
-    res &= test_count_bits_0();
-    res &= test_count_bits_1();
-    res &= test_count_bits_2();
-    res &= test_count_bits_3();
-    res &= test_add_0();
-    res &= test_add_1();
-    res &= test_add_2();
-    res &= test_add_3();
-    res &= test_add_4();
-    res &= test_add_5();
-    res &= test_subtract_0();
-    res &= test_subtract_1();
-    res &= test_subtract_2();
-    res &= test_subtract_3();
-    res &= test_subtract_4();
-    res &= test_subtract_5();
-    res &= test_subtract_6();
-    res &= test_subtract_7();
-    res &= test_compare_0a();
-    res &= test_compare_0b();
-    res &= test_compare_0c();
-    res &= test_compare_0d();
-    res &= test_compare_0e();
-    res &= test_compare_0f();
-    res &= test_compare_1a();
-    res &= test_compare_1b();
-    res &= test_compare_1c();
-    res &= test_compare_1d();
-    res &= test_compare_1e();
-    res &= test_compare_1f();
-    res &= test_compare_2a();
-    res &= test_compare_2b();
-    res &= test_compare_2c();
-    res &= test_compare_2d();
-    res &= test_compare_2e();
-    res &= test_compare_2f();
-    res &= test_compare_3a();
-    res &= test_compare_3b();
-    res &= test_compare_3c();
-    res &= test_compare_3d();
-    res &= test_compare_3e();
-    res &= test_compare_3f();
-    res &= test_lshift_0();
-    res &= test_lshift_1();
-    res &= test_lshift_2();
-    res &= test_lshift_3();
-    res &= test_lshift_4();
-    res &= test_rshift_0();
-    res &= test_rshift_1();
-    res &= test_rshift_2();
-    res &= test_rshift_3();
-    res &= test_rshift_4();
-    res &= test_multiply_0();
-    res &= test_multiply_1();
-    res &= test_multiply_2();
-    res &= test_multiply_3();
-    res &= test_multiply_4();
-    res &= test_divide_0();
-    res &= test_divide_1();
-    res &= test_divide_2();
-    res &= test_divide_3();
-    res &= test_divide_4();
-    res &= test_divide_5();
-    res &= test_divide_6();
-    res &= test_gcd_0();
-    res &= test_gcd_1();
-    res &= test_gcd_2();
-    res &= test_gcd_3();
-    res &= test_to_unsigned_long_long_0();
-    res &= test_to_unsigned_long_long_1();
-    res &= test_to_unsigned_long_long_2();
-    res &= test_to_unsigned_long_long_3();
-    res &= test_to_unsigned_long_long_4();
-    res &= test_print_0();
-    res &= test_print_1();
-    res &= test_print_2();
-    res &= test_print_3();
-    res &= test_print_4();
-    res &= test_print_5();
-    res &= test_print_6();
-    res &= test_print_7();
+    test *p = tests;
+    while (*p) {
+        res &= (*p)();
+        p++;
+    }
 
     if (!res) {
         std::cout << "TESTS FAILED!\n";
