@@ -1001,66 +1001,45 @@ auto test_multiply_4() -> bool {
  * Test division.
  */
 auto test_divide_0() -> bool {
-    bool res = true;
-
     c8::natural d0(1000000000000000000ULL);
     c8::natural d1(99999999999999999ULL);
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << d2;
-    res &= test_check("div 0a", p, "10", sa);
-    std::stringstream sb;
-    sb << mo2;
-    res &= test_check("div 0b", p, "10", sb);
-
-    return res;
+    std::stringstream s;
+    s << d2 << ',' << mo2;
+    return test_check("div 0", p, "10,10", s);
 }
 
 /*
  * Test division.
  */
 auto test_divide_1() -> bool {
-    bool res = true;
-
     c8::natural d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
     c8::natural d1(99999999999999999ULL);
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << d2;
-    res &= test_check("div 1a", p, "78292387927518758972102054472775487212767983201652300846", sa);
-    std::stringstream sb;
-    sb << mo2;
-    res &= test_check("div 1b", p, "35600667362958008", sb);
-
-    return res;
+    std::stringstream s;
+    s << d2 << ',' << mo2;
+    return test_check("div 1", p, "78292387927518758972102054472775487212767983201652300846,35600667362958008", s);
 }
 
 /*
  * Test division.
  */
 auto test_divide_2() -> bool {
-    bool res = true;
-
     c8::natural d0("0x100000000000000000000000000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000001000000000000000100000000");
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << std::hex << d2;
-    res &= test_check("div 2a", p, "ffffffffffffffff000000000000000", sa);
-    std::stringstream sb;
-    sb << std::hex << mo2;
-    res &= test_check("div 2b", p, "100000000000000000000000", sb);
-
-    return res;
+    std::stringstream s;
+    s << std::hex << d2 << ',' << mo2;
+    return test_check("div 2", p, "ffffffffffffffff000000000000000,100000000000000000000000", s);
 }
 
 /*
@@ -1093,66 +1072,45 @@ auto test_divide_3() -> bool {
  * Test division.
  */
 auto test_divide_4() -> bool {
-    bool res = true;
-
     c8::natural d0("0x10000000000000");
     c8::natural d1("0x100000000");
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << std::hex << d2;
-    res &= test_check("div 4a", p, "100000", sa);
-    std::stringstream sb;
-    sb << std::hex << mo2;
-    res &= test_check("div 4b", p, "0", sb);
-
-    return res;
+    std::stringstream s;
+    s << std::hex << d2 << ',' << mo2;
+    return test_check("div 4", p, "100000,0", s);
 }
 
 /*
  * Test division.
  */
 auto test_divide_5() -> bool {
-    bool res = true;
-
     c8::natural d0("0x10000000000000001000000000000000100000000");
     c8::natural d1("1");
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << std::hex << d2;
-    res &= test_check("div 5a", p, "10000000000000001000000000000000100000000", sa);
-    std::stringstream sb;
-    sb << std::hex << mo2;
-    res &= test_check("div 5b", p, "0", sb);
-
-    return res;
+    std::stringstream s;
+    s << std::hex << d2 << ',' << mo2;
+    return test_check("div 5", p, "10000000000000001000000000000000100000000,0", s);
 }
 
 /*
  * Trigger a divide that exercises a corner case in the divide estimation logic.
  */
 auto test_divide_6() -> bool {
-    bool res = true;
-
     c8::natural d0("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000000000000010000000000000000");
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << std::hex << d2;
-    res &= test_check("div 6a", p, "1000000000000000000000000ffffffff", sa);
-    std::stringstream sb;
-    sb << std::hex << mo2;
-    res &= test_check("div 6b", p, "ffffffffffffffff000000010000000000000000", sb);
-
-    return res;
+    std::stringstream s;
+    s << std::hex << d2 << ',' << mo2;
+    return test_check("div 6", p, "1000000000000000000000000ffffffff,ffffffffffffffff000000010000000000000000", s);
 }
 
 /*

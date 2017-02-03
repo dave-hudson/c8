@@ -267,13 +267,13 @@ auto test_add_0() -> bool {
  * Add a positive and a negative value.
  */
 auto test_add_1() -> bool {
-    c8::integer a0_1("42");
-    c8::integer a1_1("-21");
+    c8::integer a0("42");
+    c8::integer a1("-21");
     auto t = get_start_time_ticks();
-    auto a2_1 = a0_1 + a1_1;
+    auto a2 = a0 + a1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << a2_1;
+    s << a2;
     return test_check("add 1", p, "21", s);
 }
 
@@ -281,13 +281,13 @@ auto test_add_1() -> bool {
  * Add a positive and a negative value that gives a negative result
  */
 auto test_add_2() -> bool {
-    c8::integer a0_2("12345678");
-    c8::integer a1_2("-34738957485741895748957485743809574812345678");
+    c8::integer a0("12345678");
+    c8::integer a1("-34738957485741895748957485743809574812345678");
     auto t = get_start_time_ticks();
-    auto a2_2 = a0_2 + a1_2;
+    auto a2 = a0 + a1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << a2_2;
+    s << a2;
     return test_check("add 2", p, "-34738957485741895748957485743809574800000000", s);
 }
 
@@ -295,13 +295,13 @@ auto test_add_2() -> bool {
  * Add two very large negative values.
  */
 auto test_add_3() -> bool {
-    c8::integer a0_3("-10000000000000000000000000000000000000000000000000000000000000000008789");
-    c8::integer a1_3("-88888880000000000000000000000000000000000000000000000000000000999992000");
+    c8::integer a0("-10000000000000000000000000000000000000000000000000000000000000000008789");
+    c8::integer a1("-88888880000000000000000000000000000000000000000000000000000000999992000");
     auto t = get_start_time_ticks();
-    auto a2_3 = a0_3 + a1_3;
+    auto a2 = a0 + a1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << a2_3;
+    s << a2;
     return test_check("add 3", p, "-98888880000000000000000000000000000000000000000000000000000001000000789", s);
 }
 
@@ -323,13 +323,13 @@ auto test_subtract_0() -> bool {
  * Subtract a large negative value from another large negative value.
  */
 auto test_subtract_1() -> bool {
-    c8::integer s0_1("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
-    c8::integer s1_1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
+    c8::integer s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::integer s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
     auto t = get_start_time_ticks();
-    auto s2_1 = s0_1 - s1_1;
+    auto s2 = s0 - s1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << s2_1;
+    s << s2;
     return test_check("sub 1", p, "-5872488729698595999749602411500766185722239445613509099777952305512191704320129156897500143", s);
 }
 
@@ -337,13 +337,13 @@ auto test_subtract_1() -> bool {
  * Subtract a large negative value from a large value.
  */
 auto test_subtract_2() -> bool {
-    c8::integer s0_2("10000000000000000000000000000000000000000000000000000000000000000000000");
-    c8::integer s1_2("-10000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::integer s0("10000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::integer s1("-10000000000000000000000000000000000000000000000000000000000000000000000");
     auto t = get_start_time_ticks();
-    auto s2_2 = s0_2 - s1_2;
+    auto s2 = s0 - s1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << s2_2;
+    s << s2;
     return test_check("sub 2", p, "20000000000000000000000000000000000000000000000000000000000000000000000", s);
 }
 
@@ -351,13 +351,13 @@ auto test_subtract_2() -> bool {
  * Subtract a large value from a smaller one.
  */
 auto test_subtract_3() -> bool {
-    c8::integer s0_3(2);
-    c8::integer s1_3(52);
+    c8::integer s0(2);
+    c8::integer s1(52);
     auto t = get_start_time_ticks();
-    auto s2_3 = s0_3 - s1_3;
+    auto s2 = s0 - s1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << s2_3;
+    s << s2;
     return test_check("sub 3", p, "-50", s);
 }
 
@@ -449,13 +449,13 @@ auto test_compare_0f() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1a() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1a = (co0_1 == co1_1);
+    auto co2 = (co0 == co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1a;
+    s << co2;
     return test_check("comp 1a", p, "0", s);
 }
 
@@ -463,13 +463,13 @@ auto test_compare_1a() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1b() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1b = (co0_1 != co1_1);
+    auto co2 = (co0 != co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1b;
+    s << co2;
     return test_check("comp 1b", p, "1", s);
 }
 
@@ -477,13 +477,13 @@ auto test_compare_1b() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1c() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1c = (co0_1 > co1_1);
+    auto co2 = (co0 > co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1c;
+    s << co2;
     return test_check("comp 1c", p, "0", s);
 }
 
@@ -491,13 +491,13 @@ auto test_compare_1c() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1d() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1d = (co0_1 >= co1_1);
+    auto co2 = (co0 >= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1d;
+    s << co2;
     return test_check("comp 1d", p, "0", s);
 }
 
@@ -505,13 +505,13 @@ auto test_compare_1d() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1e() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1e = (co0_1 < co1_1);
+    auto co2 = (co0 < co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1e;
+    s << co2;
     return test_check("comp 1e", p, "1", s);
 }
 
@@ -519,13 +519,13 @@ auto test_compare_1e() -> bool {
  * Compare a negative value with a positive one.
  */
 auto test_compare_1f() -> bool {
-    c8::integer co0_1(-0x987654321LL);
-    c8::integer co1_1(1);
+    c8::integer co0(-0x987654321LL);
+    c8::integer co1(1);
     auto t = get_start_time_ticks();
-    auto co2_1f = (co0_1 <= co1_1);
+    auto co2 = (co0 <= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_1f;
+    s << co2;
     return test_check("comp 1f", p, "1", s);
 }
 
@@ -533,13 +533,13 @@ auto test_compare_1f() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2a() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2a = (co0_2 == co1_2);
+    auto co2 = (co0 == co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2a;
+    s << co2;
     return test_check("comp 2a", p, "0", s);
 }
 
@@ -547,13 +547,13 @@ auto test_compare_2a() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2b() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2b = (co0_2 != co1_2);
+    auto co2 = (co0 != co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2b;
+    s << co2;
     return test_check("comp 2b", p, "1", s);
 }
 
@@ -561,13 +561,13 @@ auto test_compare_2b() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2c() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2c = (co0_2 > co1_2);
+    auto co2 = (co0 > co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2c;
+    s << co2;
     return test_check("comp 2c", p, "1", s);
 }
 
@@ -575,13 +575,13 @@ auto test_compare_2c() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2d() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2d = (co0_2 >= co1_2);
+    auto co2 = (co0 >= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2d;
+    s << co2;
     return test_check("comp 2d", p, "1", s);
 }
 
@@ -589,13 +589,13 @@ auto test_compare_2d() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2e() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2e = (co0_2 < co1_2);
+    auto co2 = (co0 < co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2e;
+    s << co2;
     return test_check("comp 2e", p, "0", s);
 }
 
@@ -603,13 +603,13 @@ auto test_compare_2e() -> bool {
  * Compare a positive value with a negative one.
  */
 auto test_compare_2f() -> bool {
-    c8::integer co0_2(1);
-    c8::integer co1_2(-0x987654321LL);
+    c8::integer co0(1);
+    c8::integer co1(-0x987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_2f = (co0_2 <= co1_2);
+    auto co2 = (co0 <= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_2f;
+    s << co2;
     return test_check("comp 2f", p, "0", s);
 }
 
@@ -617,13 +617,13 @@ auto test_compare_2f() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3a() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3a = (co0_3 == co1_3);
+    auto co2 = (co0 == co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3a;
+    s << co2;
     return test_check("comp 3a", p, "1", s);
 }
 
@@ -631,13 +631,13 @@ auto test_compare_3a() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3b() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3b = (co0_3 != co1_3);
+    auto co2 = (co0 != co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3b;
+    s << co2;
     return test_check("comp 3b", p, "0", s);
 }
 
@@ -645,13 +645,13 @@ auto test_compare_3b() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3c() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3c = (co0_3 > co1_3);
+    auto co2 = (co0 > co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3c;
+    s << co2;
     return test_check("comp 3c", p, "0", s);
 }
 
@@ -659,13 +659,13 @@ auto test_compare_3c() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3d() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3d = (co0_3 >= co1_3);
+    auto co2 = (co0 >= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3d;
+    s << co2;
     return test_check("comp 3d", p, "1", s);
 }
 
@@ -673,13 +673,13 @@ auto test_compare_3d() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3e() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3e = (co0_3 < co1_3);
+    auto co2 = (co0 < co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3e;
+    s << co2;
     return test_check("comp 3e", p, "0", s);
 }
 
@@ -687,13 +687,13 @@ auto test_compare_3e() -> bool {
  * Compare two negative values.
  */
 auto test_compare_3f() -> bool {
-    c8::integer co0_3(-0x2f987654321LL);
-    c8::integer co1_3(-0x2f987654321LL);
+    c8::integer co0(-0x2f987654321LL);
+    c8::integer co1(-0x2f987654321LL);
     auto t = get_start_time_ticks();
-    auto co2_3f = (co0_3 <= co1_3);
+    auto co2 = (co0 <= co1);
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << co2_3f;
+    s << co2;
     return test_check("comp 3f", p, "1", s);
 }
 
@@ -845,13 +845,13 @@ auto test_multiply_0() -> bool {
  * Test multiplication.
  */
 auto test_multiply_1() -> bool {
-    c8::integer mu0_1(1000000000000000000LL);
-    c8::integer mu1_1("-9999999999999999999");
+    c8::integer mu0(1000000000000000000LL);
+    c8::integer mu1("-9999999999999999999");
     auto t = get_start_time_ticks();
-    auto mu2_1 = mu0_1 * mu1_1;
+    auto mu2 = mu0 * mu1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << mu2_1;
+    s << mu2;
     return test_check("mul 1", p, "-9999999999999999999000000000000000000", s);
 }
 
@@ -859,13 +859,13 @@ auto test_multiply_1() -> bool {
  * Test multiplication.
  */
 auto test_multiply_2() -> bool {
-    c8::integer mu0_2(-0x2000000000000000LL);
-    c8::integer mu1_2(0x4000000000000000LL);
+    c8::integer mu0(-0x2000000000000000LL);
+    c8::integer mu1(0x4000000000000000LL);
     auto t = get_start_time_ticks();
-    auto mu2_2 = mu0_2 * mu1_2;
+    auto mu2 = mu0 * mu1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << std::hex << mu2_2;
+    s << std::hex << mu2;
     return test_check("mul 2", p, "-8000000000000000000000000000000", s);
 }
 
@@ -873,13 +873,13 @@ auto test_multiply_2() -> bool {
  * Test multiplication.
  */
 auto test_multiply_3() -> bool {
-    c8::integer mu0_3("-12345678901234567890123456789012345678901234567890123456789012345678901234567890");
-    c8::integer mu1_3("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    c8::integer mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    c8::integer mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
     auto t = get_start_time_ticks();
-    auto mu2_3 = mu0_3 * mu1_3;
+    auto mu2 = mu0 * mu1;
     auto p = get_end_time_ticks() - t;
     std::stringstream s;
-    s << mu2_3;
+    s << mu2;
     return test_check("mul 3", p, "15241578753238836750495351562566681945008382873376009755225118122311263526910001371743100137174310012193273126047859425087639153757049236500533455762536198787501905199875019052100", s);
 }
 
@@ -887,66 +887,45 @@ auto test_multiply_3() -> bool {
  * Test division.
  */
 auto test_divide_0() -> bool {
-    bool res = true;
-
     c8::integer d0(1000000000000000000LL);
     c8::integer d1(99999999999999999LL);
     auto t = get_start_time_ticks();
     auto d2 = d0 / d1;
     auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << d2;
-    res &= test_check("div 0a", p, "10", sa);
-    std::stringstream sb;
-    sb << mo2;
-    res &= test_check("div 0b", p, "10", sb);
-
-    return res;
+    std::stringstream s;
+    s << d2 << ',' << mo2;
+    return test_check("div 0", p, "10,10", s);
 }
 
 /*
  * Test division.
  */
 auto test_divide_1() -> bool {
-    bool res = true;
-
-    c8::integer d0_1("7829238792751875818917817519758789749174743847389742871867617465710657162");
-    c8::integer d1_1(-99999999999999999LL);
+    c8::integer d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
+    c8::integer d1(-99999999999999999LL);
     auto t = get_start_time_ticks();
-    auto d2_1 = d0_1 / d1_1;
-    auto mo2_1 = d0_1 % d1_1;
+    auto d2 = d0 / d1;
+    auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << d2_1;
-    res &= test_check("div 1a", p, "-78292387927518758972102054472775487212767983201652300846", sa);
-    std::stringstream sb;
-    sb << mo2_1;
-    res &= test_check("div 1b", p, "35600667362958008", sb);
-
-    return res;
+    std::stringstream s;
+    s << d2 << ',' << mo2;
+    return test_check("div 1", p, "-78292387927518758972102054472775487212767983201652300846,35600667362958008", s);
 }
 
 /*
  * Test division.
  */
 auto test_divide_2() -> bool {
-    bool res = true;
-
-    c8::integer d0_2("-0x100000000000000000000000000000000000000000000000000000000000000000000000");
-    c8::integer d1_2("0x10000000000000001000000000000000100000000");
+    c8::integer d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::integer d1("0x10000000000000001000000000000000100000000");
     auto t = get_start_time_ticks();
-    auto d2_2 = d0_2 / d1_2;
-    auto mo2_2 = d0_2 % d1_2;
+    auto d2 = d0 / d1;
+    auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << std::hex << d2_2;
-    res &= test_check("div 2a", p, "-ffffffffffffffff000000000000000", sa);
-    std::stringstream sb;
-    sb << std::hex << mo2_2;
-    res &= test_check("div 2b", p, "100000000000000000000000", sb);
-
-    return res;
+    std::stringstream s;
+    s << std::hex << d2 << ',' << mo2;
+    return test_check("div 2", p, "-ffffffffffffffff000000000000000,100000000000000000000000", s);
 }
 
 /*
@@ -958,14 +937,14 @@ auto test_divide_3() -> bool {
     /*
      * Divide by zero.  This will throw an exception!
      */
-    c8::integer d0_3(2000);
-    c8::integer d1_3(0);
+    c8::integer d0(2000);
+    c8::integer d1(0);
     auto t = get_start_time_ticks();
     try {
-        auto d2_3 = d0_3 / d1_3;
+        auto d2 = d0 / d1;
         auto p = get_end_time_ticks() - t;
         std::stringstream s;
-        s << d2_3;
+        s << d2;
         res &= test_nocheck("div 3", p, "failed to throw exception", false);
     } catch (const c8::divide_by_zero &e) {
         auto p = get_end_time_ticks() - t;
@@ -982,22 +961,15 @@ auto test_divide_3() -> bool {
  * Test division.
  */
 auto test_divide_4() -> bool {
-    bool res = true;
-
-    c8::integer d0_4(-1000000000000000000LL);
-    c8::integer d1_4(-99999999999999999LL);
+    c8::integer d0(-1000000000000000000LL);
+    c8::integer d1(-99999999999999999LL);
     auto t = get_start_time_ticks();
-    auto d2_4 = d0_4 / d1_4;
-    auto mo2_4 = d0_4 % d1_4;
+    auto d2 = d0 / d1;
+    auto mo2 = d0 % d1;
     auto p = get_end_time_ticks() - t;
-    std::stringstream sa;
-    sa << d2_4;
-    res &= test_check("div 4a", p, "10", sa);
-    std::stringstream sb;
-    sb << mo2_4;
-    res &= test_check("div 4b", p, "10", sb);
-
-    return res;
+    std::stringstream s;
+    s << d2 << ',' << mo2;
+    return test_check("div 4a", p, "10,10", s);
 }
 
 /*
