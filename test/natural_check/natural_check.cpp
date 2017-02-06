@@ -1,6 +1,7 @@
 /*
  * natural_check.c
  */
+#include <algorithm>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -1621,6 +1622,7 @@ auto test_print_7() -> result {
 static auto usage(const char *name) -> void {
     std::cerr << "usage: " << name << " [OPTIONS]\n\n";
     std::cerr << "Options\n";
+    std::cerr << "  -b  Generate benchmark results (optional)\n\n";
     std::cerr << "  -v  Verbose reporting (optional)\n\n";
 }
 
@@ -1727,13 +1729,18 @@ test tests[] = {
  */
 auto main(int argc, char **argv) -> int {
     bool verbose = false;
+    int loops = 1;
 
     /*
      * Parse the command line options.
      */
     int ch;
-    while ((ch = getopt(argc, argv, "v?")) != -1) {
+    while ((ch = getopt(argc, argv, "bv?")) != -1) {
         switch (ch) {
+        case 'b':
+            loops = 10000;
+            break;
+
         case 'v':
             verbose = true;
             break;
@@ -1751,11 +1758,34 @@ auto main(int argc, char **argv) -> int {
 
     test *p = tests;
     while (*p) {
+        std::vector<std::chrono::nanoseconds> duration;
+
+        /*
+         * Run one test every time.  This gives the pass/fail status.
+         */
+        bool rp = true;
         result r = (*p)();
-        bool rp = r.get_pass();
+        rp = r.get_pass();
+        duration.push_back(r.get_elapsed());
+
+        /*
+         * Run more tests if we're running a benchmark.
+         */
+        for (auto i = 1; i < loops; i++) {
+            result l = (*p)();
+            duration.push_back(l.get_elapsed());
+        }
+
+        /*
+         * If we're being verbose then print the results.  We print the 20th percentile result if
+         * this is a benchmark test.  Lower than the 10th percentile we can see some rather
+         * odd timing results and greater than the 50th percentile we can run into problems
+         * related to scheduling.  The 20th percentile number is an empirical choice.
+         */
         if (verbose) {
+            std::nth_element(duration.begin(), duration.begin() + (duration.size() / 5), duration.end());
             std::cout << std::setw(10) << std::left << r.get_name() << " | ";
-            std::cout << std::setw(10) << std::right << r.get_elapsed().count() << " | " << (rp ? "pass" : "FAIL");
+            std::cout << std::setw(10) << std::right << duration[duration.size() / 5].count() << " | " << (rp ? "pass" : "FAIL");
             std::cout << " | " << r.get_stream().str();
             if (!rp) {
                 std::cout << " (" << r.get_expected() << ')';
