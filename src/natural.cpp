@@ -1057,7 +1057,7 @@ namespace c8 {
     /*
      * Compare this natural number with another one.
      */
-    auto natural::compare(const natural &v) const -> natural_comparison {
+    auto natural::compare(const natural &v) const -> comparison {
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
@@ -1065,11 +1065,11 @@ namespace c8 {
          * If our sizes differ then this is really easy!
          */
         if (this_sz > v_sz) {
-            return natural_comparison::gt;
+            return comparison::gt;
         }
 
         if (this_sz < v_sz) {
-            return natural_comparison::lt;
+            return comparison::lt;
         }
 
         /*
@@ -1079,15 +1079,15 @@ namespace c8 {
             auto a = digits_[i - 1];
             auto b = v.digits_[i - 1];
             if (a > b) {
-                return natural_comparison::gt;
+                return comparison::gt;
             }
 
             if (a < b) {
-                return natural_comparison::lt;
+                return comparison::lt;
             }
         }
 
-        return natural_comparison::eq;
+        return comparison::eq;
     }
 
     /*

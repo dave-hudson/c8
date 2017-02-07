@@ -165,21 +165,11 @@ namespace c8 {
     /*
      * Compare a rational with this one.
      */
-    auto rational::compare(const rational &v) const -> rational_comparison {
+    auto rational::compare(const rational &v) const -> comparison {
         integer lhs = num_ * integer(v.denom_);
         integer rhs = v.num_ * integer(denom_);
 
-        auto ures = lhs.compare(rhs);
-        switch (ures) {
-        case integer_comparison::lt:
-            return rational_comparison::lt;
-
-        case integer_comparison::eq:
-            return rational_comparison::eq;
-
-        case integer_comparison::gt:
-            return rational_comparison::gt;
-        }
+        return lhs.compare(rhs);
     }
 
     /*

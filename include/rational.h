@@ -7,12 +7,6 @@
 #include <integer.h>
 
 namespace c8 {
-    enum class rational_comparison {
-        lt,                                 // Less than
-        eq,                                 // Equal
-        gt                                  // Greater than
-    };
-
     class rational {
     public:
         /*
@@ -43,7 +37,7 @@ namespace c8 {
         auto operator -(const rational &v) const -> rational;
         auto operator *(const rational &v) const -> rational;
         auto operator /(const rational &v) const -> rational;
-        auto compare(const rational &v) const -> rational_comparison;
+        auto compare(const rational &v) const -> comparison;
         auto to_double() const -> double;
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
@@ -75,27 +69,27 @@ namespace c8 {
         }
 
         auto operator ==(const rational &v) const -> bool {
-            return compare(v) == rational_comparison::eq;
+            return compare(v) == comparison::eq;
         }
 
         auto operator !=(const rational &v) const -> bool {
-            return compare(v) != rational_comparison::eq;
+            return compare(v) != comparison::eq;
         }
 
         auto operator >(const rational &v) const -> bool {
-            return compare(v) == rational_comparison::gt;
+            return compare(v) == comparison::gt;
         }
 
         auto operator >=(const rational &v) const -> bool {
-            return compare(v) != rational_comparison::lt;
+            return compare(v) != comparison::lt;
         }
 
         auto operator <(const rational &v) const -> bool {
-            return compare(v) == rational_comparison::lt;
+            return compare(v) == comparison::lt;
         }
 
         auto operator <=(const rational &v) const -> bool {
-            return compare(v) != rational_comparison::gt;
+            return compare(v) != comparison::gt;
         }
 
     private:

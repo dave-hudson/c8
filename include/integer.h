@@ -7,12 +7,6 @@
 #include <natural.h>
 
 namespace c8 {
-    enum class integer_comparison {
-        lt,                                 // Less than
-        eq,                                 // Equal
-        gt                                  // Greater than
-    };
-
     class integer {
     public:
         /*
@@ -43,7 +37,7 @@ namespace c8 {
         auto operator <<(unsigned int count) const -> integer;
         auto operator *(const integer &v) const -> integer;
         auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
-        auto compare(const integer &v) const -> integer_comparison;
+        auto compare(const integer &v) const -> comparison;
         auto to_long_long() const -> long long;
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
@@ -100,27 +94,27 @@ namespace c8 {
         }
 
         auto operator ==(const integer &v) const -> bool {
-            return compare(v) == integer_comparison::eq;
+            return compare(v) == comparison::eq;
         }
 
         auto operator !=(const integer &v) const -> bool {
-            return compare(v) != integer_comparison::eq;
+            return compare(v) != comparison::eq;
         }
 
         auto operator >(const integer &v) const -> bool {
-            return compare(v) == integer_comparison::gt;
+            return compare(v) == comparison::gt;
         }
 
         auto operator >=(const integer &v) const -> bool {
-            return compare(v) != integer_comparison::lt;
+            return compare(v) != comparison::lt;
         }
 
         auto operator <(const integer &v) const -> bool {
-            return compare(v) == integer_comparison::lt;
+            return compare(v) == comparison::lt;
         }
 
         auto operator <=(const integer &v) const -> bool {
-            return compare(v) != integer_comparison::gt;
+            return compare(v) != comparison::gt;
         }
 
     private:

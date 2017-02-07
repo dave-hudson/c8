@@ -149,7 +149,7 @@ namespace c8 {
     /*
      * Compare a integer with this one.
      */
-    auto integer::compare(const integer &v) const -> integer_comparison {
+    auto integer::compare(const integer &v) const -> comparison {
         /*
          * Is this number non-negative?
          */
@@ -159,24 +159,14 @@ namespace c8 {
              * just do a simple comparison of the magnitudes.
              */
             if (!v.negative_) {
-                auto ures = magnitude_.compare(v.magnitude_);
-                switch (ures) {
-                case natural_comparison::lt:
-                    return integer_comparison::lt;
-
-                case natural_comparison::eq:
-                    return integer_comparison::eq;
-
-                case natural_comparison::gt:
-                    return integer_comparison::gt;
-                }
+                return magnitude_.compare(v.magnitude_);
             }
 
             /*
              * The number we're comparing with is negative so we're definitely greater
              * than it.
              */
-            return integer_comparison::gt;
+            return comparison::gt;
         }
 
         /*
@@ -187,14 +177,14 @@ namespace c8 {
         if (v.negative_) {
             auto ures = magnitude_.compare(v.magnitude_);
             switch (ures) {
-            case natural_comparison::lt:
-                return integer_comparison::gt;
+            case comparison::lt:
+                return comparison::gt;
 
-            case natural_comparison::eq:
-                return integer_comparison::eq;
+            case comparison::eq:
+                return comparison::eq;
 
-            case natural_comparison::gt:
-                return integer_comparison::lt;
+            case comparison::gt:
+                return comparison::lt;
             }
         }
 
@@ -202,7 +192,7 @@ namespace c8 {
          * This integer is negative, but the one we're comparing with is not, so we're
          * smaller.
          */
-        return integer_comparison::lt;
+        return comparison::lt;
     }
 
     /*

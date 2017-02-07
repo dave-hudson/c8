@@ -6,6 +6,15 @@
 
 namespace c8 {
     /*
+     * Comparison enum class.
+     */
+    enum class comparison {
+        lt,                                 // Less than
+        eq,                                 // Equal
+        gt                                  // Greater than
+    };
+
+    /*
      * Exception class to signal an invalid argument.
      */
     class invalid_argument : public std::invalid_argument {
