@@ -886,10 +886,6 @@ namespace c8 {
 
         std::size_t this_sz = num_digits_;
 
-        /*
-         * Is the first digit of our dividend larger than that of the divisor?  If it is then
-         * we insert a one and move to the next step.
-         */
         natural res;
         res.reserve(this_sz);
         res.num_digits_ = this_sz;
@@ -953,17 +949,9 @@ namespace c8 {
         natural remaining = *this << normalize_shift;
         natural divisor = v << normalize_shift;
 
-        /*
-         * We know that our result is at least 1.  Start by estimating the first digit
-         * of the result.
-         */
         std::size_t remaining_sz = remaining.num_digits_;
         std::size_t divisor_sz = divisor.num_digits_;
 
-        /*
-         * Is the first digit of our dividend larger than that of the divisor?  If it is then
-         * we insert a one and move to the next step.
-         */
         res.reserve(remaining_sz - divisor_sz + 1);
         res.num_digits_ = remaining_sz - divisor_sz + 1;
 
