@@ -151,7 +151,7 @@ namespace c8 {
 
         res.num_ = num_ * integer(v.denom_);
         integer d = integer(denom_) * v.num_;
-        if (isnegative(d)) {
+        if (is_negative(d)) {
             res.num_ = -res.num_;
         }
 
@@ -269,7 +269,7 @@ namespace c8 {
         /*
          * Is our numerator negative?
          */
-        if (isnegative(num_)) {
+        if (is_negative(num_)) {
             res |= 0x8000000000000000ULL;
         }
 

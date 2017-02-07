@@ -47,7 +47,7 @@ namespace c8 {
         auto to_long_long() const -> long long;
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
-        auto isnegative() const -> bool {
+        auto is_negative() const -> bool {
             return negative_;
         }
 
@@ -128,8 +128,8 @@ namespace c8 {
         natural magnitude_;                 // The magnitude of the integer
     };
 
-    inline auto isnegative(integer v) -> bool {
-        return v.isnegative();
+    inline auto is_negative(integer v) -> bool {
+        return v.is_negative();
     }
 
     inline auto abs(integer v) -> natural {
