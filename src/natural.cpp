@@ -956,7 +956,7 @@ namespace c8 {
          * Now we run a long divide algorithm.
          */
         std::size_t i = remaining_sz;
-        natural_double_digit upper_div_digit = static_cast<natural_double_digit>(divisor.digits_[divisor_sz - 1]);
+        auto upper_div_digit = divisor.digits_[divisor_sz - 1];
         while (remaining >= divisor) {
             /*
              * Iterate through our dividend from the most significant digit to the least.
@@ -976,7 +976,7 @@ namespace c8 {
              * We know that our divisor has been shifted so that the most significant digit has
              * its top bit set.  This means that the quotient for our next digit can only be 0 or 1.
              */
-            natural_double_digit d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
+            auto d_hi = remaining.digits_[i];
             if (d_hi >= upper_div_digit) {
                 natural m = divisor << static_cast<unsigned int>((i - divisor_sz + 1) * natural_digit_bits);
 
@@ -1008,16 +1008,17 @@ namespace c8 {
                      * Having reduced our remaining dividend we changed its upper most digit
                      * so we need to fetch the new version.
                      */
-                    d_hi = static_cast<natural_double_digit>(remaining.digits_[i]);
+                    d_hi = remaining.digits_[i];
                 }
             }
 
             /*
              * Estimate the next digit of the result.
              */
-            natural_double_digit d_lo = static_cast<natural_double_digit>(remaining.digits_[i - 1]);
-            natural_double_digit d = static_cast<natural_double_digit>((d_hi << natural_digit_bits) + d_lo);
-            natural_double_digit q = d / upper_div_digit;
+            natural_double_digit d_lo_d = static_cast<natural_double_digit>(remaining.digits_[i - 1]);
+            natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
+            natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
+            natural_double_digit q = d / static_cast<natural_double_digit>(upper_div_digit);
 
             /*
              * Our result can't actually be bigger than a digit, but the estimate might be.
