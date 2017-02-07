@@ -972,20 +972,11 @@ namespace c8 {
          */
         std::size_t i = remaining_sz;
         auto upper_div_digit = divisor.digits_[divisor_sz - 1];
-        while (remaining >= divisor) {
+        while (true) {
             /*
              * Iterate through our dividend from the most significant digit to the least.
              */
             i--;
-
-            /*
-             * During the course of an earlier iteration we may have reduced the size of
-             * our remaining dividend by more than one digit.  If so then move on to the next
-             * digit.
-             */
-            if (i >= remaining.num_digits_) {
-                continue;
-            }
 
             /*
              * We know that our divisor has been shifted so that the most significant digit has
@@ -1020,6 +1011,14 @@ namespace c8 {
 
                 res.digits_[i - divisor_sz] = q;
                 remaining -= m;
+                if (remaining < divisor) {
+                    break;
+                }
+
+                if (i > remaining.num_digits_) {
+                    i = remaining.num_digits_;
+                }
+
                 continue;
             }
 
@@ -1045,6 +1044,13 @@ namespace c8 {
 
             res.digits_[i - divisor_sz] = q;
             remaining -= m;
+            if (remaining < divisor) {
+                break;
+            }
+
+            if (i > remaining.num_digits_) {
+                i = remaining.num_digits_;
+            }
         }
 
         remaining >>= normalize_shift;
