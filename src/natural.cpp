@@ -283,18 +283,18 @@ namespace c8 {
          */
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
-        const natural *larger;
-        const natural *smaller;
+        const natural_digit *larger_digits;
+        const natural_digit *smaller_digits;
         std::size_t larger_sz;
         std::size_t smaller_sz;
         if (this_sz >= v_sz) {
-            larger = this;
-            smaller = &v;
+            larger_digits = digits_;
+            smaller_digits = v.digits_;
             larger_sz = this_sz;
             smaller_sz = v_sz;
         } else {
-            larger = &v;
-            smaller = this;
+            larger_digits = v.digits_;
+            smaller_digits = digits_;
             larger_sz = v_sz;
             smaller_sz = this_sz;
         }
@@ -307,8 +307,8 @@ namespace c8 {
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = smaller->digits_[i];
-            auto b = larger->digits_[i];
+            auto a = *smaller_digits++;
+            auto b = *larger_digits++;
             acc = acc + (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(b));
             res.digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
@@ -318,7 +318,7 @@ namespace c8 {
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            auto b = larger->digits_[i];
+            auto b = *larger_digits++;
             acc = acc + static_cast<natural_double_digit>(b);
             res.digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
@@ -388,18 +388,18 @@ namespace c8 {
          */
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
-        const natural *larger;
-        const natural *smaller;
+        const natural_digit *larger_digits;
+        const natural_digit *smaller_digits;
         std::size_t larger_sz;
         std::size_t smaller_sz;
         if (this_sz >= v_sz) {
-            larger = this;
-            smaller = &v;
+            larger_digits = digits_;
+            smaller_digits = v.digits_;
             larger_sz = this_sz;
             smaller_sz = v_sz;
         } else {
-            larger = &v;
-            smaller = this;
+            larger_digits = v.digits_;
+            smaller_digits = digits_;
             larger_sz = v_sz;
             smaller_sz = this_sz;
         }
@@ -411,8 +411,8 @@ namespace c8 {
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = smaller->digits_[i];
-            auto b = larger->digits_[i];
+            auto a = *smaller_digits++;
+            auto b = *larger_digits++;
             acc = acc + (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(b));
             digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
@@ -422,7 +422,7 @@ namespace c8 {
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            auto b = larger->digits_[i];
+            auto b = *larger_digits++;
             acc = acc + static_cast<natural_double_digit>(b);
             digits_[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
