@@ -78,7 +78,7 @@ namespace c8 {
          * We now know the base we're using and the starting index.
          */
         for (std::size_t i = idx; i < v_sz; i++) {
-            auto c = v[i];
+            char c = v[i];
             if (!isdigit(c)) {
                 if (base != 16) {
                     throw invalid_argument("invalid digit");
@@ -89,7 +89,7 @@ namespace c8 {
                 }
 
                 c = static_cast<char>(tolower(c));
-                c -= ('a' - '0' - 10);
+                c = static_cast<char>(c - ('a' - '0' - 10));
             }
 
             if (base == 8) {
