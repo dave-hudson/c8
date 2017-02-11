@@ -160,8 +160,6 @@ namespace c8 {
         natural_digit *digits_;             // Digits of the natural number
         std::size_t digits_size_;           // Number of digits_ allocated
         std::size_t num_digits_;            // The number of digits
-
-        auto normalize() -> void;
     };
 
     inline auto is_zero(const natural &v) -> bool {

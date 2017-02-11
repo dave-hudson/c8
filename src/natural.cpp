@@ -30,13 +30,16 @@ namespace c8 {
 
         reserve(sizeof(unsigned long long) / sizeof(natural_digit));
 
-        num_digits_ = 0;
+        natural_digit *this_digits = digits_;
+
+        std::size_t i = 0;
         while (v) {
             natural_digit m = static_cast<natural_digit>(-1);
-            digits_[num_digits_] = static_cast<natural_digit>(v & m);
-            num_digits_++;
+            this_digits[i++] = static_cast<natural_digit>(v & m);
             v >>= natural_digit_bits;
         }
+
+        num_digits_ = i;
     }
 
     /*
@@ -246,30 +249,32 @@ namespace c8 {
         natural res;
         res.reserve(this_sz + 1);
 
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
+
         /*
          * Add the first digit.
          */
-        auto a = digits_[0];
+        auto a = this_digits[0];
         natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
-        res.digits_[0] = static_cast<natural_digit>(acc);
+        res_digits[0] = static_cast<natural_digit>(acc);
         acc >>= natural_digit_bits;
 
         /*
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = 1; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = acc + static_cast<natural_double_digit>(a);
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        res.num_digits_ = this_sz;
-
         if (acc) {
-            res.digits_[this_sz] = static_cast<natural_digit>(acc);
-            res.num_digits_++;
+            res_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
+
+        res.num_digits_ = this_sz;
 
         return res;
     }
@@ -283,6 +288,7 @@ namespace c8 {
          */
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
+
         const natural_digit *larger_digits;
         const natural_digit *smaller_digits;
         std::size_t larger_sz;
@@ -302,15 +308,17 @@ namespace c8 {
         natural res;
         res.reserve(larger_sz + 1);
 
+        natural_digit *res_digits = res.digits_;
+
         /*
          * Add the parts together until we run out of digits in the smaller part.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = *smaller_digits++;
-            auto b = *larger_digits++;
+            auto a = smaller_digits[i];
+            auto b = larger_digits[i];
             acc = acc + (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(b));
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
@@ -318,18 +326,17 @@ namespace c8 {
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            auto b = *larger_digits++;
+            auto b = larger_digits[i];
             acc = acc + static_cast<natural_double_digit>(b);
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        res.num_digits_ = larger_sz;
-
         if (acc) {
-            res.digits_[larger_sz] = static_cast<natural_digit>(acc);
-            res.num_digits_++;
+            res_digits[larger_sz++] = static_cast<natural_digit>(acc);
         }
+
+        res.num_digits_ = larger_sz;
 
         return res;
     }
@@ -342,11 +349,13 @@ namespace c8 {
 
         expand(this_sz + 1);
 
+        natural_digit *this_digits = digits_;
+
         /*
          * Is this number zero?  If yes then just construct the result.
          */
         if (!this_sz) {
-            digits_[0] = v;
+            this_digits[0] = v;
             num_digits_ = 1;
             return *this;
         }
@@ -354,27 +363,26 @@ namespace c8 {
         /*
          * Add the first digit.
          */
-        natural_digit a = digits_[0];
+        natural_digit a = this_digits[0];
         natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
-        digits_[0] = static_cast<natural_digit>(acc);
+        this_digits[0] = static_cast<natural_digit>(acc);
         acc >>= natural_digit_bits;
 
         /*
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = 1; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = acc + static_cast<natural_double_digit>(a);
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        num_digits_ = this_sz;
-
         if (acc) {
-            digits_[this_sz] = static_cast<natural_digit>(acc);
-            num_digits_++;
+            this_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
+
+        num_digits_ = this_sz;
 
         return *this;
     }
@@ -406,15 +414,17 @@ namespace c8 {
 
         expand(larger_sz + 1);
 
+        natural_digit *this_digits = digits_;
+
         /*
          * Add the parts together until we run out of digits in the smaller part.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = *smaller_digits++;
-            auto b = *larger_digits++;
+            auto a = smaller_digits[i];
+            auto b = larger_digits[i];
             acc = acc + (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(b));
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
@@ -422,18 +432,17 @@ namespace c8 {
          * Add the remaining digits and any carries.
          */
         for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            auto b = *larger_digits++;
+            auto b = larger_digits[i];
             acc = acc + static_cast<natural_double_digit>(b);
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        num_digits_ = larger_sz;
-
         if (acc) {
-            digits_[larger_sz] = static_cast<natural_digit>(acc);
-            num_digits_++;
+            this_digits[larger_sz++] = static_cast<natural_digit>(acc);
         }
+
+        num_digits_ = larger_sz;
 
         return *this;
     }
@@ -457,23 +466,25 @@ namespace c8 {
         }
 
         res.reserve(this_sz);
-        res.num_digits_ = this_sz;
+
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Subtract the digits from this number's lowest digit.
          */
-        auto a = digits_[0];
+        auto a = this_digits[0];
         natural_double_digit acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(v));
-        res.digits_[0] = static_cast<natural_digit>(acc);
+        res_digits[0] = static_cast<natural_digit>(acc);
         acc = (acc >> natural_digit_bits) & 1;
 
         /*
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = 1; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = static_cast<natural_double_digit>(a) - acc;
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -485,9 +496,14 @@ namespace c8 {
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * We may have a zero upper digit so account for this.
          */
-        res.normalize();
+        std::size_t j = this_sz;
+        if (!res_digits[j - 1]) {
+            j--;
+        }
+
+        res.num_digits_ = j;
 
         return res;
     }
@@ -501,17 +517,20 @@ namespace c8 {
 
         natural res;
         res.reserve(this_sz);
-        res.num_digits_ = this_sz;
+
+        const natural_digit *this_digits = digits_;
+        const natural_digit *v_digits = v.digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < v_sz; i++) {
-            auto a = digits_[i];
-            auto b = v.digits_[i];
+            auto a = this_digits[i];
+            auto b = v_digits[i];
             acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(b)) - acc;
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -519,9 +538,9 @@ namespace c8 {
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = v_sz; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = static_cast<natural_double_digit>(a) - acc;
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -533,9 +552,16 @@ namespace c8 {
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * Calculate our resulting digits.
          */
-        res.normalize();
+        std::size_t j = this_sz;
+        while (j--) {
+            if (res_digits[j]) {
+                break;
+            }
+        }
+
+        res.num_digits_ = j + 1;
 
         return res;
     }
@@ -557,21 +583,23 @@ namespace c8 {
             throw not_a_number();
         }
 
+        natural_digit *this_digits = digits_;
+
         /*
          * Subtract the digits from this number's lowest digit.
          */
-        auto a = digits_[0];
+        auto a = this_digits[0];
         natural_double_digit acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(v));
-        digits_[0] = static_cast<natural_digit>(acc);
+        this_digits[0] = static_cast<natural_digit>(acc);
         acc = (acc >> natural_digit_bits) & 1;
 
         /*
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = 1; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = static_cast<natural_double_digit>(a) - acc;
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -583,9 +611,14 @@ namespace c8 {
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * We may have a zero upper digit so account for this.
          */
-        normalize();
+        std::size_t j = this_sz;
+        if (!this_digits[j - 1]) {
+            j--;
+        }
+
+        num_digits_ = j;
 
         return *this;
     }
@@ -597,15 +630,18 @@ namespace c8 {
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
+        natural_digit *this_digits = digits_;
+        const natural_digit *v_digits = v.digits_;
+
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < v_sz; i++) {
-            auto a = digits_[i];
-            auto b = v.digits_[i];
+            auto a = this_digits[i];
+            auto b = v_digits[i];
             acc = (static_cast<natural_double_digit>(a) - static_cast<natural_double_digit>(b)) - acc;
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -613,9 +649,9 @@ namespace c8 {
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = v_sz; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = static_cast<natural_double_digit>(a) - acc;
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
 
@@ -627,9 +663,16 @@ namespace c8 {
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * Calculate our resulting digits.
          */
-        normalize();
+        std::size_t j = this_sz;
+        while (j--) {
+            if (this_digits[j]) {
+                break;
+            }
+        }
+
+        num_digits_ = j + 1;
 
         return *this;
     }
@@ -646,11 +689,14 @@ namespace c8 {
         res.reserve(this_sz + trailing_digits + 1);
         res.num_digits_ = this_sz + trailing_digits;
 
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
+
         /*
          * Are we shifting by whole digits?
          */
         if (digit_shift == 0) {
-            std::memcpy(&res.digits_[trailing_digits], digits_, this_sz * sizeof(natural_digit));
+            std::memcpy(&res_digits[trailing_digits], digits_, this_sz * sizeof(natural_digit));
             return res;
         }
 
@@ -660,16 +706,16 @@ namespace c8 {
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(digits_[this_sz - 1 - i]) << digit_shift);
-            res.digits_[trailing_digits + this_sz - i] = static_cast<natural_digit>(acc >> natural_digit_bits);
+            acc |= (static_cast<natural_double_digit>(this_digits[this_sz - 1 - i]) << digit_shift);
+            res_digits[trailing_digits + this_sz - i] = static_cast<natural_digit>(acc >> natural_digit_bits);
             acc <<= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+            res_digits[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
         }
 
-        if (res.digits_[trailing_digits + this_sz]) {
+        if (res_digits[trailing_digits + this_sz]) {
             res.num_digits_++;
         }
 
@@ -696,22 +742,25 @@ namespace c8 {
 
         res.reserve(this_sz - trailing_digits);
 
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
+
         /*
          * Shift the original value and insert in the result.
          */
-        natural_double_digit acc = static_cast<natural_double_digit>(digits_[trailing_digits]) >> digit_shift;
-        for (std::size_t i = 0; i < this_sz - (trailing_digits + 1); i++) {
-            acc |= (static_cast<natural_double_digit>(digits_[i + trailing_digits + 1]) << (natural_digit_bits - digit_shift));
-            res.digits_[i] = static_cast<natural_digit>(acc);
+        std::size_t new_sz = this_sz - (trailing_digits + 1);
+        natural_double_digit acc = static_cast<natural_double_digit>(this_digits[trailing_digits]) >> digit_shift;
+        for (std::size_t i = 0; i < new_sz; i++) {
+            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits + 1]) << (natural_digit_bits - digit_shift));
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        res.num_digits_ = this_sz - (trailing_digits + 1);
-
         if (acc) {
-            res.digits_[this_sz - (trailing_digits + 1)] = static_cast<natural_digit>(acc);
-            res.num_digits_++;
+            res_digits[new_sz++] = static_cast<natural_digit>(acc);
         }
+
+        res.num_digits_ = new_sz;
 
         return res;
     }
@@ -739,23 +788,26 @@ namespace c8 {
          */
         natural res;
         res.reserve(this_sz + 1);
-        res.num_digits_ = this_sz;
+
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Long multiply.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
-            res.digits_[i] = static_cast<natural_digit>(acc);
+            res_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
         if (acc) {
-            res.digits_[this_sz] = static_cast<natural_digit>(acc);
-            res.num_digits_++;
+            res_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
+
+        res.num_digits_ = this_sz;
 
         return res;
     }
@@ -779,11 +831,13 @@ namespace c8 {
             return res;
         }
 
+        const natural_digit *v_digits = v.digits_;
+
         /*
          * Are we multiplying by a single digit?  If yes, then use the fast version
          */
         if (v_sz == 1) {
-            return *this * v.digits_[0];
+            return *this * v_digits[0];
         }
 
         /*
@@ -793,7 +847,9 @@ namespace c8 {
 
         natural res;
         res.reserve(res_sz);
-        res.num_digits_ = res_sz;
+
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Comba multiply.
@@ -811,8 +867,8 @@ namespace c8 {
             c1 = c2;
             c2 = 0;
             for (std::size_t j = 0; j < j_lim; j++) {
-                natural_digit a = digits_[ti++];
-                natural_digit b = v.digits_[tj--];
+                natural_digit a = this_digits[ti++];
+                natural_digit b = v_digits[tj--];
                 natural_double_digit d0 = static_cast<natural_double_digit>(c0) + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(b));
                 c0 = static_cast<natural_digit>(d0);
                 natural_double_digit d1 = static_cast<natural_double_digit>(c1) + (d0 >> natural_digit_bits);
@@ -820,13 +876,18 @@ namespace c8 {
                 c2 += static_cast<natural_digit>((d1 >> natural_digit_bits));
             }
 
-            res.digits_[i] = c0;
+            res_digits[i] = c0;
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * We may have a zero upper digit so account for this.
          */
-        res.normalize();
+        std::size_t j = res_sz;
+        if (!res_digits[j - 1]) {
+            j--;
+        }
+
+        res.num_digits_ = j;
 
         return res;
     }
@@ -852,23 +913,25 @@ namespace c8 {
          * Estimate our output size in digits.
          */
         expand(this_sz + 1);
-        num_digits_ = this_sz;
+
+        natural_digit *this_digits = digits_;
 
         /*
          * Long multiply.
          */
         natural_double_digit acc = 0;
         for (std::size_t i = 0; i < this_sz; i++) {
-            auto a = digits_[i];
+            auto a = this_digits[i];
             acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
-            digits_[i] = static_cast<natural_digit>(acc);
+            this_digits[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
         if (acc) {
-            digits_[this_sz] = static_cast<natural_digit>(acc);
-            num_digits_++;
+            this_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
+
+        num_digits_ = this_sz;
 
         return *this;
     }
@@ -888,24 +951,32 @@ namespace c8 {
 
         natural res;
         res.reserve(this_sz);
-        res.num_digits_ = this_sz;
+
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Now we run a long divide algorithm.
          */
         natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < this_sz; i++) {
-            auto a = digits_[this_sz - 1 - i];
+        std::size_t i = this_sz;
+        while (i--) {
+            auto a = this_digits[i];
             acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
             natural_double_digit q = acc / v;
             acc = acc % v;
-            res.digits_[this_sz - 1 - i] = static_cast<natural_digit>(q);
+            res_digits[i] = static_cast<natural_digit>(q);
         }
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * We may have a zero upper digit so account for this.
          */
-        res.normalize();
+        std::size_t j = this_sz;
+        if (!res_digits[j - 1]) {
+            j--;
+        }
+
+        res.num_digits_ = j;
 
         return std::make_pair(std::move(res), static_cast<natural_digit>(acc));
     }
@@ -953,13 +1024,16 @@ namespace c8 {
         std::size_t divisor_sz = divisor.num_digits_;
 
         res.reserve(remaining_sz - divisor_sz + 1);
-        res.num_digits_ = remaining_sz - divisor_sz + 1;
+
+        const natural_digit *divisor_digits = divisor.digits_;
+        const natural_digit *remaining_digits = remaining.digits_;
+        natural_digit *res_digits = res.digits_;
 
         /*
          * Now we run a long divide algorithm.
          */
         std::size_t i = remaining_sz;
-        auto upper_div_digit = divisor.digits_[divisor_sz - 1];
+        auto upper_div_digit = divisor_digits[divisor_sz - 1];
         while (true) {
             /*
              * Iterate through our dividend from the most significant digit to the least.
@@ -972,7 +1046,7 @@ namespace c8 {
              * If we compare the most significant digit of our remainder with that of the divisor
              * we can see if it's possibly 1.
              */
-            auto d_hi = remaining.digits_[i];
+            auto d_hi = remaining_digits[i];
             if (d_hi >= upper_div_digit) {
                 /*
                  * Our next quotient digit is probably a 1, but we have to be sure.  It's possible
@@ -997,7 +1071,7 @@ namespace c8 {
                     m -= (divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits));
                 }
 
-                res.digits_[i - divisor_sz] = q;
+                res_digits[i - divisor_sz] = q;
                 remaining -= m;
                 if (remaining < divisor) {
                     break;
@@ -1013,7 +1087,7 @@ namespace c8 {
             /*
              * Estimate the next digit of the result.
              */
-            natural_double_digit d_lo_d = static_cast<natural_double_digit>(remaining.digits_[i - 1]);
+            natural_double_digit d_lo_d = static_cast<natural_double_digit>(remaining_digits[i - 1]);
             natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
             natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
             natural_digit q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
@@ -1030,7 +1104,7 @@ namespace c8 {
                 q--;
             }
 
-            res.digits_[i - divisor_sz] = q;
+            res_digits[i - divisor_sz] = q;
             remaining -= m;
             if (remaining < divisor) {
                 break;
@@ -1044,9 +1118,16 @@ namespace c8 {
         remaining >>= normalize_shift;
 
         /*
-         * We need to normalize because our result can have zero upper digits.
+         * Calculate our resulting digits.
          */
-        res.normalize();
+        std::size_t j = remaining_sz - divisor_sz + 1;
+        while (j--) {
+            if (res_digits[j]) {
+                break;
+            }
+        }
+
+        res.num_digits_ = j + 1;
 
         return std::make_pair(std::move(res), std::move(remaining));
     }
@@ -1069,12 +1150,16 @@ namespace c8 {
             return comparison::lt;
         }
 
+        const natural_digit *this_digits = digits_;
+        const natural_digit *v_digits = v.digits_;
+
         /*
          * Our sizes are the same so do digit-by-digit comparisons.
          */
-        for (std::size_t i = this_sz; i != 0; --i) {
-            auto a = digits_[i - 1];
-            auto b = v.digits_[i - 1];
+        std::size_t i = this_sz;
+        while (i--) {
+            auto a = this_digits[i];
+            auto b = v_digits[i];
             if (a > b) {
                 return comparison::gt;
             }
@@ -1119,23 +1204,6 @@ namespace c8 {
     }
 
     /*
-     * Normalize a natural number (strip any leading zeros)
-     */
-    auto natural::normalize() -> void {
-        /*
-         * If our upper digit is non-zero we're done, but if not then remove the upper digit.
-         */
-        std::size_t sz = num_digits_;
-        while (sz--) {
-            if (digits_[sz]) {
-                break;
-            }
-
-            num_digits_--;
-        }
-    }
-
-    /*
      * Reserve a number of digits in this natural number.
      */
     auto natural::reserve(std::size_t new_digits) -> void {
@@ -1145,7 +1213,6 @@ namespace c8 {
          */
         digits_ = new natural_digit[new_digits + 1]();
         digits_size_ = new_digits + 1;
-        num_digits_ = 0;
     }
 
     /*
@@ -1165,7 +1232,6 @@ namespace c8 {
         }
 
         digits_size_ = new_digits;
-        num_digits_ = 0;
         digits_ = n;
     }
 
@@ -1189,8 +1255,10 @@ namespace c8 {
         if (sz > (sizeof(unsigned long long) / sizeof(natural_digit))) {
             sz = sizeof(unsigned long long) / sizeof(natural_digit);
         }
+
+        const natural_digit *this_digits = digits_;
         for (unsigned int i = 0; i < sz; i++) {
-            res |= (static_cast<unsigned long long>(digits_[i]) << (i * natural_digit_bits));
+            res |= (static_cast<unsigned long long>(this_digits[i]) << (i * natural_digit_bits));
         }
 
         return res;
