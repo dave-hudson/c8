@@ -33,11 +33,11 @@ namespace c8 {
         natural_digit *this_digits = digits_;
 
         std::size_t i = 0;
-        while (v) {
+        do {
             natural_digit m = static_cast<natural_digit>(-1);
             this_digits[i++] = static_cast<natural_digit>(v & m);
             v >>= natural_digit_bits;
-        }
+        } while (v);
 
         num_digits_ = i;
     }
@@ -947,9 +947,12 @@ namespace c8 {
             throw divide_by_zero();
         }
 
-        std::size_t this_sz = num_digits_;
-
         natural res;
+        std::size_t this_sz = num_digits_;
+        if (!this_sz) {
+            return std::make_pair(std::move(res), 0);
+        }
+
         res.reserve(this_sz);
 
         const natural_digit *this_digits = digits_;
@@ -1194,11 +1197,11 @@ namespace c8 {
             larger = *this;
         }
 
-        while (!smaller.is_zero()) {
+        do {
             natural mod = larger % smaller;
             larger = std::move(smaller);
             smaller = std::move(mod);
-        }
+        } while (!smaller.is_zero());
 
         return larger;
     }
@@ -1298,13 +1301,13 @@ namespace c8 {
 
         std::vector<char> res;
         auto rem = v;
-        while (!is_zero(rem)) {
+        do {
             std::pair<natural, natural_digit> qm = rem.divide_modulus(base);
             natural_digit mod = qm.second;
             res.emplace_back(digits[mod]);
 
             rem = std::move(qm.first);
-        }
+        } while (!is_zero(rem));
 
         std::size_t res_sz = res.size();
         for (std::size_t i = 0; i < res_sz; i++) {
