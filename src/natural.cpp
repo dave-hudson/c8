@@ -1247,7 +1247,7 @@ namespace c8 {
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
          */
-        if (this->count_bits() > (8 * sizeof(long long))) {
+        if (count_bits() > (8 * sizeof(long long))) {
             throw overflow_error();
         }
 
