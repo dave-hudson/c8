@@ -1214,8 +1214,9 @@ namespace c8 {
          * Always make space for one extra digit.  This means that sometimes
          * we won't have to expand this number if we do an in-place edit.
          */
-        digits_ = new natural_digit[new_digits + 1]();
-        digits_size_ = new_digits + 1;
+        std::size_t n = new_digits + 1;
+        digits_size_ = n;
+        digits_ = new natural_digit[n]();
     }
 
     /*
@@ -1226,16 +1227,16 @@ namespace c8 {
             return;
         }
 
+        auto d = digits_;
         auto n = new natural_digit[new_digits];
-        std::memset(&n[num_digits_], 0, sizeof(natural_digit) * (new_digits - num_digits_));
-
-        if (digits_) {
-            std::memcpy(n, digits_, sizeof(natural_digit) * num_digits_);
-            delete[] digits_;
-        }
-
-        digits_size_ = new_digits;
+        auto num_digits = num_digits_;
         digits_ = n;
+        digits_size_ = new_digits;
+
+        std::memcpy(n, d, sizeof(natural_digit) * num_digits);
+        std::memset(&n[num_digits], 0, sizeof(natural_digit) * (new_digits - num_digits));
+
+        delete[] d;
     }
 
     /*
