@@ -36,7 +36,7 @@ namespace c8 {
         /*
          * Constructors.
          */
-        natural() {
+        natural() noexcept {
             num_digits_ = 0;
             digits_size_ = 0;
             digits_ = nullptr;
@@ -45,12 +45,12 @@ namespace c8 {
         natural(unsigned long long v);
         natural(const std::string &v);
         natural(const natural &v);
-        natural(natural &&v);
+        natural(natural &&v) noexcept;
         ~natural();
         auto operator =(const natural &v) -> natural &;
-        auto operator =(natural &&v) -> natural &;
+        auto operator =(natural &&v) noexcept -> natural &;
 
-        auto count_bits() const -> unsigned int;
+        auto count_bits() const noexcept -> unsigned int;
         auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
         auto operator +=(natural_digit v) -> natural &;
@@ -73,7 +73,7 @@ namespace c8 {
         auto expand(std::size_t new_digits) -> void;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
-        auto is_zero() const -> bool {
+        auto is_zero() const noexcept -> bool {
             return (num_digits_ == 0) ? true : false;
         }
 

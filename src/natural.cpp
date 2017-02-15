@@ -126,13 +126,13 @@ namespace c8 {
     /*
      * Move constructor.
      */
-    natural::natural(natural &&v) {
+    natural::natural(natural &&v) noexcept {
         num_digits_ = v.num_digits_;
+        v.num_digits_ = 0;
         digits_size_ = v.digits_size_;
+        v.digits_size_ = 0;
         digits_ = v.digits_;
         v.digits_ = nullptr;
-        v.num_digits_ = 0;
-        v.digits_size_ = 0;
     }
 
     /*
@@ -181,7 +181,7 @@ namespace c8 {
     /*
      * Move assignment operator.
      */
-    auto natural::operator =(natural &&v) -> natural & {
+    auto natural::operator =(natural &&v) noexcept -> natural & {
         /*
          * Are we assigning to ourself?  If we are then we don't have to do anything.
          */
@@ -200,11 +200,11 @@ namespace c8 {
          * Move the contents of v.
          */
         num_digits_ = v.num_digits_;
+        v.num_digits_ = 0;
         digits_size_ = v.digits_size_;
+        v.digits_size_ = 0;
         digits_ = v.digits_;
         v.digits_ = nullptr;
-        v.num_digits_ = 0;
-        v.digits_size_ = 0;
 
         return *this;
     }
@@ -212,7 +212,7 @@ namespace c8 {
     /*
      * Return the number of bits required to represent this natural number.
      */
-    auto natural::count_bits() const -> unsigned int {
+    auto natural::count_bits() const noexcept -> unsigned int {
         /*
          * If we have no digits then this is a simple (special) case.
          */
@@ -692,6 +692,8 @@ namespace c8 {
         const natural_digit *this_digits = digits_;
         natural_digit *res_digits = res.digits_;
 
+        std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
+
         /*
          * Are we shifting by whole digits?
          */
@@ -711,9 +713,7 @@ namespace c8 {
             acc <<= natural_digit_bits;
         }
 
-        if (acc) {
-            res_digits[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
-        }
+        res_digits[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
 
         if (res_digits[trailing_digits + this_sz]) {
             res.num_digits_++;
@@ -1031,6 +1031,7 @@ namespace c8 {
         const natural_digit *divisor_digits = divisor.digits_;
         const natural_digit *remaining_digits = remaining.digits_;
         natural_digit *res_digits = res.digits_;
+        std::memset(res_digits, 0, sizeof(natural_digit) * (remaining_sz - divisor_sz + 1));
 
         /*
          * Now we run a long divide algorithm.
@@ -1210,13 +1211,8 @@ namespace c8 {
      * Reserve a number of digits in this natural number.
      */
     auto natural::reserve(std::size_t new_digits) -> void {
-        /*
-         * Always make space for one extra digit.  This means that sometimes
-         * we won't have to expand this number if we do an in-place edit.
-         */
-        std::size_t n = new_digits + 1;
-        digits_size_ = n;
-        digits_ = new natural_digit[n]();
+        digits_size_ = new_digits;
+        digits_ = new natural_digit[new_digits];
     }
 
     /*
