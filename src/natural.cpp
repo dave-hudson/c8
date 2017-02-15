@@ -23,6 +23,7 @@ namespace c8 {
         num_digits_ = 0;
         digits_ = nullptr;
         digits_size_ = 0;
+        delete_on_final_ = false;
 
         if (!v) {
             return;
@@ -52,6 +53,7 @@ namespace c8 {
         digits_ = nullptr;
         digits_size_ = 0;
         num_digits_ = 0;
+        delete_on_final_ = false;
 
         std::size_t v_sz = v.size();
         if (v_sz == 0) {
@@ -109,39 +111,86 @@ namespace c8 {
     }
 
     /*
-     * Copy constructor.
+     * Delete digits array if it is marked for deletion.
      */
-    natural::natural(const natural &v) {
+    auto inline natural::delete_digits() -> void {
+        if (delete_on_final_) {
+            delete[] digits_;
+        }
+    }
+
+    /*
+     * Reserve a number of digits in this natural number.
+     */
+    auto inline natural::reserve(std::size_t new_digits) -> void {
+        digits_size_ = new_digits;
+        delete_on_final_ = true;
+        digits_ = new natural_digit[new_digits];
+    }
+
+    /*
+     * Expand the number of digits in this natural number.
+     */
+    auto inline natural::expand(std::size_t new_digits) -> void {
+        if (digits_size_ >= new_digits) {
+            return;
+        }
+
+        auto d = digits_;
+        reserve(new_digits);
+        std::memcpy(digits_, d, sizeof(natural_digit) * num_digits_);
+
+        delete[] d;
+    }
+
+    /*
+     * Copy the contents of a natural number into this one.
+     */
+    auto inline natural::copy_digits(const natural &v) -> void {
         num_digits_ = v.num_digits_;
-        digits_size_ = v.digits_size_;
-        if (!digits_size_) {
+        if (!v.digits_size_) {
+            delete_on_final_ = false;
             digits_ = nullptr;
             return;
         }
 
-        digits_ = new natural_digit[digits_size_];
+        reserve(v.digits_size_);
         std::memcpy(digits_, v.digits_, sizeof(natural_digit) * digits_size_);
     }
 
     /*
-     * Move constructor.
+     * Steal the contents of a natural number into this one.
      */
-    natural::natural(natural &&v) noexcept {
+    auto inline natural::steal_digits(natural &v) -> void {
         num_digits_ = v.num_digits_;
         v.num_digits_ = 0;
         digits_size_ = v.digits_size_;
         v.digits_size_ = 0;
         digits_ = v.digits_;
         v.digits_ = nullptr;
+        delete_on_final_ = v.delete_on_final_;
+        v.delete_on_final_ = false;
+    }
+
+    /*
+     * Copy constructor.
+     */
+    natural::natural(const natural &v) {
+        copy_digits(v);
+    }
+
+    /*
+     * Move constructor.
+     */
+    natural::natural(natural &&v) noexcept {
+        steal_digits(v);
     }
 
     /*
      * Destructor.
      */
     natural::~natural() {
-        if (digits_size_) {
-            delete[] digits_;
-        }
+        delete_digits();
     }
 
     /*
@@ -156,25 +205,10 @@ namespace c8 {
         }
 
         /*
-         * Delete the old contents of this natural number.
+         * Delete the old contents of this natural number and copy the original's digits.
          */
-        if (digits_size_) {
-            delete[] digits_;
-        }
-
-        /*
-         * Copy the contents of v.
-         */
-        num_digits_ = v.num_digits_;
-        digits_size_ = v.digits_size_;
-        if (!digits_size_) {
-            digits_ = nullptr;
-            return *this;
-        }
-
-        digits_ = new natural_digit[digits_size_];
-        std::memcpy(digits_, v.digits_, sizeof(natural_digit) * digits_size_);
-
+        delete_digits();
+        copy_digits(v);
         return *this;
     }
 
@@ -190,22 +224,10 @@ namespace c8 {
         }
 
         /*
-         * Delete the old contents of this natural number.
+         * Delete the old contents of this natural number and steal the original's digits.
          */
-        if (digits_size_) {
-            delete[] digits_;
-        }
-
-        /*
-         * Move the contents of v.
-         */
-        num_digits_ = v.num_digits_;
-        v.num_digits_ = 0;
-        digits_size_ = v.digits_size_;
-        v.digits_size_ = 0;
-        digits_ = v.digits_;
-        v.digits_ = nullptr;
-
+        delete_digits();
+        steal_digits(v);
         return *this;
     }
 
@@ -516,6 +538,18 @@ namespace c8 {
         std::size_t v_sz = v.num_digits_;
 
         natural res;
+
+        /*
+         * Is this number zero?  If yes, then it's either an exception or a zero result.
+         */
+        if (!this_sz) {
+            if (!v_sz) {
+                return res;
+            }
+
+            throw not_a_number();
+        }
+
         res.reserve(this_sz);
 
         const natural_digit *this_digits = digits_;
@@ -1205,33 +1239,6 @@ namespace c8 {
         } while (!smaller.is_zero());
 
         return larger;
-    }
-
-    /*
-     * Reserve a number of digits in this natural number.
-     */
-    auto natural::reserve(std::size_t new_digits) -> void {
-        digits_size_ = new_digits;
-        digits_ = new natural_digit[new_digits];
-    }
-
-    /*
-     * Expand the number of digits in this natural number.
-     */
-    auto natural::expand(std::size_t new_digits) -> void {
-        if (digits_size_ >= new_digits) {
-            return;
-        }
-
-        auto d = digits_;
-        auto n = new natural_digit[new_digits];
-        auto num_digits = num_digits_;
-        digits_ = n;
-        digits_size_ = new_digits;
-
-        std::memcpy(n, d, sizeof(natural_digit) * num_digits);
-
-        delete[] d;
     }
 
     /*

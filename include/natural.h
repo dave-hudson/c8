@@ -69,8 +69,6 @@ namespace c8 {
         auto compare(const natural &v) const -> comparison;
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
-        auto reserve(std::size_t new_digits) -> void;
-        auto expand(std::size_t new_digits) -> void;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         auto is_zero() const noexcept -> bool {
@@ -157,9 +155,16 @@ namespace c8 {
         }
 
     private:
+        bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
         natural_digit *digits_;             // Digits of the natural number
         std::size_t digits_size_;           // Number of digits_ allocated
         std::size_t num_digits_;            // The number of digits
+
+        auto inline delete_digits() -> void;
+        auto inline reserve(std::size_t new_digits) -> void;
+        auto inline expand(std::size_t new_digits) -> void;
+        auto inline steal_digits(natural &v) -> void;
+        auto inline copy_digits(const natural &v) -> void;
     };
 
     inline auto is_zero(const natural &v) -> bool {
