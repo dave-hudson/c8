@@ -1230,7 +1230,6 @@ namespace c8 {
         digits_size_ = new_digits;
 
         std::memcpy(n, d, sizeof(natural_digit) * num_digits);
-        std::memset(&n[num_digits], 0, sizeof(natural_digit) * (new_digits - num_digits));
 
         delete[] d;
     }
