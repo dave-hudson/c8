@@ -2,13 +2,10 @@
  * natural.cpp
  */
 #include <cctype>
-#include <cstring>
 
 #include "natural.h"
 
 namespace c8 {
-    const std::size_t natural_digit_bits = 8 * sizeof(natural_digit);
-
     const char digits_lower[] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
     };
@@ -108,171 +105,6 @@ namespace c8 {
         }
 
         *this = std::move(res);
-    }
-
-    /*
-     * Delete digits array if it is marked for deletion.
-     */
-    auto inline natural::delete_digits() -> void {
-        if (delete_on_final_) {
-            delete[] digits_;
-        }
-    }
-
-    /*
-     * Reserve a number of digits in this natural number.
-     */
-    auto inline natural::reserve(std::size_t new_digits) -> void {
-        if (digits_size_ >= new_digits) {
-            return;
-        }
-
-        digits_size_ = new_digits;
-        delete_on_final_ = true;
-        digits_ = new natural_digit[new_digits];
-    }
-
-    /*
-     * Expand the number of digits in this natural number.
-     */
-    auto inline natural::expand(std::size_t new_digits) -> void {
-        if (digits_size_ >= new_digits) {
-            return;
-        }
-
-        auto d = new natural_digit[new_digits];
-        std::memcpy(d, digits_, sizeof(natural_digit) * num_digits_);
-
-        delete_digits();
-        digits_size_ = new_digits;
-        delete_on_final_ = true;
-        digits_ = d;
-    }
-
-    /*
-     * Copy the contents of a natural number into this one.
-     */
-    auto inline natural::copy_digits(const natural &v) -> void {
-        digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
-        delete_on_final_ = false;
-        digits_ = small_digits_;
-        num_digits_ = v.num_digits_;
-        if (!num_digits_) {
-            return;
-        }
-
-        reserve(v.num_digits_);
-        std::memcpy(digits_, v.digits_, sizeof(natural_digit) * num_digits_);
-    }
-
-    /*
-     * Steal the contents of a natural number into this one.
-     */
-    auto inline natural::steal_digits(natural &v) -> void {
-        /*
-         * Are we currently using the default small buffer?  If we are then we
-         * need to deep copy it.
-         */
-        if (v.digits_ == v.small_digits_) {
-            std::memcpy(small_digits_, v.small_digits_, sizeof(natural_digit) * v.num_digits_);
-            digits_ = small_digits_;
-        } else {
-            /*
-             * We aren't using the default buffer so we can shallow copy instead.
-             */
-            digits_ = v.digits_;
-        }
-
-        num_digits_ = v.num_digits_;
-        v.num_digits_ = 0;
-        digits_size_ = v.digits_size_;
-        v.digits_size_ = sizeof(v.small_digits_) / sizeof(natural_digit);
-        v.digits_ = v.small_digits_;
-        delete_on_final_ = v.delete_on_final_;
-        v.delete_on_final_ = false;
-    }
-
-    /*
-     * Copy constructor.
-     */
-    natural::natural(const natural &v) {
-        copy_digits(v);
-    }
-
-    /*
-     * Move constructor.
-     */
-    natural::natural(natural &&v) noexcept {
-        steal_digits(v);
-    }
-
-    /*
-     * Destructor.
-     */
-    natural::~natural() {
-        delete_digits();
-    }
-
-    /*
-     * Copy assignment operator.
-     */
-    auto natural::operator =(const natural &v) -> natural & {
-        /*
-         * Are we assigning to ourself?  If we are then we don't need to do anything.
-         */
-        if (this == &v) {
-            return *this;
-        }
-
-        /*
-         * Delete the old contents of this natural number and copy the original's digits.
-         */
-        delete_digits();
-        copy_digits(v);
-        return *this;
-    }
-
-    /*
-     * Move assignment operator.
-     */
-    auto natural::operator =(natural &&v) noexcept -> natural & {
-        /*
-         * Are we assigning to ourself?  If we are then we don't have to do anything.
-         */
-        if (this == &v) {
-            return *this;
-        }
-
-        /*
-         * Delete the old contents of this natural number and steal the original's digits.
-         */
-        delete_digits();
-        steal_digits(v);
-        return *this;
-    }
-
-    /*
-     * Return the number of bits required to represent this natural number.
-     */
-    auto natural::count_bits() const noexcept -> unsigned int {
-        /*
-         * If we have no digits then this is a simple (special) case.
-         */
-        std::size_t this_sz = num_digits_;
-        if (this_sz == 0) {
-            return 0;
-        }
-
-        /*
-         * We can account for trailing digits easily, but the most significant digit is
-         * more tricky.  We use __builtin_clz() to count the leadign zeros of the digit,
-         * but if the size of a digit is smaller than the size of an integer (which is
-         * what __builtin_clz() uses) then we must compensate for the extra zeros that
-         * it returns.
-         */
-        natural_digit d = digits_[this_sz - 1];
-        auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
-        return static_cast<unsigned int>((this_sz + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
     }
 
     /*
@@ -1193,7 +1025,7 @@ namespace c8 {
     /*
      * Compare this natural number with another one.
      */
-    auto natural::compare(const natural &v) const -> comparison {
+    auto natural::compare(const natural &v) const noexcept -> comparison {
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
