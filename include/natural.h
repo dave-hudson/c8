@@ -38,8 +38,9 @@ namespace c8 {
          */
         natural() noexcept {
             num_digits_ = 0;
-            digits_size_ = 0;
-            digits_ = nullptr;
+            digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
+            digits_ = small_digits_;
+            delete_on_final_ = false;
         }
 
         natural(unsigned long long v);
@@ -159,6 +160,7 @@ namespace c8 {
         natural_digit *digits_;             // Digits of the natural number
         std::size_t digits_size_;           // Number of digits_ allocated
         std::size_t num_digits_;            // The number of digits
+        natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
         auto inline delete_digits() -> void;
         auto inline reserve(std::size_t new_digits) -> void;

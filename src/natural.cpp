@@ -21,8 +21,8 @@ namespace c8 {
      */
     natural::natural(unsigned long long v) {
         num_digits_ = 0;
-        digits_ = nullptr;
-        digits_size_ = 0;
+        digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
+        digits_ = small_digits_;
         delete_on_final_ = false;
 
         if (!v) {
@@ -50,9 +50,9 @@ namespace c8 {
      * representations.
      */
     natural::natural(const std::string &v) {
-        digits_ = nullptr;
-        digits_size_ = 0;
         num_digits_ = 0;
+        digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
+        digits_ = small_digits_;
         delete_on_final_ = false;
 
         std::size_t v_sz = v.size();
@@ -123,6 +123,10 @@ namespace c8 {
      * Reserve a number of digits in this natural number.
      */
     auto inline natural::reserve(std::size_t new_digits) -> void {
+        if (digits_size_ >= new_digits) {
+            return;
+        }
+
         digits_size_ = new_digits;
         delete_on_final_ = true;
         digits_ = new natural_digit[new_digits];
@@ -136,38 +140,54 @@ namespace c8 {
             return;
         }
 
-        auto d = digits_;
-        reserve(new_digits);
-        std::memcpy(digits_, d, sizeof(natural_digit) * num_digits_);
+        auto d = new natural_digit[new_digits];
+        std::memcpy(d, digits_, sizeof(natural_digit) * num_digits_);
 
-        delete[] d;
+        delete_digits();
+        digits_size_ = new_digits;
+        delete_on_final_ = true;
+        digits_ = d;
     }
 
     /*
      * Copy the contents of a natural number into this one.
      */
     auto inline natural::copy_digits(const natural &v) -> void {
+        digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
+        delete_on_final_ = false;
+        digits_ = small_digits_;
         num_digits_ = v.num_digits_;
-        if (!v.digits_size_) {
-            delete_on_final_ = false;
-            digits_ = nullptr;
+        if (!num_digits_) {
             return;
         }
 
-        reserve(v.digits_size_);
-        std::memcpy(digits_, v.digits_, sizeof(natural_digit) * digits_size_);
+        reserve(v.num_digits_);
+        std::memcpy(digits_, v.digits_, sizeof(natural_digit) * num_digits_);
     }
 
     /*
      * Steal the contents of a natural number into this one.
      */
     auto inline natural::steal_digits(natural &v) -> void {
+        /*
+         * Are we currently using the default small buffer?  If we are then we
+         * need to deep copy it.
+         */
+        if (v.digits_ == v.small_digits_) {
+            std::memcpy(small_digits_, v.small_digits_, sizeof(natural_digit) * v.num_digits_);
+            digits_ = small_digits_;
+        } else {
+            /*
+             * We aren't using the default buffer so we can shallow copy instead.
+             */
+            digits_ = v.digits_;
+        }
+
         num_digits_ = v.num_digits_;
         v.num_digits_ = 0;
         digits_size_ = v.digits_size_;
-        v.digits_size_ = 0;
-        digits_ = v.digits_;
-        v.digits_ = nullptr;
+        v.digits_size_ = sizeof(v.small_digits_) / sizeof(natural_digit);
+        v.digits_ = v.small_digits_;
         delete_on_final_ = v.delete_on_final_;
         v.delete_on_final_ = false;
     }
