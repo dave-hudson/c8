@@ -53,7 +53,7 @@ namespace c8 {
         delete_on_final_ = false;
 
         std::size_t v_sz = v.size();
-        if (v_sz == 0) {
+        if (C8_UNLIKELY(v_sz == 0)) {
             throw invalid_argument("zero size string");
         }
 
@@ -116,7 +116,7 @@ namespace c8 {
         /*
          * Is this number zero?  If yes then just construct the result.
          */
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             return natural(v);
         }
 
@@ -144,7 +144,7 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             res_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
 
@@ -206,7 +206,7 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             res_digits[larger_sz++] = static_cast<natural_digit>(acc);
         }
 
@@ -228,7 +228,7 @@ namespace c8 {
         /*
          * Is this number zero?  If yes then just construct the result.
          */
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             this_digits[0] = v;
             num_digits_ = 1;
             return *this;
@@ -252,7 +252,7 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             this_digits[this_sz++] = static_cast<natural_digit>(acc);
         }
 
@@ -312,7 +312,7 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             this_digits[larger_sz++] = static_cast<natural_digit>(acc);
         }
 
@@ -331,8 +331,8 @@ namespace c8 {
         /*
          * Is this number zero?  If yes, then it's either an exception or a zero result.
          */
-        if (!this_sz) {
-            if (!v) {
+        if (C8_UNLIKELY(!this_sz)) {
+            if (C8_LIKELY(!v)) {
                 return res;
             }
 
@@ -365,7 +365,7 @@ namespace c8 {
         /*
          * We should not have a carry!
          */
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             throw not_a_number();
         }
 
@@ -394,8 +394,8 @@ namespace c8 {
         /*
          * Is this number zero?  If yes, then it's either an exception or a zero result.
          */
-        if (!this_sz) {
-            if (!v_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
+            if (C8_LIKELY(!v_sz)) {
                 return res;
             }
 
@@ -433,7 +433,7 @@ namespace c8 {
         /*
          * We should not have a carry!
          */
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             throw not_a_number();
         }
 
@@ -461,8 +461,8 @@ namespace c8 {
         /*
          * Is this number zero?  If yes, then it's either an exception or a zero result.
          */
-        if (!this_sz) {
-            if (!v) {
+        if (C8_UNLIKELY(!this_sz)) {
+            if (C8_LIKELY(!v)) {
                 return *this;
             }
 
@@ -492,7 +492,7 @@ namespace c8 {
         /*
          * We should not have a carry!
          */
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             throw not_a_number();
         }
 
@@ -544,7 +544,7 @@ namespace c8 {
         /*
          * We should not have a carry!
          */
-        if (acc) {
+        if (C8_UNLIKELY(acc)) {
             throw not_a_number();
         }
 
@@ -829,13 +829,13 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (!v) {
+        if (C8_UNLIKELY(!v)) {
             throw divide_by_zero();
         }
 
         natural res;
         std::size_t this_sz = num_digits_;
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             return std::make_pair(std::move(res), 0);
         }
 
@@ -879,7 +879,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (!v.num_digits_) {
+        if (C8_UNLIKELY(!v.num_digits_)) {
             throw divide_by_zero();
         }
 
@@ -894,7 +894,7 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (*this < v) {
+        if (C8_UNLIKELY(*this < v)) {
             return std::make_pair(std::move(res), *this);
         }
 
@@ -1032,11 +1032,11 @@ namespace c8 {
         /*
          * If our sizes differ then this is really easy!
          */
-        if (this_sz > v_sz) {
+        if (C8_UNLIKELY(this_sz > v_sz)) {
             return comparison::gt;
         }
 
-        if (this_sz < v_sz) {
+        if (C8_UNLIKELY(this_sz < v_sz)) {
             return comparison::lt;
         }
 
@@ -1066,11 +1066,11 @@ namespace c8 {
      * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
-        if (v.is_zero()) {
+        if (C8_UNLIKELY(v.is_zero())) {
             return *this;
         }
 
-        if (is_zero()) {
+        if (C8_UNLIKELY(is_zero())) {
             return v;
         }
 

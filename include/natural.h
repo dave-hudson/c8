@@ -77,7 +77,7 @@ namespace c8 {
             /*
              * Are we assigning to ourself?  If we are then we don't need to do anything.
              */
-            if (this == &v) {
+            if (C8_UNLIKELY(this == &v)) {
                 return *this;
             }
 
@@ -96,7 +96,7 @@ namespace c8 {
             /*
              * Are we assigning to ourself?  If we are then we don't have to do anything.
              */
-            if (this == &v) {
+            if (C8_UNLIKELY(this == &v)) {
                 return *this;
             }
 
@@ -116,7 +116,7 @@ namespace c8 {
              * If we have no digits then this is a simple (special) case.
              */
             std::size_t this_sz = num_digits_;
-            if (this_sz == 0) {
+            if (C8_UNLIKELY(this_sz == 0)) {
                 return 0;
             }
 
@@ -249,7 +249,7 @@ namespace c8 {
          * Delete digits array if it is marked for deletion.
          */
         auto delete_digits() -> void {
-            if (delete_on_final_) {
+            if (C8_UNLIKELY(delete_on_final_)) {
                 delete[] digits_;
             }
         }
@@ -258,7 +258,7 @@ namespace c8 {
          * Reserve a number of digits in this natural number.
          */
         auto reserve(std::size_t new_digits) -> void {
-            if (digits_size_ >= new_digits) {
+            if (C8_LIKELY(digits_size_ >= new_digits)) {
                 return;
             }
 
@@ -271,7 +271,7 @@ namespace c8 {
          * Expand the number of digits in this natural number.
          */
         auto expand(std::size_t new_digits) -> void {
-            if (digits_size_ >= new_digits) {
+            if (C8_LIKELY(digits_size_ >= new_digits)) {
                 return;
             }
 
@@ -292,7 +292,7 @@ namespace c8 {
             delete_on_final_ = false;
             digits_ = small_digits_;
             num_digits_ = v.num_digits_;
-            if (!num_digits_) {
+            if (C8_UNLIKELY(!num_digits_)) {
                 return;
             }
 
@@ -308,7 +308,7 @@ namespace c8 {
              * Are we currently using the default small buffer?  If we are then we
              * need to deep copy it.
              */
-            if (v.digits_ == v.small_digits_) {
+            if (C8_LIKELY(v.digits_ == v.small_digits_)) {
                 std::memcpy(small_digits_, v.small_digits_, sizeof(natural_digit) * v.num_digits_);
                 digits_ = small_digits_;
             } else {

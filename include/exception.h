@@ -4,6 +4,12 @@
 #ifndef __C8_EXCEPTION_H
 #define __C8_EXCEPTION_H
 
+/*
+ * Macros to allow the compiler to make better choices about code structure.
+ */
+#define C8_LIKELY(x) __builtin_expect(!!(x), 1)
+#define C8_UNLIKELY(x) __builtin_expect(!!(x), 0)
+
 namespace c8 {
     /*
      * Comparison enum class.
