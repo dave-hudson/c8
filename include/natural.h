@@ -152,6 +152,9 @@ namespace c8 {
         auto to_unsigned_long_long() const -> unsigned long long;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
+        /*
+         * Is this number zero?
+         */
         auto is_zero() const noexcept -> bool {
             return (num_digits_ == 0) ? true : false;
         }
