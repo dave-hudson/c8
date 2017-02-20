@@ -572,19 +572,28 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         natural res;
-        res.reserve(this_sz + trailing_digits + 1);
-        res.num_digits_ = this_sz + trailing_digits;
+
+        /*
+         * If our value is zero then return 0.
+         */
+        if (C8_UNLIKELY(!this_sz)) {
+            return res;
+        }
+
+        std::size_t new_sz = this_sz + trailing_digits;
+        res.reserve(new_sz + 1);
 
         const natural_digit *this_digits = digits_;
         natural_digit *res_digits = res.digits_;
 
-        std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
-
         /*
          * Are we shifting by whole digits?
          */
-        if (digit_shift == 0) {
+        if (C8_UNLIKELY(digit_shift == 0)) {
+            res.num_digits_ = new_sz;
             std::memcpy(&res_digits[trailing_digits], digits_, this_sz * sizeof(natural_digit));
+            std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
+
             return res;
         }
 
@@ -592,18 +601,21 @@ namespace c8 {
          * Shift the original value by the remaining number of bits that we
          * need, and insert those in the result.
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < this_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(this_digits[this_sz - 1 - i]) << digit_shift);
-            res_digits[trailing_digits + this_sz - i] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        natural_double_digit acc = (static_cast<natural_double_digit>(this_digits[this_sz - 1]) << digit_shift);
+        if (acc >> natural_digit_bits) {
+            res_digits[new_sz++] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        }
+
+        for (std::size_t i = this_sz - 1; i > 0; i--) {
             acc <<= natural_digit_bits;
+            acc |= (static_cast<natural_double_digit>(this_digits[i - 1]) << digit_shift);
+            res_digits[i + trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
         }
 
-        res_digits[trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        res_digits[trailing_digits] = static_cast<natural_digit>(acc);
+        res.num_digits_ = new_sz;
 
-        if (res_digits[trailing_digits + this_sz]) {
-            res.num_digits_++;
-        }
+        std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
 
         return res;
     }
@@ -619,26 +631,36 @@ namespace c8 {
         natural res;
 
         /*
-         * If our shift is more than the total number of bits that we had
-         * then return 0.
+         * If our shift is more than the total number of bits that we had then return 0.
          */
-        if (this_sz <= trailing_digits) {
+        if (C8_UNLIKELY(this_sz <= trailing_digits)) {
             return res;
         }
 
-        res.reserve(this_sz - trailing_digits);
+        std::size_t new_sz = this_sz - (trailing_digits + 1);
+        res.reserve(new_sz + 1);
 
         const natural_digit *this_digits = digits_;
         natural_digit *res_digits = res.digits_;
 
         /*
+         * Are we shifting by whole digits?
+         */
+        if (C8_UNLIKELY(digit_shift == 0)) {
+            new_sz++;
+            res.num_digits_ = new_sz;
+            std::memcpy(res_digits, &digits_[trailing_digits], new_sz * sizeof(natural_digit));
+
+            return res;
+        }
+
+        /*
          * Shift the original value and insert in the result.
          */
-        std::size_t new_sz = this_sz - (trailing_digits + 1);
         natural_double_digit acc = static_cast<natural_double_digit>(this_digits[trailing_digits]) >> digit_shift;
-        for (std::size_t i = 0; i < new_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits + 1]) << (natural_digit_bits - digit_shift));
-            res_digits[i] = static_cast<natural_digit>(acc);
+        for (std::size_t i = 1; i <= new_sz; i++) {
+            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits]) << (natural_digit_bits - digit_shift));
+            res_digits[i - 1] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
