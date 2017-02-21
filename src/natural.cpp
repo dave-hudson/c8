@@ -372,12 +372,11 @@ namespace c8 {
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t j = this_sz;
-        if (!res_digits[j - 1]) {
-            j--;
+        if (!res_digits[this_sz - 1]) {
+            this_sz--;
         }
 
-        res.num_digits_ = j;
+        res.num_digits_ = this_sz;
 
         return res;
     }
@@ -440,14 +439,13 @@ namespace c8 {
         /*
          * Calculate our resulting digits.
          */
-        std::size_t j = this_sz;
-        while (j--) {
-            if (res_digits[j]) {
+        while (this_sz--) {
+            if (res_digits[this_sz]) {
                 break;
             }
         }
 
-        res.num_digits_ = j + 1;
+        res.num_digits_ = this_sz + 1;
 
         return res;
     }
@@ -499,12 +497,11 @@ namespace c8 {
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t j = this_sz;
-        if (!this_digits[j - 1]) {
-            j--;
+        if (!this_digits[this_sz - 1]) {
+            this_sz--;
         }
 
-        num_digits_ = j;
+        num_digits_ = this_sz;
 
         return *this;
     }
@@ -551,14 +548,13 @@ namespace c8 {
         /*
          * Calculate our resulting digits.
          */
-        std::size_t j = this_sz;
-        while (j--) {
-            if (this_digits[j]) {
+        while (this_sz--) {
+            if (this_digits[this_sz]) {
                 break;
             }
         }
 
-        num_digits_ = j + 1;
+        num_digits_ = this_sz + 1;
 
         return *this;
     }
@@ -591,7 +587,7 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             res.num_digits_ = new_sz;
-            copy_digit_array(&res_digits[trailing_digits], digits_, this_sz);
+            copy_digit_array(&res_digits[trailing_digits], this_digits, this_sz);
             zero_digit_array(res_digits, trailing_digits);
 
             return res;
@@ -618,6 +614,60 @@ namespace c8 {
         zero_digit_array(res_digits, trailing_digits);
 
         return res;
+    }
+
+    /*
+     * Left shift this natural number by a bit count.
+     */
+    auto natural::operator <<=(unsigned int count) -> natural & {
+        std::size_t this_sz = num_digits_;
+        std::size_t trailing_digits = count / natural_digit_bits;
+        std::size_t digit_shift = count % natural_digit_bits;
+
+        /*
+         * If our value is zero then return 0.
+         */
+        if (C8_UNLIKELY(!this_sz)) {
+            return *this;
+        }
+
+        std::size_t new_sz = this_sz + trailing_digits;
+        expand(new_sz + 1);
+
+        natural_digit *this_digits = digits_;
+
+        /*
+         * Are we shifting by whole digits?
+         */
+        if (C8_UNLIKELY(digit_shift == 0)) {
+            num_digits_ = new_sz;
+            rcopy_digit_array(&this_digits[trailing_digits], this_digits, this_sz);
+            zero_digit_array(this_digits, trailing_digits);
+
+            return *this;
+        }
+
+        /*
+         * Shift the original value by the remaining number of bits that we
+         * need, and insert those in the result.
+         */
+        natural_double_digit acc = (static_cast<natural_double_digit>(this_digits[this_sz - 1]) << digit_shift);
+        if (acc >> natural_digit_bits) {
+            this_digits[new_sz++] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        }
+
+        for (std::size_t i = this_sz - 1; i > 0; i--) {
+            acc <<= natural_digit_bits;
+            acc |= (static_cast<natural_double_digit>(this_digits[i - 1]) << digit_shift);
+            this_digits[i + trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        }
+
+        this_digits[trailing_digits] = static_cast<natural_digit>(acc);
+        num_digits_ = new_sz;
+
+        zero_digit_array(this_digits, trailing_digits);
+
+        return *this;
     }
 
     /*
@@ -649,7 +699,7 @@ namespace c8 {
         if (C8_UNLIKELY(digit_shift == 0)) {
             new_sz++;
             res.num_digits_ = new_sz;
-            copy_digit_array(res_digits, &digits_[trailing_digits], new_sz);
+            copy_digit_array(res_digits, &this_digits[trailing_digits], new_sz);
 
             return res;
         }
@@ -671,6 +721,56 @@ namespace c8 {
         res.num_digits_ = new_sz;
 
         return res;
+    }
+
+    /*
+     * Right shift this natural number by a bit count.
+     */
+    auto natural::operator >>=(unsigned int count) -> natural & {
+        std::size_t this_sz = num_digits_;
+        std::size_t trailing_digits = count / natural_digit_bits;
+        std::size_t digit_shift = count % natural_digit_bits;
+
+        /*
+         * If our shift is more than the total number of bits that we had then return 0.
+         */
+        if (C8_UNLIKELY(this_sz <= trailing_digits)) {
+            num_digits_ = 0;
+            return *this;
+        }
+
+        std::size_t new_sz = this_sz - (trailing_digits + 1);
+
+        natural_digit *this_digits = digits_;
+
+        /*
+         * Are we shifting by whole digits?
+         */
+        if (C8_UNLIKELY(digit_shift == 0)) {
+            new_sz++;
+            num_digits_ = new_sz;
+            copy_digit_array(this_digits, &this_digits[trailing_digits], new_sz);
+
+            return *this;
+        }
+
+        /*
+         * Shift the original value and insert in the result.
+         */
+        natural_double_digit acc = static_cast<natural_double_digit>(this_digits[trailing_digits]) >> digit_shift;
+        for (std::size_t i = 1; i <= new_sz; i++) {
+            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits]) << (natural_digit_bits - digit_shift));
+            this_digits[i - 1] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        if (acc) {
+            this_digits[new_sz++] = static_cast<natural_digit>(acc);
+        }
+
+        num_digits_ = new_sz;
+
+        return *this;
     }
 
     /*
@@ -790,12 +890,11 @@ namespace c8 {
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t j = res_sz;
-        if (!res_digits[j - 1]) {
-            j--;
+        if (!res_digits[res_sz - 1]) {
+            res_sz--;
         }
 
-        res.num_digits_ = j;
+        res.num_digits_ = res_sz;
 
         return res;
     }
@@ -882,12 +981,11 @@ namespace c8 {
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t j = this_sz;
-        if (!res_digits[j - 1]) {
-            j--;
+        if (!res_digits[this_sz - 1]) {
+            this_sz--;
         }
 
-        res.num_digits_ = j;
+        res.num_digits_ = this_sz;
 
         return std::make_pair(std::move(res), static_cast<natural_digit>(acc));
     }
@@ -933,13 +1031,14 @@ namespace c8 {
 
         std::size_t remaining_sz = remaining.num_digits_;
         std::size_t divisor_sz = divisor.num_digits_;
+        std::size_t res_sz = remaining_sz - divisor_sz + 1;
 
-        res.reserve(remaining_sz - divisor_sz + 1);
+        res.reserve(res_sz);
 
         const natural_digit *divisor_digits = divisor.digits_;
         const natural_digit *remaining_digits = remaining.digits_;
         natural_digit *res_digits = res.digits_;
-        zero_digit_array(res_digits, (remaining_sz - divisor_sz + 1));
+        zero_digit_array(res_digits, res_sz);
 
         /*
          * Now we run a long divide algorithm.
@@ -967,7 +1066,7 @@ namespace c8 {
                  */
                 natural_digit q = 1;
                 natural m = divisor << static_cast<unsigned int>((i - divisor_sz + 1) * natural_digit_bits);
-                if (remaining >= m) {
+                if (C8_LIKELY(remaining >= m)) {
                     /*
                      * Our result was 1.  While we now know this digit, subtracting "m" may
                      * still leave us with a non-zero digit so we want to re-evaluate this
@@ -985,11 +1084,11 @@ namespace c8 {
 
                 res_digits[i - divisor_sz] = q;
                 remaining -= m;
-                if (remaining < divisor) {
+                if (C8_UNLIKELY(remaining < divisor)) {
                     break;
                 }
 
-                if (i > remaining.num_digits_) {
+                if (C8_UNLIKELY(i > remaining.num_digits_)) {
                     i = remaining.num_digits_;
                 }
 
@@ -1004,25 +1103,26 @@ namespace c8 {
             natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
             natural_digit q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
 
-            natural m = (divisor * q) << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
+            natural m = divisor * q;
+            m <<= static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
              * to evaluate it on the basis of the full divisor, not just the shifted, most
              * significant digit.  This may mean we reduce our estimate slightly.
              */
-            if (m > remaining) {
+            if (C8_UNLIKELY(m > remaining)) {
                 m -= (divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits));
                 q--;
             }
 
             res_digits[i - divisor_sz] = q;
             remaining -= m;
-            if (remaining < divisor) {
+            if (C8_UNLIKELY(remaining < divisor)) {
                 break;
             }
 
-            if (i > remaining.num_digits_) {
+            if (C8_UNLIKELY(i > remaining.num_digits_)) {
                 i = remaining.num_digits_;
             }
         }
@@ -1032,14 +1132,13 @@ namespace c8 {
         /*
          * Calculate our resulting digits.
          */
-        std::size_t j = remaining_sz - divisor_sz + 1;
-        while (j--) {
-            if (res_digits[j]) {
+        while (res_sz--) {
+            if (res_digits[res_sz]) {
                 break;
             }
         }
 
-        res.num_digits_ = j + 1;
+        res.num_digits_ = res_sz + 1;
 
         return std::make_pair(std::move(res), std::move(remaining));
     }

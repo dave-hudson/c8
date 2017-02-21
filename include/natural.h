@@ -66,6 +66,25 @@ namespace c8 {
         }
     }
 
+    /*
+     * Reverse copy an array of digits.
+     */
+    auto inline rcopy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
+        dest += num_digits;
+        src += num_digits;
+
+        if (num_digits & 1) {
+            num_digits--;
+            *--dest = *--src;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *--dest = *--src;
+            *--dest = *--src;
+        }
+    }
+
     class natural {
     public:
         /*
@@ -172,8 +191,10 @@ namespace c8 {
         auto operator -(const natural &v) const -> natural;
         auto operator -=(natural_digit v) -> natural &;
         auto operator -=(const natural &v) -> natural &;
-        auto operator >>(unsigned int count) const -> natural;
         auto operator <<(unsigned int count) const -> natural;
+        auto operator <<=(unsigned int count) -> natural &;
+        auto operator >>(unsigned int count) const -> natural;
+        auto operator >>=(unsigned int count) -> natural &;
         auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
         auto operator *=(natural_digit v) -> natural &;
@@ -189,16 +210,6 @@ namespace c8 {
          */
         auto is_zero() const noexcept -> bool {
             return (num_digits_ == 0) ? true : false;
-        }
-
-        auto operator >>=(unsigned int count) -> natural & {
-            *this = *this >> count;
-            return *this;
-        }
-
-        auto operator <<=(unsigned int count) -> natural & {
-            *this = *this << count;
-            return *this;
         }
 
         auto operator *=(const natural &v) -> natural & {
