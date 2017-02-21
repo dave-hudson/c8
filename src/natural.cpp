@@ -597,18 +597,19 @@ namespace c8 {
          * Shift the original value by the remaining number of bits that we
          * need, and insert those in the result.
          */
-        natural_double_digit acc = (static_cast<natural_double_digit>(this_digits[this_sz - 1]) << digit_shift);
-        if (acc >> natural_digit_bits) {
-            res_digits[new_sz++] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        natural_digit d = this_digits[this_sz - 1];
+        natural_digit d_hi = d >> (natural_digit_bits - digit_shift);
+        if (d_hi) {
+            res_digits[new_sz++] = d_hi;
         }
 
         for (std::size_t i = this_sz - 1; i > 0; i--) {
-            acc <<= natural_digit_bits;
-            acc |= (static_cast<natural_double_digit>(this_digits[i - 1]) << digit_shift);
-            res_digits[i + trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+            d_hi = d << digit_shift;
+            d = this_digits[i - 1];
+            res_digits[i + trailing_digits] = d_hi | (d >> (natural_digit_bits - digit_shift));
         }
 
-        res_digits[trailing_digits] = static_cast<natural_digit>(acc);
+        res_digits[trailing_digits] = d << digit_shift;
         res.num_digits_ = new_sz;
 
         zero_digit_array(res_digits, trailing_digits);
@@ -651,18 +652,19 @@ namespace c8 {
          * Shift the original value by the remaining number of bits that we
          * need, and insert those in the result.
          */
-        natural_double_digit acc = (static_cast<natural_double_digit>(this_digits[this_sz - 1]) << digit_shift);
-        if (acc >> natural_digit_bits) {
-            this_digits[new_sz++] = static_cast<natural_digit>(acc >> natural_digit_bits);
+        natural_digit d = this_digits[this_sz - 1];
+        natural_digit d_hi = d >> (natural_digit_bits - digit_shift);
+        if (d_hi) {
+            this_digits[new_sz++] = d_hi;
         }
 
         for (std::size_t i = this_sz - 1; i > 0; i--) {
-            acc <<= natural_digit_bits;
-            acc |= (static_cast<natural_double_digit>(this_digits[i - 1]) << digit_shift);
-            this_digits[i + trailing_digits] = static_cast<natural_digit>(acc >> natural_digit_bits);
+            d_hi = d << digit_shift;
+            d = this_digits[i - 1];
+            this_digits[i + trailing_digits] = d_hi | (d >> (natural_digit_bits - digit_shift));
         }
 
-        this_digits[trailing_digits] = static_cast<natural_digit>(acc);
+        this_digits[trailing_digits] = d << digit_shift;
         num_digits_ = new_sz;
 
         zero_digit_array(this_digits, trailing_digits);
@@ -707,15 +709,15 @@ namespace c8 {
         /*
          * Shift the original value and insert in the result.
          */
-        natural_double_digit acc = static_cast<natural_double_digit>(this_digits[trailing_digits]) >> digit_shift;
+        natural_digit d_lo = this_digits[trailing_digits] >> digit_shift;
         for (std::size_t i = 1; i <= new_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits]) << (natural_digit_bits - digit_shift));
-            res_digits[i - 1] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
+            natural_digit d = this_digits[i + trailing_digits];
+            res_digits[i - 1] = d_lo | (d << (natural_digit_bits - digit_shift));
+            d_lo = d >> digit_shift;
         }
 
-        if (acc) {
-            res_digits[new_sz++] = static_cast<natural_digit>(acc);
+        if (d_lo) {
+            res_digits[new_sz++] = d_lo;
         }
 
         res.num_digits_ = new_sz;
@@ -757,15 +759,15 @@ namespace c8 {
         /*
          * Shift the original value and insert in the result.
          */
-        natural_double_digit acc = static_cast<natural_double_digit>(this_digits[trailing_digits]) >> digit_shift;
+        natural_digit d_lo = this_digits[trailing_digits] >> digit_shift;
         for (std::size_t i = 1; i <= new_sz; i++) {
-            acc |= (static_cast<natural_double_digit>(this_digits[i + trailing_digits]) << (natural_digit_bits - digit_shift));
-            this_digits[i - 1] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
+            natural_digit d = this_digits[i + trailing_digits];
+            this_digits[i - 1] = d_lo | (d << (natural_digit_bits - digit_shift));
+            d_lo = d >> digit_shift;
         }
 
-        if (acc) {
-            this_digits[new_sz++] = static_cast<natural_digit>(acc);
+        if (d_lo) {
+            this_digits[new_sz++] = d_lo;
         }
 
         num_digits_ = new_sz;
