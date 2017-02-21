@@ -34,6 +34,38 @@ namespace c8 {
 
     const std::size_t natural_digit_bits = 8 * sizeof(natural_digit);
 
+    /*
+     * Zero an array of digits.
+     */
+    auto inline zero_digit_array(natural_digit *p, std::size_t num_digits) -> void {
+        if (num_digits & 1) {
+            num_digits--;
+            *p++ = 0;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *p++ = 0;
+            *p++ = 0;
+        }
+    }
+
+    /*
+     * Copy an array of digits.
+     */
+    auto inline copy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
+        if (num_digits & 1) {
+            num_digits--;
+            *dest++ = *src++;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *dest++ = *src++;
+            *dest++ = *src++;
+        }
+    }
+
     class natural {
     public:
         /*
@@ -276,7 +308,7 @@ namespace c8 {
             }
 
             auto d = new natural_digit[new_digits];
-            std::memcpy(d, digits_, sizeof(natural_digit) * num_digits_);
+            copy_digit_array(d, digits_, num_digits_);
 
             delete_digits();
             digits_size_ = new_digits;
@@ -297,7 +329,7 @@ namespace c8 {
             }
 
             reserve(v.num_digits_);
-            std::memcpy(digits_, v.digits_, sizeof(natural_digit) * num_digits_);
+            copy_digit_array(digits_, v.digits_, num_digits_);
         }
 
         /*
@@ -309,7 +341,7 @@ namespace c8 {
              * need to deep copy it.
              */
             if (C8_LIKELY(v.digits_ == v.small_digits_)) {
-                std::memcpy(small_digits_, v.small_digits_, sizeof(natural_digit) * v.num_digits_);
+                copy_digit_array(small_digits_, v.small_digits_, v.num_digits_);
                 digits_ = small_digits_;
             } else {
                 /*

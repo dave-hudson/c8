@@ -591,8 +591,8 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             res.num_digits_ = new_sz;
-            std::memcpy(&res_digits[trailing_digits], digits_, this_sz * sizeof(natural_digit));
-            std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
+            copy_digit_array(&res_digits[trailing_digits], digits_, this_sz);
+            zero_digit_array(res_digits, trailing_digits);
 
             return res;
         }
@@ -615,7 +615,7 @@ namespace c8 {
         res_digits[trailing_digits] = static_cast<natural_digit>(acc);
         res.num_digits_ = new_sz;
 
-        std::memset(res_digits, 0, trailing_digits * sizeof(natural_digit));
+        zero_digit_array(res_digits, trailing_digits);
 
         return res;
     }
@@ -649,7 +649,7 @@ namespace c8 {
         if (C8_UNLIKELY(digit_shift == 0)) {
             new_sz++;
             res.num_digits_ = new_sz;
-            std::memcpy(res_digits, &digits_[trailing_digits], new_sz * sizeof(natural_digit));
+            copy_digit_array(res_digits, &digits_[trailing_digits], new_sz);
 
             return res;
         }
@@ -681,12 +681,12 @@ namespace c8 {
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             natural res;
             return res;
         }
 
-        if (!v) {
+        if (C8_UNLIKELY(!v)) {
             natural res;
             return res;
         }
@@ -728,13 +728,13 @@ namespace c8 {
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             natural res;
             return res;
         }
 
         std::size_t v_sz = v.num_digits_;
-        if (!v_sz) {
+        if (C8_UNLIKELY(!v_sz)) {
             natural res;
             return res;
         }
@@ -744,7 +744,7 @@ namespace c8 {
         /*
          * Are we multiplying by a single digit?  If yes, then use the fast version
          */
-        if (v_sz == 1) {
+        if (C8_UNLIKELY(v_sz == 1)) {
             return *this * v_digits[0];
         }
 
@@ -808,11 +808,11 @@ namespace c8 {
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
-        if (!this_sz) {
+        if (C8_UNLIKELY(!this_sz)) {
             return *this;
         }
 
-        if (!v) {
+        if (C8_UNLIKELY(!v)) {
             num_digits_ = 0;
             return *this;
         }
@@ -909,7 +909,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (v.num_digits_ == 1) {
+        if (C8_UNLIKELY(v.num_digits_ == 1)) {
             return divide_modulus(v.digits_[0]);
         }
 
@@ -939,7 +939,7 @@ namespace c8 {
         const natural_digit *divisor_digits = divisor.digits_;
         const natural_digit *remaining_digits = remaining.digits_;
         natural_digit *res_digits = res.digits_;
-        std::memset(res_digits, 0, sizeof(natural_digit) * (remaining_sz - divisor_sz + 1));
+        zero_digit_array(res_digits, (remaining_sz - divisor_sz + 1));
 
         /*
          * Now we run a long divide algorithm.
@@ -1123,7 +1123,7 @@ namespace c8 {
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
          */
-        if (count_bits() > (8 * sizeof(long long))) {
+        if (C8_UNLIKELY(count_bits() > (8 * sizeof(long long)))) {
             throw overflow_error();
         }
 
