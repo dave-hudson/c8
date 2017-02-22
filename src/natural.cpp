@@ -1146,46 +1146,6 @@ namespace c8 {
     }
 
     /*
-     * Compare this natural number with another one.
-     */
-    auto natural::compare(const natural &v) const noexcept -> comparison {
-        std::size_t this_sz = num_digits_;
-        std::size_t v_sz = v.num_digits_;
-
-        /*
-         * If our sizes differ then this is really easy!
-         */
-        if (C8_UNLIKELY(this_sz > v_sz)) {
-            return comparison::gt;
-        }
-
-        if (C8_UNLIKELY(this_sz < v_sz)) {
-            return comparison::lt;
-        }
-
-        const natural_digit *this_digits = digits_;
-        const natural_digit *v_digits = v.digits_;
-
-        /*
-         * Our sizes are the same so do digit-by-digit comparisons.
-         */
-        std::size_t i = this_sz;
-        while (i--) {
-            auto a = this_digits[i];
-            auto b = v_digits[i];
-            if (a > b) {
-                return comparison::gt;
-            }
-
-            if (a < b) {
-                return comparison::lt;
-            }
-        }
-
-        return comparison::eq;
-    }
-
-    /*
      * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {

@@ -200,7 +200,6 @@ namespace c8 {
         auto operator *=(natural_digit v) -> natural &;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
-        auto compare(const natural &v) const noexcept -> comparison;
         auto gcd(const natural &v) const -> natural;
         auto to_unsigned_long_long() const -> unsigned long long;
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
@@ -255,6 +254,46 @@ namespace c8 {
         auto operator %=(const natural &v) -> natural & {
             *this = *this % v;
             return *this;
+        }
+
+        /*
+         * Compare this natural number with another one.
+         */
+        auto compare(const natural &v) const noexcept -> comparison {
+            std::size_t this_sz = num_digits_;
+            std::size_t v_sz = v.num_digits_;
+
+            /*
+             * If our sizes differ then this is really easy!
+             */
+            if (C8_UNLIKELY(this_sz > v_sz)) {
+                return comparison::gt;
+            }
+
+            if (C8_UNLIKELY(this_sz < v_sz)) {
+                return comparison::lt;
+            }
+
+            const natural_digit *this_digits = digits_;
+            const natural_digit *v_digits = v.digits_;
+
+            /*
+             * Our sizes are the same so do digit-by-digit comparisons.
+             */
+            std::size_t i = this_sz;
+            while (i--) {
+                auto a = this_digits[i];
+                auto b = v_digits[i];
+                if (a > b) {
+                    return comparison::gt;
+                }
+
+                if (a < b) {
+                    return comparison::lt;
+                }
+            }
+
+            return comparison::eq;
         }
 
         auto operator ==(const natural &v) const -> bool {
