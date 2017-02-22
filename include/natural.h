@@ -282,10 +282,10 @@ namespace c8 {
         }
 
     private:
-        bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
-        natural_digit *digits_;             // Digits of the natural number
+        std::size_t num_digits_;            // The number of digits in this number
         std::size_t digits_size_;           // Number of digits_ allocated
-        std::size_t num_digits_;            // The number of digits
+        natural_digit *digits_;             // Digits of the natural number
+        bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
         natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
         /*
