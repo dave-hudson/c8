@@ -984,7 +984,13 @@ namespace c8 {
      * Divide this natural number by another one, returning the quotient and modulus.
      */
     auto natural::divide_modulus(const natural &v) const -> std::pair<natural, natural> {
-        natural res;
+        /*
+         * Are we dividing by a single digit?  If yes, then use the fast version
+         * of divide_modulus!
+         */
+        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+            return divide_modulus(v.digits_[0]);
+        }
 
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
@@ -993,13 +999,7 @@ namespace c8 {
             throw divide_by_zero();
         }
 
-        /*
-         * Are we dividing by a single digit?  If yes, then use the fast version
-         * of divide_modulus!
-         */
-        if (C8_UNLIKELY(v.num_digits_ == 1)) {
-            return divide_modulus(v.digits_[0]);
-        }
+        natural res;
 
         /*
          * Is the result zero?  If yes then we're done.
