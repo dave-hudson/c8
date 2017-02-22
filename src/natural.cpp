@@ -326,6 +326,7 @@ namespace c8 {
      */
     auto natural::operator -(natural_digit v) const -> natural {
         std::size_t this_sz = num_digits_;
+
         natural res;
 
         /*
@@ -779,24 +780,23 @@ namespace c8 {
      * Multiply this natural number with a single digit.
      */
     auto natural::operator *(natural_digit v) const -> natural {
+        natural res;
+
         /*
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
         if (C8_UNLIKELY(!this_sz)) {
-            natural res;
             return res;
         }
 
         if (C8_UNLIKELY(!v)) {
-            natural res;
             return res;
         }
 
         /*
          * Estimate our output size in digits.
          */
-        natural res;
         res.reserve(this_sz + 1);
 
         const natural_digit *this_digits = digits_;
@@ -826,74 +826,68 @@ namespace c8 {
      * Multiply this natural number with another one.
      */
     auto natural::operator *(const natural &v) const -> natural {
+        natural res;
+
         /*
          * If either value is zero then our result is zero.
          */
         std::size_t this_sz = num_digits_;
         if (C8_UNLIKELY(!this_sz)) {
-            natural res;
             return res;
         }
 
         std::size_t v_sz = v.num_digits_;
         if (C8_UNLIKELY(!v_sz)) {
-            natural res;
             return res;
-        }
-
-        const natural_digit *v_digits = v.digits_;
-
-        /*
-         * Are we multiplying by a single digit?  If yes, then use the fast version
-         */
-        if (C8_UNLIKELY(v_sz == 1)) {
-            return *this * v_digits[0];
         }
 
         /*
          * Estimate our output size in digits.
          */
-        std::size_t res_sz = this_sz + v_sz;
+        std::size_t res_sz = this_sz + v_sz - 1;
+        res.reserve(res_sz + 1);
 
-        natural res;
-        res.reserve(res_sz);
-
+        const natural_digit *v_digits = v.digits_;
         const natural_digit *this_digits = digits_;
         natural_digit *res_digits = res.digits_;
 
         /*
          * Comba multiply.
+         *
+         * In this style of multplier we work out all of the multplies that contribute to
+         * a single result digit at the same time.
+         *
+         * When we multiply two digits together we get a double digit result.  We track
+         * the upper digit via an accumulator, acc1, along with all previous accumulated
+         * carries.
          */
-        natural_digit c0 = 0;
-        natural_digit c1 = 0;
-        natural_digit c2 = 0;
+        natural_digit acc0 = 0;
+        natural_double_digit acc1 = 0;
         std::size_t tj_lim = v_sz - 1;
 
-        for (std::size_t i = 0; i < res_sz; i++) {
-            std::size_t tj = (i < tj_lim) ? i : tj_lim;
-            std::size_t ti = i - tj;
-            std::size_t j_lim = ((this_sz - ti) < (tj + 1)) ? (this_sz - ti) : (tj + 1);
-            c0 = c1;
-            c1 = c2;
-            c2 = 0;
-            for (std::size_t j = 0; j < j_lim; j++) {
+        for (std::size_t res_column = 0; res_column < res_sz; res_column++) {
+            std::size_t tj = (res_column < tj_lim) ? res_column : tj_lim;
+            std::size_t ti = res_column - tj;
+            std::size_t num_multiplies = ((this_sz - ti) < (tj + 1)) ? (this_sz - ti) : (tj + 1);
+            acc0 = static_cast<natural_digit>(acc1);
+            acc1 >>= natural_digit_bits;
+            for (std::size_t j = 0; j < num_multiplies; j++) {
                 natural_digit a = this_digits[ti++];
                 natural_digit b = v_digits[tj--];
-                natural_double_digit d0 = static_cast<natural_double_digit>(c0) + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(b));
-                c0 = static_cast<natural_digit>(d0);
-                natural_double_digit d1 = static_cast<natural_double_digit>(c1) + (d0 >> natural_digit_bits);
-                c1 = static_cast<natural_digit>(d1);
-                c2 += static_cast<natural_digit>((d1 >> natural_digit_bits));
+                natural_double_digit m = static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(b);
+                natural_double_digit d0 = static_cast<natural_double_digit>(acc0) + m;
+                acc0 = static_cast<natural_digit>(d0);
+                acc1 += (d0 >> natural_digit_bits);
             }
 
-            res_digits[i] = c0;
+            res_digits[res_column] = acc0;
         }
 
         /*
-         * We may have a zero upper digit so account for this.
+         * We may have an extra upper digit, so account for this.
          */
-        if (!res_digits[res_sz - 1]) {
-            res_sz--;
+        if (acc1) {
+            res_digits[res_sz++] = static_cast<natural_digit>(acc1);
         }
 
         res.num_digits_ = res_sz;
