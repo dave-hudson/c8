@@ -855,7 +855,6 @@ namespace c8 {
          * the upper digit via an accumulator, acc1, along with all previous accumulated
          * carries.
          */
-        natural_digit acc0 = 0;
         natural_double_digit acc1 = 0;
         std::size_t tj_lim = v_sz - 1;
 
@@ -863,18 +862,17 @@ namespace c8 {
             std::size_t tj = (res_column < tj_lim) ? res_column : tj_lim;
             std::size_t ti = res_column - tj;
             std::size_t num_multiplies = ((this_sz - ti) < (tj + 1)) ? (this_sz - ti) : (tj + 1);
-            acc0 = static_cast<natural_digit>(acc1);
+            auto acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(acc1));
             acc1 >>= natural_digit_bits;
             for (std::size_t j = 0; j < num_multiplies; j++) {
-                natural_digit a = this_digits[ti++];
-                natural_digit b = v_digits[tj--];
-                natural_double_digit m = static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(b);
-                natural_double_digit d0 = static_cast<natural_double_digit>(acc0) + m;
-                acc0 = static_cast<natural_digit>(d0);
+                auto a = static_cast<natural_double_digit>(this_digits[ti++]);
+                auto b = static_cast<natural_double_digit>(v_digits[tj--]);
+                natural_double_digit d0 = acc0 + (a * b);
+                acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(d0));
                 acc1 += (d0 >> natural_digit_bits);
             }
 
-            res_digits[res_column] = acc0;
+            res_digits[res_column] = static_cast<natural_digit>(acc0);
         }
 
         /*
