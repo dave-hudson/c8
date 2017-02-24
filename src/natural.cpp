@@ -1173,13 +1173,11 @@ namespace c8 {
         /*
          * Calculate our resulting digits.
          */
-        while (res_sz--) {
-            if (res_digits[res_sz]) {
-                break;
-            }
+        if (!res_digits[res_sz - 1]) {
+            res_sz--;
         }
 
-        res.num_digits_ = res_sz + 1;
+        res.num_digits_ = res_sz;
 
         return std::make_pair(std::move(res), std::move(remaining));
     }
