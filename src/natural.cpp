@@ -111,16 +111,18 @@ namespace c8 {
      * Add a natural digit to this one.
      */
     auto natural::operator +(natural_digit v) const -> natural {
+        natural res;
+
         std::size_t this_sz = num_digits_;
 
         /*
          * Is this number zero?  If yes then just construct the result.
          */
         if (C8_UNLIKELY(!this_sz)) {
-            return natural(v);
+            res = natural(v);
+            return res;
         }
 
-        natural res;
         res.reserve(this_sz + 1);
 
         const natural_digit *this_digits = digits_;
@@ -836,6 +838,14 @@ namespace c8 {
         }
 
         /*
+         * Are we multiplying by a single digit?  If yes, then use the fast version.
+         */
+        if (C8_UNLIKELY(v_sz == 1)) {
+            res = *this * v.digits_[0];
+            return res;
+        }
+
+        /*
          * Estimate our output size in digits.
          */
         std::size_t res_sz = this_sz + v_sz - 1;
@@ -942,16 +952,17 @@ namespace c8 {
             throw divide_by_zero();
         }
 
-        natural res;
+        std::pair<natural, natural_digit> p;
         std::size_t this_sz = num_digits_;
         if (C8_UNLIKELY(!this_sz)) {
-            return std::make_pair(std::move(res), 0);
+            p.second = 0;
+            return p;
         }
 
-        res.reserve(this_sz);
+        p.first.reserve(this_sz);
 
         const natural_digit *this_digits = digits_;
-        natural_digit *res_digits = res.digits_;
+        natural_digit *res_digits = p.first.digits_;
 
         /*
          * Now we run a long divide algorithm.
@@ -973,9 +984,10 @@ namespace c8 {
             this_sz--;
         }
 
-        res.num_digits_ = this_sz;
+        p.first.num_digits_ = this_sz;
 
-        return std::make_pair(std::move(res), static_cast<natural_digit>(acc));
+        p.second = static_cast<natural_digit>(acc);
+        return p;
     }
 
     /*
@@ -983,27 +995,31 @@ namespace c8 {
      */
     auto natural::divide_modulus(const natural &v) const -> std::pair<natural, natural> {
         /*
-         * Are we dividing by a single digit?  If yes, then use the fast version
-         * of divide_modulus!
-         */
-        if (C8_UNLIKELY(v.num_digits_ == 1)) {
-            return divide_modulus(v.digits_[0]);
-        }
-
-        /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
         if (C8_UNLIKELY(!v.num_digits_)) {
             throw divide_by_zero();
         }
 
-        natural res;
+        std::pair<natural, natural> p;
+
+        /*
+         * Are we dividing by a single digit?  If yes, then use the fast version
+         * of divide_modulus!
+         */
+        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+            auto r = divide_modulus(v.digits_[0]);
+            p.first = std::move(r.first);
+            p.second = natural(r.second);
+            return p;
+        }
 
         /*
          * Is the result zero?  If yes then we're done.
          */
         if (C8_UNLIKELY(*this < v)) {
-            return std::make_pair(std::move(res), *this);
+            p.second = *this;
+            return p;
         }
 
         /*
@@ -1021,11 +1037,11 @@ namespace c8 {
         std::size_t divisor_sz = divisor.num_digits_;
         std::size_t res_sz = remaining_sz - divisor_sz + 1;
 
-        res.reserve(res_sz);
+        p.first.reserve(res_sz);
 
         const natural_digit *divisor_digits = divisor.digits_;
         const natural_digit *remaining_digits = remaining.digits_;
-        natural_digit *res_digits = res.digits_;
+        natural_digit *res_digits = p.first.digits_;
         zero_digit_array(res_digits, res_sz);
 
         /*
@@ -1115,8 +1131,6 @@ namespace c8 {
             }
         }
 
-        remaining >>= normalize_shift;
-
         /*
          * Calculate our resulting digits.
          */
@@ -1124,25 +1138,29 @@ namespace c8 {
             res_sz--;
         }
 
-        res.num_digits_ = res_sz;
+        p.first.num_digits_ = res_sz;
 
-        return std::make_pair(std::move(res), std::move(remaining));
+        p.second = remaining >> normalize_shift;
+        return p;
     }
 
     /*
      * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
+        natural larger;
+
         if (C8_UNLIKELY(v.is_zero())) {
-            return *this;
+            larger = *this;
+            return larger;
         }
 
         if (C8_UNLIKELY(is_zero())) {
-            return v;
+            larger = v;
+            return larger;
         }
 
         natural smaller;
-        natural larger;
         if (*this < v) {
             smaller = *this;
             larger = v;

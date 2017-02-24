@@ -254,7 +254,7 @@ namespace c8 {
 
         auto operator %(natural_digit v) const -> natural_digit {
             std::pair<natural, natural_digit> dm = divide_modulus(v);
-            return std::move(dm.second);
+            return dm.second;
         }
 
         auto operator %(const natural &v) const -> natural {
