@@ -29,12 +29,13 @@ namespace c8 {
      * Add another integer to this one.
      */
     auto integer::operator +(const integer &v) const -> integer {
+        integer res;
+
         /*
          * If our two numbers have the same sign then we just add and retain the
          * sign for this number.
          */
         if (negative_ == v.negative_) {
-            integer res;
             res.negative_ = negative_;
             res.magnitude_ = magnitude_ + v.magnitude_;
             return res;
@@ -45,7 +46,6 @@ namespace c8 {
          * from the larger, and retain the sign of the larger.
          */
         if (magnitude_ < v.magnitude_) {
-            integer res;
             res.negative_ = v.negative_;
             res.magnitude_ = v.magnitude_ - magnitude_;
             return res;
@@ -55,7 +55,6 @@ namespace c8 {
          * We're adding a smaller magnitude value, so subtract the smaller
          * from the larger, and, again, retain the sign of the larger.
          */
-        integer res;
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ - v.magnitude_;
         return res;
@@ -69,12 +68,13 @@ namespace c8 {
      * exceptions for negative results.
      */
     auto integer::operator -(const integer &v) const -> integer {
+        integer res;
+
         /*
          * If we're subtracting a negative number from a positive, or a positive from
          * a negative, then we add the magnitudes of both and retain the sign of this one.
          */
         if (negative_ != v.negative_) {
-            integer res;
             res.negative_ = negative_;
             res.magnitude_ = magnitude_ + v.magnitude_;
             return res;
@@ -85,7 +85,6 @@ namespace c8 {
          * subtract the magnitudes and use the inverse of the sign for the larger.
          */
         if (magnitude_ < v.magnitude_) {
-            integer res;
             res.negative_ = !v.negative_;
             res.magnitude_ = v.magnitude_ - magnitude_;
             return res;
@@ -95,7 +94,6 @@ namespace c8 {
          * We're subtracting a number with a smaller magnitude than this one, so subtract
          * the magnitudes and use the sign of this one.
          */
-        integer res;
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ - v.magnitude_;
         return res;
