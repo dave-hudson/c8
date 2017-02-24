@@ -39,11 +39,8 @@ namespace c8 {
         natural res;
         res.reserve(new_sz);
 
-        const natural_digit *this_digits = digits_;
-        natural_digit *res_digits = res.digits_;
-
         res.num_digits_ = new_sz;
-        shift_left_digit_array(res_digits, this_digits, this_sz, count);
+        shift_left_digit_array(res.digits_, digits_, this_sz, count);
 
         return res;
     }
@@ -58,10 +55,8 @@ namespace c8 {
 
         expand(new_sz);
 
-        natural_digit *this_digits = digits_;
-
         num_digits_ = new_sz;
-        shift_left_digit_array(this_digits, this_sz, count);
+        shift_left_digit_array(digits_, this_sz, count);
 
         return *this;
     }
