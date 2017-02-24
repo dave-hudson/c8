@@ -14,6 +14,22 @@ namespace c8 {
     };
 
     /*
+     * shift a digit array left by a whole number of digits.
+     */
+    inline auto shift_left_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, std::size_t shift_count) -> void {
+        zero_digit_array(dest, shift_count);
+        copy_digit_array(&dest[shift_count], src, num_src_digits);
+    }
+
+    /*
+     * shift a digit array left by a whole number of digits.
+     */
+    inline auto shift_left_digit_array(natural_digit *digits, std::size_t num_digits, std::size_t shift_count) -> void {
+        rcopy_digit_array(&digits[shift_count], digits, num_digits);
+        zero_digit_array(digits, shift_count);
+    }
+
+    /*
      * Shift by an integer number of digits, assuming that our number is non-zero.
      */
     inline auto natural::shift_left_digits(std::size_t count) const -> natural {
@@ -27,8 +43,7 @@ namespace c8 {
         natural_digit *res_digits = res.digits_;
 
         res.num_digits_ = new_sz;
-        zero_digit_array(res_digits, count);
-        copy_digit_array(&res_digits[count], this_digits, this_sz);
+        shift_left_digit_array(res_digits, this_digits, this_sz, count);
 
         return res;
     }
@@ -46,8 +61,7 @@ namespace c8 {
         natural_digit *this_digits = digits_;
 
         num_digits_ = new_sz;
-        rcopy_digit_array(&this_digits[count], this_digits, this_sz);
-        zero_digit_array(this_digits, count);
+        shift_left_digit_array(this_digits, this_sz, count);
 
         return *this;
     }
@@ -621,8 +635,7 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             res.num_digits_ = new_sz;
-            zero_digit_array(res_digits, trailing_digits);
-            copy_digit_array(&res_digits[trailing_digits], this_digits, this_sz);
+            shift_left_digit_array(res_digits, this_digits, this_sz, trailing_digits);
 
             return res;
         }
@@ -676,8 +689,7 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             num_digits_ = new_sz;
-            rcopy_digit_array(&this_digits[trailing_digits], this_digits, this_sz);
-            zero_digit_array(this_digits, trailing_digits);
+            shift_left_digit_array(this_digits, this_sz, trailing_digits);
 
             return *this;
         }
