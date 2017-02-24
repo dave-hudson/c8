@@ -486,7 +486,8 @@ namespace c8 {
         }
 
         /*
-         * Calculate our resulting digits.
+         * Calculate the number of resulting digits.  With subtraction there's no
+         * easy way to estimate this numbers.
          */
         while (this_sz--) {
             if (res_digits[this_sz]) {
@@ -571,7 +572,7 @@ namespace c8 {
         for (std::size_t i = 0; i < v_sz; i++) {
             auto a = static_cast<natural_double_digit>(this_digits[i]);
             auto b = static_cast<natural_double_digit>(v_digits[i]);
-            acc = a - b- acc;
+            acc = a - b - acc;
             this_digits[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
         }
@@ -594,7 +595,8 @@ namespace c8 {
         }
 
         /*
-         * Calculate our resulting digits.
+         * Calculate the number of resulting digits.  With subtraction there's no
+         * easy way to estimate this numbers.
          */
         while (this_sz--) {
             if (this_digits[this_sz]) {
