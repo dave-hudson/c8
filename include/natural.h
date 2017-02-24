@@ -327,6 +327,9 @@ namespace c8 {
         bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
         natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
+        auto shift_left_digits(std::size_t count) const -> natural;
+        auto shift_left_digits_this(std::size_t count) -> natural &;
+
         /*
          * Delete digits array if it is marked for deletion.
          */

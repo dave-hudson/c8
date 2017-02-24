@@ -14,6 +14,45 @@ namespace c8 {
     };
 
     /*
+     * Shift by an integer number of digits, assuming that our number is non-zero.
+     */
+    inline auto natural::shift_left_digits(std::size_t count) const -> natural {
+        std::size_t this_sz = num_digits_;
+        std::size_t new_sz = this_sz + count;
+
+        natural res;
+        res.reserve(new_sz);
+
+        const natural_digit *this_digits = digits_;
+        natural_digit *res_digits = res.digits_;
+
+        res.num_digits_ = new_sz;
+        zero_digit_array(res_digits, count);
+        copy_digit_array(&res_digits[count], this_digits, this_sz);
+
+        return res;
+    }
+
+    /*
+     * Shift by an integer number of digits, assuming that our number is non-zero,
+     * and write the result back to this number.
+     */
+    inline auto natural::shift_left_digits_this(std::size_t count) -> natural & {
+        std::size_t this_sz = num_digits_;
+        std::size_t new_sz = this_sz + count;
+
+        expand(new_sz);
+
+        natural_digit *this_digits = digits_;
+
+        num_digits_ = new_sz;
+        rcopy_digit_array(&this_digits[count], this_digits, this_sz);
+        zero_digit_array(this_digits, count);
+
+        return *this;
+    }
+
+    /*
      * Construct a natural number from an unsigned long long integer.
      */
     natural::natural(unsigned long long v) {
@@ -582,8 +621,8 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             res.num_digits_ = new_sz;
-            copy_digit_array(&res_digits[trailing_digits], this_digits, this_sz);
             zero_digit_array(res_digits, trailing_digits);
+            copy_digit_array(&res_digits[trailing_digits], this_digits, this_sz);
 
             return res;
         }
@@ -1053,7 +1092,7 @@ namespace c8 {
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
                 natural_digit q = 1;
-                natural m = divisor << static_cast<unsigned int>((i - divisor_sz + 1) * natural_digit_bits);
+                natural m = divisor.shift_left_digits(i - divisor_sz + 1);
                 if (C8_LIKELY(remaining >= m)) {
                     /*
                      * Our result was 1.  While we now know this digit, subtracting "m" may
@@ -1067,7 +1106,7 @@ namespace c8 {
                      * digit is it's maximum possible size.
                      */
                     q = static_cast<natural_digit>(-1);
-                    m -= (divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits));
+                    m -= divisor.shift_left_digits(i - divisor_sz);
                 }
 
                 res_digits[i - divisor_sz] = q;
@@ -1092,7 +1131,7 @@ namespace c8 {
             natural_digit q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
 
             natural m = divisor * q;
-            m <<= static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits);
+            m.shift_left_digits_this(i - divisor_sz);
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
@@ -1100,7 +1139,7 @@ namespace c8 {
              * significant digit.  This may mean we reduce our estimate slightly.
              */
             if (C8_UNLIKELY(m > remaining)) {
-                m -= (divisor << static_cast<unsigned int>((i - divisor_sz) * natural_digit_bits));
+                m -= divisor.shift_left_digits(i - divisor_sz);
                 q--;
             }
 
