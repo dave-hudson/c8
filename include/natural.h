@@ -85,6 +85,22 @@ namespace c8 {
         }
     }
 
+    /*
+     * shift a digit array left by a whole number of digits.
+     */
+    inline auto shift_left_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, std::size_t shift_count) -> void {
+        zero_digit_array(dest, shift_count);
+        copy_digit_array(&dest[shift_count], src, num_src_digits);
+    }
+
+    /*
+     * shift a digit array left by a whole number of digits.
+     */
+    inline auto shift_left_digit_array(natural_digit *digits, std::size_t num_digits, std::size_t shift_count) -> void {
+        rcopy_digit_array(&digits[shift_count], digits, num_digits);
+        zero_digit_array(digits, shift_count);
+    }
+
     class natural {
     public:
         /*
@@ -327,9 +343,6 @@ namespace c8 {
         bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
         natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
-        auto shift_left_digits(std::size_t count) const -> natural;
-        auto shift_left_digits_this(std::size_t count) -> natural &;
-
         /*
          * Delete digits array if it is marked for deletion.
          */
@@ -410,6 +423,38 @@ namespace c8 {
             v.digits_ = v.small_digits_;
             delete_on_final_ = v.delete_on_final_;
             v.delete_on_final_ = false;
+        }
+
+        /*
+         * Shift by an integer number of digits, assuming that our number is non-zero.
+         */
+        auto shift_left_digits(std::size_t count) const -> natural {
+            std::size_t this_sz = num_digits_;
+            std::size_t new_sz = this_sz + count;
+
+            natural res;
+            res.reserve(new_sz);
+
+            res.num_digits_ = new_sz;
+            shift_left_digit_array(res.digits_, digits_, this_sz, count);
+
+            return res;
+        }
+
+        /*
+         * Shift by an integer number of digits, assuming that our number is non-zero,
+         * and write the result back to this number.
+         */
+        auto shift_left_digits_this(std::size_t count) -> natural & {
+            std::size_t this_sz = num_digits_;
+            std::size_t new_sz = this_sz + count;
+
+            expand(new_sz);
+
+            num_digits_ = new_sz;
+            shift_left_digit_array(digits_, this_sz, count);
+
+            return *this;
         }
     };
 
