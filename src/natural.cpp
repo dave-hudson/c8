@@ -14,6 +14,165 @@ namespace c8 {
     };
 
     /*
+     * Add a single digit to a digit array.
+     *
+     * Note: It is OK for dest and src to be the same pointer.
+     */
+    inline auto add_digit_array_digit(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, natural_digit v) -> std::size_t {
+        /*
+         * Is this number zero?  If yes then just construct the result.
+         */
+        if (C8_UNLIKELY(!num_src_digits)) {
+            dest[0] = v;
+            return 1;
+        }
+
+        /*
+         * Add the first digit.
+         */
+        auto a = src[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
+        dest[0] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        /*
+         * Add the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < num_src_digits; i++) {
+            acc += static_cast<natural_double_digit>(src[i]);
+            dest[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        std::size_t num_dest_digits = num_src_digits;
+        if (C8_UNLIKELY(acc)) {
+            dest[num_dest_digits++] = static_cast<natural_digit>(acc);
+        }
+
+        return num_dest_digits;
+    }
+
+    /*
+     * Add two digit arrays.
+     *
+     * Note: It is OK for dest and either src1, or src2, to be the same pointer.
+     */
+    inline auto add_digit_arrays(natural_digit *dest, const natural_digit *src1, std::size_t num_src1_digits, const natural_digit *src2, std::size_t num_src2_digits) -> std::size_t {
+        /*
+         * Add the parts together until we run out of digits in the smaller part.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < num_src2_digits; i++) {
+            auto a = static_cast<natural_double_digit>(src1[i]);
+            auto b = static_cast<natural_double_digit>(src2[i]);
+            acc += (a + b);
+            dest[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        /*
+         * Add the remaining digits and any carries.
+         */
+        for (std::size_t i = num_src2_digits; i < num_src1_digits; i++) {
+            acc += static_cast<natural_double_digit>(src1[i]);
+            dest[i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        std::size_t num_dest_digits = num_src1_digits;
+        if (C8_UNLIKELY(acc)) {
+            dest[num_dest_digits++] = static_cast<natural_digit>(acc);
+        }
+
+        return num_dest_digits;
+    }
+
+    /*
+     * Subtract a single digit from a digit array.
+     *
+     * Note: It is OK for dest and src to be the same pointer.
+     */
+    inline auto subtract_digit_array_digit(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, natural_digit v) -> std::size_t {
+        /*
+         * Is this number zero?  If yes then just construct the result.  We know
+         * that we cannot have a negative result so we don't need to worry about
+         * throwing exceptions.
+         */
+        if (C8_UNLIKELY(!num_src_digits)) {
+            return 0;
+        }
+
+        /*
+         * Subtract the digits from this number's lowest digit.
+         */
+        auto a = static_cast<natural_double_digit>(src[0]);
+        natural_double_digit acc = (a - static_cast<natural_double_digit>(v));
+        dest[0] = static_cast<natural_digit>(acc);
+        acc = (acc >> natural_digit_bits) & 1;
+
+        /*
+         * Subtract the remaining digits and any carries.
+         */
+        for (std::size_t i = 1; i < num_src_digits; i++) {
+            acc = static_cast<natural_double_digit>(src[i]) - acc;
+            dest[i] = static_cast<natural_digit>(acc);
+            acc = (acc >> natural_digit_bits) & 1;
+        }
+
+        /*
+         * We may have a zero upper digit so account for this.
+         */
+        std::size_t num_dest_digits = num_src_digits;
+        if (!dest[num_dest_digits - 1]) {
+            num_dest_digits--;
+        }
+
+        return num_dest_digits;
+    }
+
+    /*
+     * Subtract one digit array from another.
+     *
+     * Note: It is OK for dest and either src1, or src2, to be the same pointer.
+     */
+    inline auto subtract_digit_arrays(natural_digit *dest, const natural_digit *src1, std::size_t num_src1_digits, const natural_digit *src2, std::size_t num_src2_digits) -> std::size_t {
+        /*
+         * Subtract the parts together until we run out of digits in the smaller part.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < num_src2_digits; i++) {
+            auto a = static_cast<natural_double_digit>(src1[i]);
+            auto b = static_cast<natural_double_digit>(src2[i]);
+            acc = a - b - acc;
+            dest[i] = static_cast<natural_digit>(acc);
+            acc = (acc >> natural_digit_bits) & 1;
+        }
+
+        /*
+         * Subtract the remaining digits and any carries.
+         */
+        for (std::size_t i = num_src2_digits; i < num_src1_digits; i++) {
+            auto a = static_cast<natural_double_digit>(src1[i]);
+            acc = a - acc;
+            dest[i] = static_cast<natural_digit>(acc);
+            acc = (acc >> natural_digit_bits) & 1;
+        }
+
+        /*
+         * Calculate the number of resulting digits.  With subtraction there's no
+         * easy way to estimate this numbers.
+         */
+        std::size_t num_dest_digits = num_src1_digits;
+        while (num_dest_digits--) {
+            if (dest[num_dest_digits]) {
+                break;
+            }
+        }
+
+        return num_dest_digits + 1;
+    }
+
+    /*
      * Construct a natural number from an unsigned long long integer.
      */
     natural::natural(unsigned long long v) {
@@ -111,45 +270,11 @@ namespace c8 {
      * Add a natural digit to this one.
      */
     auto natural::operator +(natural_digit v) const -> natural {
-        natural res;
-
         std::size_t this_sz = num_digits_;
 
-        /*
-         * Is this number zero?  If yes then just construct the result.
-         */
-        if (C8_UNLIKELY(!this_sz)) {
-            res = natural(v);
-            return res;
-        }
-
+        natural res;
         res.reserve(this_sz + 1);
-
-        const natural_digit *this_digits = digits_;
-        natural_digit *res_digits = res.digits_;
-
-        /*
-         * Add the first digit.
-         */
-        auto a = this_digits[0];
-        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
-        res_digits[0] = static_cast<natural_digit>(acc);
-        acc >>= natural_digit_bits;
-
-        /*
-         * Add the remaining digits and any carries.
-         */
-        for (std::size_t i = 1; i < this_sz; i++) {
-            acc += static_cast<natural_double_digit>(this_digits[i]);
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        if (C8_UNLIKELY(acc)) {
-            res_digits[this_sz++] = static_cast<natural_digit>(acc);
-        }
-
-        res.num_digits_ = this_sz;
+        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_sz, v);
 
         return res;
     }
@@ -182,35 +307,7 @@ namespace c8 {
 
         natural res;
         res.reserve(larger_sz + 1);
-
-        natural_digit *res_digits = res.digits_;
-
-        /*
-         * Add the parts together until we run out of digits in the smaller part.
-         */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = static_cast<natural_double_digit>(smaller_digits[i]);
-            auto b = static_cast<natural_double_digit>(larger_digits[i]);
-            acc += (a + b);
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        /*
-         * Add the remaining digits and any carries.
-         */
-        for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            acc += static_cast<natural_double_digit>(larger_digits[i]);
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        if (C8_UNLIKELY(acc)) {
-            res_digits[larger_sz++] = static_cast<natural_digit>(acc);
-        }
-
-        res.num_digits_ = larger_sz;
+        res.num_digits_ = add_digit_arrays(res.digits_, larger_digits, larger_sz, smaller_digits, smaller_sz);
 
         return res;
     }
@@ -222,40 +319,7 @@ namespace c8 {
         std::size_t this_sz = num_digits_;
 
         expand(this_sz + 1);
-
-        natural_digit *this_digits = digits_;
-
-        /*
-         * Is this number zero?  If yes then just construct the result.
-         */
-        if (C8_UNLIKELY(!this_sz)) {
-            this_digits[0] = v;
-            num_digits_ = 1;
-            return *this;
-        }
-
-        /*
-         * Add the first digit.
-         */
-        natural_digit a = this_digits[0];
-        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(v));
-        this_digits[0] = static_cast<natural_digit>(acc);
-        acc >>= natural_digit_bits;
-
-        /*
-         * Add the remaining digits and any carries.
-         */
-        for (std::size_t i = 1; i < this_sz; i++) {
-            acc += static_cast<natural_double_digit>(this_digits[i]);
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        if (C8_UNLIKELY(acc)) {
-            this_digits[this_sz++] = static_cast<natural_digit>(acc);
-        }
-
-        num_digits_ = this_sz;
+        num_digits_ = add_digit_array_digit(digits_, digits_, this_sz, v);
 
         return *this;
     }
@@ -286,35 +350,7 @@ namespace c8 {
         }
 
         expand(larger_sz + 1);
-
-        natural_digit *this_digits = digits_;
-
-        /*
-         * Add the parts together until we run out of digits in the smaller part.
-         */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < smaller_sz; i++) {
-            auto a = static_cast<natural_double_digit>(smaller_digits[i]);
-            auto b = static_cast<natural_double_digit>(larger_digits[i]);
-            acc += (a + b);
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        /*
-         * Add the remaining digits and any carries.
-         */
-        for (std::size_t i = smaller_sz; i < larger_sz; i++) {
-            acc += static_cast<natural_double_digit>(larger_digits[i]);
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc >>= natural_digit_bits;
-        }
-
-        if (C8_UNLIKELY(acc)) {
-            this_digits[larger_sz++] = static_cast<natural_digit>(acc);
-        }
-
-        num_digits_ = larger_sz;
+        num_digits_ = add_digit_arrays(digits_, larger_digits, larger_sz, smaller_digits, smaller_sz);
 
         return *this;
     }
@@ -325,56 +361,22 @@ namespace c8 {
     auto natural::operator -(natural_digit v) const -> natural {
         std::size_t this_sz = num_digits_;
 
-        natural res;
-
         /*
-         * Is this number zero?  If yes, then it's either an exception or a zero result.
+         * We should not have a negative result!
          */
-        if (C8_UNLIKELY(!this_sz)) {
-            if (C8_LIKELY(!v)) {
-                return res;
+        if (C8_UNLIKELY(this_sz == 1)) {
+            if (C8_UNLIKELY(digits_[0] < v)) {
+                throw not_a_number();
             }
-
-            throw not_a_number();
+        } else if (C8_UNLIKELY(!this_sz)) {
+            if (C8_UNLIKELY(v)) {
+                throw not_a_number();
+            }
         }
 
+        natural res;
         res.reserve(this_sz);
-
-        const natural_digit *this_digits = digits_;
-        natural_digit *res_digits = res.digits_;
-
-        /*
-         * Subtract the digits from this number's lowest digit.
-         */
-        auto a = static_cast<natural_double_digit>(this_digits[0]);
-        natural_double_digit acc = (a - static_cast<natural_double_digit>(v));
-        res_digits[0] = static_cast<natural_digit>(acc);
-        acc = (acc >> natural_digit_bits) & 1;
-
-        /*
-         * Subtract the remaining digits and any carries.
-         */
-        for (std::size_t i = 1; i < this_sz; i++) {
-            acc = static_cast<natural_double_digit>(this_digits[i]) - acc;
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * We should not have a carry!
-         */
-        if (C8_UNLIKELY(acc)) {
-            throw not_a_number();
-        }
-
-        /*
-         * We may have a zero upper digit so account for this.
-         */
-        if (!res_digits[this_sz - 1]) {
-            this_sz--;
-        }
-
-        res.num_digits_ = this_sz;
+        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_sz, v);
 
         return res;
     }
@@ -383,68 +385,19 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -(const natural &v) const -> natural {
+        /*
+         * We should not have a negative result!
+         */
+        if (C8_UNLIKELY(*this < v)) {
+            throw not_a_number();
+        }
+
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
         natural res;
-
-        /*
-         * Is this number zero?  If yes, then it's either an exception or a zero result.
-         */
-        if (C8_UNLIKELY(!this_sz)) {
-            if (C8_LIKELY(!v_sz)) {
-                return res;
-            }
-
-            throw not_a_number();
-        }
-
         res.reserve(this_sz);
-
-        const natural_digit *this_digits = digits_;
-        const natural_digit *v_digits = v.digits_;
-        natural_digit *res_digits = res.digits_;
-
-        /*
-         * Subtract the parts together until we run out of digits in the smaller part.
-         */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < v_sz; i++) {
-            auto a = static_cast<natural_double_digit>(this_digits[i]);
-            auto b = static_cast<natural_double_digit>(v_digits[i]);
-            acc = a - b - acc;
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * Subtract the remaining digits and any carries.
-         */
-        for (std::size_t i = v_sz; i < this_sz; i++) {
-            auto a = static_cast<natural_double_digit>(this_digits[i]);
-            acc = a - acc;
-            res_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * We should not have a carry!
-         */
-        if (C8_UNLIKELY(acc)) {
-            throw not_a_number();
-        }
-
-        /*
-         * Calculate the number of resulting digits.  With subtraction there's no
-         * easy way to estimate this numbers.
-         */
-        while (this_sz--) {
-            if (res_digits[this_sz]) {
-                break;
-            }
-        }
-
-        res.num_digits_ = this_sz + 1;
+        res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_sz, v.digits_, v_sz);
 
         return res;
     }
@@ -456,50 +409,19 @@ namespace c8 {
         std::size_t this_sz = num_digits_;
 
         /*
-         * Is this number zero?  If yes, then it's either an exception or a zero result.
+         * We should not have a negative result!
          */
-        if (C8_UNLIKELY(!this_sz)) {
-            if (C8_LIKELY(!v)) {
-                return *this;
+        if (C8_UNLIKELY(this_sz == 1)) {
+            if (C8_UNLIKELY(digits_[0] < v)) {
+                throw not_a_number();
             }
-
-            throw not_a_number();
+        } else if (C8_UNLIKELY(!this_sz)) {
+            if (C8_UNLIKELY(v)) {
+                throw not_a_number();
+            }
         }
 
-        natural_digit *this_digits = digits_;
-
-        /*
-         * Subtract the digits from this number's lowest digit.
-         */
-        auto a = static_cast<natural_double_digit>(this_digits[0]);
-        natural_double_digit acc = (a - static_cast<natural_double_digit>(v));
-        this_digits[0] = static_cast<natural_digit>(acc);
-        acc = (acc >> natural_digit_bits) & 1;
-
-        /*
-         * Subtract the remaining digits and any carries.
-         */
-        for (std::size_t i = 1; i < this_sz; i++) {
-            acc = static_cast<natural_double_digit>(this_digits[i]) - acc;
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * We should not have a carry!
-         */
-        if (C8_UNLIKELY(acc)) {
-            throw not_a_number();
-        }
-
-        /*
-         * We may have a zero upper digit so account for this.
-         */
-        if (!this_digits[this_sz - 1]) {
-            this_sz--;
-        }
-
-        num_digits_ = this_sz;
+        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_sz, v);
 
         return *this;
     }
@@ -511,49 +433,14 @@ namespace c8 {
         std::size_t this_sz = num_digits_;
         std::size_t v_sz = v.num_digits_;
 
-        natural_digit *this_digits = digits_;
-        const natural_digit *v_digits = v.digits_;
-
         /*
-         * Subtract the parts together until we run out of digits in the smaller part.
+         * We should not have a negative result!
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < v_sz; i++) {
-            auto a = static_cast<natural_double_digit>(this_digits[i]);
-            auto b = static_cast<natural_double_digit>(v_digits[i]);
-            acc = a - b - acc;
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * Subtract the remaining digits and any carries.
-         */
-        for (std::size_t i = v_sz; i < this_sz; i++) {
-            auto a = static_cast<natural_double_digit>(this_digits[i]);
-            acc = a - acc;
-            this_digits[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
-        }
-
-        /*
-         * We should not have a carry!
-         */
-        if (C8_UNLIKELY(acc)) {
+        if (C8_UNLIKELY(*this < v)) {
             throw not_a_number();
         }
 
-        /*
-         * Calculate the number of resulting digits.  With subtraction there's no
-         * easy way to estimate this numbers.
-         */
-        while (this_sz--) {
-            if (this_digits[this_sz]) {
-                break;
-            }
-        }
-
-        num_digits_ = this_sz + 1;
+        num_digits_ = subtract_digit_arrays(digits_, digits_, this_sz, v.digits_, v_sz);
 
         return *this;
     }

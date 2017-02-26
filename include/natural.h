@@ -86,7 +86,7 @@ namespace c8 {
     }
 
     /*
-     * shift a digit array left by a whole number of digits.
+     * Shift a digit array left by a whole number of digits.
      */
     inline auto shift_left_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, std::size_t shift_count) -> void {
         zero_digit_array(dest, shift_count);
@@ -94,7 +94,7 @@ namespace c8 {
     }
 
     /*
-     * shift a digit array left by a whole number of digits.
+     * Shift a digit array left by a whole number of digits.
      */
     inline auto shift_left_digit_array(natural_digit *digits, std::size_t num_digits, std::size_t shift_count) -> void {
         rcopy_digit_array(&digits[shift_count], digits, num_digits);
