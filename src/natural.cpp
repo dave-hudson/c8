@@ -473,7 +473,8 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             res.num_digits_ = new_sz;
-            shift_left_digit_array(res_digits, this_digits, this_sz, trailing_digits);
+            zero_digit_array(res_digits, trailing_digits);
+            copy_digit_array(&res_digits[trailing_digits], this_digits, this_sz);
 
             return res;
         }
@@ -527,7 +528,8 @@ namespace c8 {
          */
         if (C8_UNLIKELY(digit_shift == 0)) {
             num_digits_ = new_sz;
-            shift_left_digit_array(this_digits, this_sz, trailing_digits);
+            rcopy_digit_array(&this_digits[trailing_digits], this_digits, this_sz);
+            zero_digit_array(this_digits, trailing_digits);
 
             return *this;
         }

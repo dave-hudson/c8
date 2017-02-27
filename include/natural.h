@@ -85,22 +85,6 @@ namespace c8 {
         }
     }
 
-    /*
-     * Shift a digit array left by a whole number of digits.
-     */
-    inline auto shift_left_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_src_digits, std::size_t shift_count) -> void {
-        zero_digit_array(dest, shift_count);
-        copy_digit_array(&dest[shift_count], src, num_src_digits);
-    }
-
-    /*
-     * Shift a digit array left by a whole number of digits.
-     */
-    inline auto shift_left_digit_array(natural_digit *digits, std::size_t num_digits, std::size_t shift_count) -> void {
-        rcopy_digit_array(&digits[shift_count], digits, num_digits);
-        zero_digit_array(digits, shift_count);
-    }
-
     class natural {
     public:
         /*
@@ -436,7 +420,8 @@ namespace c8 {
             res.reserve(new_sz);
 
             res.num_digits_ = new_sz;
-            shift_left_digit_array(res.digits_, digits_, this_sz, count);
+            zero_digit_array(res.digits_, count);
+            copy_digit_array(&res.digits_[count], digits_, this_sz);
 
             return res;
         }
@@ -452,7 +437,8 @@ namespace c8 {
             expand(new_sz);
 
             num_digits_ = new_sz;
-            shift_left_digit_array(digits_, this_sz, count);
+            rcopy_digit_array(&digits_[count], digits_, this_sz);
+            zero_digit_array(digits_, count);
 
             return *this;
         }
