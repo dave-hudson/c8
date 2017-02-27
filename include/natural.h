@@ -408,40 +408,6 @@ namespace c8 {
             delete_on_final_ = v.delete_on_final_;
             v.delete_on_final_ = false;
         }
-
-        /*
-         * Shift by an integer number of digits, assuming that our number is non-zero.
-         */
-        auto shift_left_digits(std::size_t count) const -> natural {
-            std::size_t this_sz = num_digits_;
-            std::size_t new_sz = this_sz + count;
-
-            natural res;
-            res.reserve(new_sz);
-
-            res.num_digits_ = new_sz;
-            zero_digit_array(res.digits_, count);
-            copy_digit_array(&res.digits_[count], digits_, this_sz);
-
-            return res;
-        }
-
-        /*
-         * Shift by an integer number of digits, assuming that our number is non-zero,
-         * and write the result back to this number.
-         */
-        auto shift_left_digits_this(std::size_t count) -> natural & {
-            std::size_t this_sz = num_digits_;
-            std::size_t new_sz = this_sz + count;
-
-            expand(new_sz);
-
-            num_digits_ = new_sz;
-            rcopy_digit_array(&digits_[count], digits_, this_sz);
-            zero_digit_array(digits_, count);
-
-            return *this;
-        }
     };
 
     inline auto is_zero(const natural &v) -> bool {
@@ -457,5 +423,5 @@ namespace c8 {
     }
 }
 
-#endif /* __C8_NATURAL_H */
+#endif // __C8_NATURAL_H
 

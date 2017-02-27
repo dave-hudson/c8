@@ -66,5 +66,5 @@ namespace c8 {
     };
 }
 
-#endif /* __C8_EXCEPTION_H */
+#endif //
 

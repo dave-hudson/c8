@@ -108,5 +108,5 @@ namespace c8 {
     }
 }
 
-#endif /* __C8_RATIONAL_H */
+#endif // __C8_RATIONAL_H
 

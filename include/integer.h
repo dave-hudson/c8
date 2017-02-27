@@ -135,5 +135,5 @@ namespace c8 {
     }
 }
 
-#endif /* __C8_INTEGER_H */
+#endif // __C8_INTEGER_H
 
