@@ -8,6 +8,57 @@
 
 namespace c8 {
     /*
+     * Zero an array of digits.
+     */
+    inline auto zero_digit_array(natural_digit *p, std::size_t num_digits) -> void {
+        if (num_digits & 1) {
+            num_digits--;
+            *p++ = 0;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *p++ = 0;
+            *p++ = 0;
+        }
+    }
+
+    /*
+     * Copy (forwards) an array of digits.
+     */
+    inline auto copy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
+        if (num_digits & 1) {
+            num_digits--;
+            *dest++ = *src++;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *dest++ = *src++;
+            *dest++ = *src++;
+        }
+    }
+
+    /*
+     * Reverse copy an array of digits.
+     */
+    inline auto rcopy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
+        dest += num_digits;
+        src += num_digits;
+
+        if (num_digits & 1) {
+            num_digits--;
+            *--dest = *--src;
+        }
+
+        while (num_digits) {
+            num_digits -= 2;
+            *--dest = *--src;
+            *--dest = *--src;
+        }
+    }
+
+    /*
      * Add a single digit to a digit array.
      *
      * Note: It is OK for dest and src to be the same pointer.

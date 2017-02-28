@@ -15,6 +15,79 @@ namespace c8 {
     };
 
     /*
+     * Reserve a number of digits in this natural number.
+     */
+    inline auto natural::reserve(std::size_t new_digits) -> void {
+        if (C8_LIKELY(digits_size_ >= new_digits)) {
+            return;
+        }
+
+        digits_size_ = new_digits;
+        delete_on_final_ = true;
+        digits_ = new natural_digit[new_digits];
+    }
+
+    /*
+     * Expand the number of digits in this natural number.
+     */
+    inline auto natural::expand(std::size_t new_digits) -> void {
+        if (C8_LIKELY(digits_size_ >= new_digits)) {
+            return;
+        }
+
+        auto d = new natural_digit[new_digits];
+        copy_digit_array(d, digits_, num_digits_);
+
+        delete_digits();
+        digits_size_ = new_digits;
+        delete_on_final_ = true;
+        digits_ = d;
+    }
+
+    /*
+     * Copy the contents of a natural number into this one.
+     */
+    auto natural::copy_digits(const natural &v) -> void {
+        digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
+        delete_on_final_ = false;
+        digits_ = small_digits_;
+        num_digits_ = v.num_digits_;
+        if (C8_UNLIKELY(!num_digits_)) {
+            return;
+        }
+
+        reserve(v.num_digits_);
+        copy_digit_array(digits_, v.digits_, num_digits_);
+    }
+
+    /*
+     * Steal the contents of a natural number into this one.
+     */
+    auto natural::steal_digits(natural &v) -> void {
+        /*
+         * Are we currently using the default small buffer?  If we are then we
+         * need to deep copy it.
+         */
+        if (C8_LIKELY(v.digits_ == v.small_digits_)) {
+            copy_digit_array(small_digits_, v.small_digits_, v.num_digits_);
+            digits_ = small_digits_;
+        } else {
+            /*
+             * We aren't using the default buffer so we can shallow copy instead.
+             */
+            digits_ = v.digits_;
+        }
+
+        num_digits_ = v.num_digits_;
+        v.num_digits_ = 0;
+        digits_size_ = v.digits_size_;
+        v.digits_size_ = sizeof(v.small_digits_) / sizeof(natural_digit);
+        v.digits_ = v.small_digits_;
+        delete_on_final_ = v.delete_on_final_;
+        v.delete_on_final_ = false;
+    }
+
+    /*
      * Construct a natural number from an unsigned long long integer.
      */
     natural::natural(unsigned long long v) {

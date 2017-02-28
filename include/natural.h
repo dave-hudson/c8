@@ -34,57 +34,6 @@ namespace c8 {
 
     const std::size_t natural_digit_bits = 8 * sizeof(natural_digit);
 
-    /*
-     * Zero an array of digits.
-     */
-    auto inline zero_digit_array(natural_digit *p, std::size_t num_digits) -> void {
-        if (num_digits & 1) {
-            num_digits--;
-            *p++ = 0;
-        }
-
-        while (num_digits) {
-            num_digits -= 2;
-            *p++ = 0;
-            *p++ = 0;
-        }
-    }
-
-    /*
-     * Copy an array of digits.
-     */
-    auto inline copy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
-        if (num_digits & 1) {
-            num_digits--;
-            *dest++ = *src++;
-        }
-
-        while (num_digits) {
-            num_digits -= 2;
-            *dest++ = *src++;
-            *dest++ = *src++;
-        }
-    }
-
-    /*
-     * Reverse copy an array of digits.
-     */
-    auto inline rcopy_digit_array(natural_digit *dest, const natural_digit *src, std::size_t num_digits) -> void {
-        dest += num_digits;
-        src += num_digits;
-
-        if (num_digits & 1) {
-            num_digits--;
-            *--dest = *--src;
-        }
-
-        while (num_digits) {
-            num_digits -= 2;
-            *--dest = *--src;
-            *--dest = *--src;
-        }
-    }
-
     class natural {
     public:
         /*
@@ -327,6 +276,11 @@ namespace c8 {
         bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
         natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
+        auto reserve(std::size_t new_digits) -> void;
+        auto expand(std::size_t new_digits) -> void;
+        auto copy_digits(const natural &v) -> void;
+        auto steal_digits(natural &v) -> void;
+
         /*
          * Delete digits array if it is marked for deletion.
          */
@@ -334,79 +288,6 @@ namespace c8 {
             if (C8_UNLIKELY(delete_on_final_)) {
                 delete[] digits_;
             }
-        }
-
-        /*
-         * Reserve a number of digits in this natural number.
-         */
-        auto reserve(std::size_t new_digits) -> void {
-            if (C8_LIKELY(digits_size_ >= new_digits)) {
-                return;
-            }
-
-            digits_size_ = new_digits;
-            delete_on_final_ = true;
-            digits_ = new natural_digit[new_digits];
-        }
-
-        /*
-         * Expand the number of digits in this natural number.
-         */
-        auto expand(std::size_t new_digits) -> void {
-            if (C8_LIKELY(digits_size_ >= new_digits)) {
-                return;
-            }
-
-            auto d = new natural_digit[new_digits];
-            copy_digit_array(d, digits_, num_digits_);
-
-            delete_digits();
-            digits_size_ = new_digits;
-            delete_on_final_ = true;
-            digits_ = d;
-        }
-
-        /*
-         * Copy the contents of a natural number into this one.
-         */
-        auto copy_digits(const natural &v) -> void {
-            digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
-            delete_on_final_ = false;
-            digits_ = small_digits_;
-            num_digits_ = v.num_digits_;
-            if (C8_UNLIKELY(!num_digits_)) {
-                return;
-            }
-
-            reserve(v.num_digits_);
-            copy_digit_array(digits_, v.digits_, num_digits_);
-        }
-
-        /*
-         * Steal the contents of a natural number into this one.
-         */
-        auto steal_digits(natural &v) -> void {
-            /*
-             * Are we currently using the default small buffer?  If we are then we
-             * need to deep copy it.
-             */
-            if (C8_LIKELY(v.digits_ == v.small_digits_)) {
-                copy_digit_array(small_digits_, v.small_digits_, v.num_digits_);
-                digits_ = small_digits_;
-            } else {
-                /*
-                 * We aren't using the default buffer so we can shallow copy instead.
-                 */
-                digits_ = v.digits_;
-            }
-
-            num_digits_ = v.num_digits_;
-            v.num_digits_ = 0;
-            digits_size_ = v.digits_size_;
-            v.digits_size_ = sizeof(v.small_digits_) / sizeof(natural_digit);
-            v.digits_ = v.small_digits_;
-            delete_on_final_ = v.delete_on_final_;
-            v.delete_on_final_ = false;
         }
     };
 
