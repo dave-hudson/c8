@@ -62,10 +62,10 @@ namespace c8 {
 
         if (exp < 0) {
             num_ = i;
-            denom_ = natural(1) << static_cast<unsigned int>(-exp);
+            denom_ = integer(1) << static_cast<unsigned int>(-exp);
         } else {
             num_ = i << static_cast<unsigned int>(exp);
-            denom_ = natural(1);
+            denom_ = integer(1);
         }
 
         normalize();
@@ -88,7 +88,7 @@ namespace c8 {
             num_ = integer(v);
         } else {
             num_ = integer(v.substr(0, pos));
-            denom_ = natural(v.substr(pos + 1));
+            denom_ = integer(v.substr(pos + 1));
         }
 
         normalize();
@@ -100,7 +100,7 @@ namespace c8 {
     auto rational::operator +(const rational &v) const -> rational {
         rational res;
 
-        res.num_ = (num_ * integer(v.denom_)) + (integer(denom_) * v.num_);
+        res.num_ = (num_ * v.denom_) + (denom_ * v.num_);
         res.denom_ = denom_ * v.denom_;
 
         res.normalize();
@@ -114,7 +114,7 @@ namespace c8 {
     auto rational::operator -(const rational &v) const -> rational {
         rational res;
 
-        res.num_ = (num_ * integer(v.denom_)) - (integer(denom_) * v.num_);
+        res.num_ = (num_ * v.denom_) - (denom_ * v.num_);
         res.denom_ = denom_ * v.denom_;
 
         res.normalize();
@@ -149,13 +149,8 @@ namespace c8 {
             throw c8::divide_by_zero();
         }
 
-        res.num_ = num_ * integer(v.denom_);
-        integer d = integer(denom_) * v.num_;
-        if (is_negative(d)) {
-            res.num_ = -res.num_;
-        }
-
-        res.denom_ = abs(d);
+        res.num_ = num_ * v.denom_;
+        res.denom_ = denom_ * v.num_;
 
         res.normalize();
 
@@ -166,8 +161,8 @@ namespace c8 {
      * Compare a rational with this one.
      */
     auto rational::compare(const rational &v) const -> comparison {
-        integer lhs = num_ * integer(v.denom_);
-        integer rhs = v.num_ * integer(denom_);
+        integer lhs = num_ * v.denom_;
+        integer rhs = v.num_ * denom_;
 
         return lhs.compare(rhs);
     }
@@ -176,10 +171,15 @@ namespace c8 {
      * Normalize the data.
      */
     auto rational::normalize() -> void {
+        if (C8_UNLIKELY(is_negative(denom_))) {
+            num_ = -num_;
+            denom_ = -denom_;
+        }
+
         /*
          * Find the GCD of the numerator and denominator.
          */
-        natural g = gcd(abs(num_), denom_);
+        integer g = gcd(num_, denom_);
         num_ /= g;
         denom_ /= g;
     }
@@ -202,7 +202,7 @@ namespace c8 {
          * want our division operation to be too expensive either, so one of the
          * other things we can do is scale our denominator down.
          */
-        natural d = denom_;
+        natural d = abs(denom_);
         int eshift = 0;
         unsigned int dbits = d.count_bits();
         if (dbits > 52) {

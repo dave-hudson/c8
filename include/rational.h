@@ -17,11 +17,11 @@ namespace c8 {
             denom_ = 1;
         }
 
-        rational(long long n, unsigned long long d = 1) : num_(n), denom_(d) {
+        rational(long long n, long long d = 1) : num_(n), denom_(d) {
             normalize();
         }
 
-        rational(integer n, natural d) : num_(n), denom_(d) {
+        rational(integer n, integer d) : num_(n), denom_(d) {
             normalize();
         }
 
@@ -41,7 +41,7 @@ namespace c8 {
         auto to_double() const -> double;
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
-        auto to_parts() const -> std::pair<integer, natural> {
+        auto to_parts() const -> std::pair<integer, integer> {
             return std::make_pair(num_, denom_);
         }
 
@@ -94,7 +94,7 @@ namespace c8 {
 
     private:
         integer num_;                       // Numerator
-        natural denom_;                     // Denominator
+        integer denom_;                     // Denominator
 
         auto normalize() -> void;
     };
@@ -103,7 +103,7 @@ namespace c8 {
         return v.to_double();
     }
 
-    inline auto to_parts(const rational &v) -> std::pair<integer, natural> {
+    inline auto to_parts(const rational &v) -> std::pair<integer, integer> {
         return v.to_parts();
     }
 }
