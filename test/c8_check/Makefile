@@ -6,12 +6,16 @@ BASE_PATH := ../..
 #
 # Define the target files.
 #
-TARGET_BIN := natural_check
+TARGET_BIN := c8_check
 
 #
 # Define the source files.
 #
-SRCS := natural_check.cpp
+SRCS := \
+    c8_check.cpp \
+    integer_check.cpp \
+    natural_check.cpp \
+    rational_check.cpp
 
 #
 # Libraries.

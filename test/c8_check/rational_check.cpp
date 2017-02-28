@@ -1,79 +1,15 @@
 /*
- * rational_check.c
+ * rational_check.cpp
  */
-#include <algorithm>
-#include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <sstream>
-#include <unistd.h>
-
 #include <rational.h>
 
-/*
- * Result class.
- */
-class result {
-public:
-    result(const std::string &name) {
-        name_ = name;
-    }
-
-    auto get_name() -> const std::string & {
-        return name_;
-    }
-
-    auto get_expected() -> const std::string & {
-        return expected_;
-    }
-
-    auto get_pass() -> bool {
-        return pass_;
-    }
-
-    auto set_pass(bool p) -> void {
-        pass_ = p;
-    }
-
-    auto check_pass(const std::string &expected) -> bool {
-        expected_ = expected;
-        pass_ = (expected == s_.str());
-        return pass_;
-    }
-
-    auto get_stream() -> std::stringstream & {
-        return s_;
-    }
-
-    auto start_clock() -> void {
-        start_time_ = std::chrono::high_resolution_clock::now();
-    }
-
-    auto stop_clock() -> void {
-        end_time_ = std::chrono::high_resolution_clock::now();
-    }
-
-    auto get_elapsed() -> std::chrono::high_resolution_clock::duration {
-        return end_time_ - start_time_;
-    }
-
-private:
-    std::string name_;                  // Test name
-    std::string expected_;              // Expected result
-    bool pass_;                         // Did this test pass?
-    std::chrono::high_resolution_clock::time_point start_time_;
-                                        // Start time
-    std::chrono::high_resolution_clock::time_point end_time_;
-                                        // End time
-    std::stringstream s_;               // Output string stream
-};
+#include "result.h"
 
 /*
  * Test Constructors.
  */
-auto test_construct_0() -> result {
-    result r("cons 0");
+auto test_rational_construct_0() -> result {
+    result r("rat cons 0");
 
     r.start_clock();
     c8::rational v(0, 1);
@@ -87,8 +23,8 @@ auto test_construct_0() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_1() -> result {
-    result r("cons 1");
+auto test_rational_construct_1() -> result {
+    result r("rat cons 1");
 
     r.start_clock();
     c8::rational v(1024, 384);
@@ -102,8 +38,8 @@ auto test_construct_1() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_2() -> result {
-    result r("cons 2");
+auto test_rational_construct_2() -> result {
+    result r("rat cons 2");
 
     r.start_clock();
     c8::rational v(-1313, 39);
@@ -117,8 +53,8 @@ auto test_construct_2() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_3() -> result {
-    result r("cons 3");
+auto test_rational_construct_3() -> result {
+    result r("rat cons 3");
 
     r.start_clock();
     c8::rational v("-99999187951591759827592578257927598275980/25");
@@ -132,8 +68,8 @@ auto test_construct_3() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_4() -> result {
-    result r("cons 4");
+auto test_rational_construct_4() -> result {
+    result r("rat cons 4");
 
     r.start_clock();
     c8::rational v("2/5154875894574578457805710875418754097512875120572105234652346059");
@@ -147,8 +83,8 @@ auto test_construct_4() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_5() -> result {
-    result r("cons 5");
+auto test_rational_construct_5() -> result {
+    result r("rat cons 5");
 
     r.start_clock();
     c8::rational v("0x2/0x2000000000000000000000000000000000000000000000000000000000000000");
@@ -162,8 +98,8 @@ auto test_construct_5() -> result {
 /*
  * Attempt to construct with an invalid octal string.
  */
-auto test_construct_6() -> result {
-    result r("cons 6");
+auto test_rational_construct_6() -> result {
+    result r("rat cons 6");
 
     r.start_clock();
     try {
@@ -190,8 +126,8 @@ auto test_construct_6() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_7() -> result {
-    result r("cons 7");
+auto test_rational_construct_7() -> result {
+    result r("rat cons 7");
 
     r.start_clock();
     c8::rational v(1.125);
@@ -205,8 +141,8 @@ auto test_construct_7() -> result {
 /*
  * Test Constructors.
  */
-auto test_construct_8() -> result {
-    result r("cons 8");
+auto test_rational_construct_8() -> result {
+    result r("rat cons 8");
 
     r.start_clock();
     c8::rational v(-1.0/1048576);
@@ -220,8 +156,8 @@ auto test_construct_8() -> result {
 /*
  * Attempt to construct with an invalid rational using a double precision infinity.
  */
-auto test_construct_9() -> result {
-    result r("cons 9");
+auto test_rational_construct_9() -> result {
+    result r("rat cons 9");
 
     r.start_clock();
     try {
@@ -248,8 +184,8 @@ auto test_construct_9() -> result {
 /*
  * Construct a rational using an imprecise double.
  */
-auto test_construct_10() -> result {
-    result r("cons 10");
+auto test_rational_construct_10() -> result {
+    result r("rat cons 10");
 
     r.start_clock();
     c8::rational v(0.1);
@@ -263,8 +199,8 @@ auto test_construct_10() -> result {
 /*
  * Add two positive values.
  */
-auto test_add_0() -> result {
-    result r("add 0");
+auto test_rational_add_0() -> result {
+    result r("rat add 0");
     c8::rational a0("31/3");
     c8::rational a1("42/3");
 
@@ -280,8 +216,8 @@ auto test_add_0() -> result {
 /*
  * Add a positive and a negative value.
  */
-auto test_add_1() -> result {
-    result r("add 1");
+auto test_rational_add_1() -> result {
+    result r("rat add 1");
     c8::rational a0("42/13");
     c8::rational a1("-1/2");
 
@@ -297,8 +233,8 @@ auto test_add_1() -> result {
 /*
  * Add a positive and a negative value that gives a negative result
  */
-auto test_add_2() -> result {
-    result r("add 2");
+auto test_rational_add_2() -> result {
+    result r("rat add 2");
     c8::rational a0("12345678/287923");
     c8::rational a1("-34738957485741895748957485743809574812345678/287923");
 
@@ -314,8 +250,8 @@ auto test_add_2() -> result {
 /*
  * Add two very large negative values.
  */
-auto test_add_3() -> result {
-    result r("add 3");
+auto test_rational_add_3() -> result {
+    result r("rat add 3");
     c8::rational a0("-10000000000000000000000000000000000000000000000000000000000000000008789/3");
     c8::rational a1("-88888880000000000000000000000000000000000000000000000000000000999992000/31");
 
@@ -331,8 +267,8 @@ auto test_add_3() -> result {
 /*
  * Subtract a 1 digit value from another 1 digit value.
  */
-auto test_subtract_0() -> result {
-    result r("sub 0");
+auto test_rational_subtract_0() -> result {
+    result r("rat sub 0");
     c8::rational s0(52, 3);
     c8::rational s1(2, 4);
 
@@ -348,8 +284,8 @@ auto test_subtract_0() -> result {
 /*
  * Subtract a large negative value from another large negative value.
  */
-auto test_subtract_1() -> result {
-    result r("sub 1");
+auto test_rational_subtract_1() -> result {
+    result r("rat sub 1");
     c8::rational s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897/3");
     c8::rational s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754/3");
 
@@ -365,8 +301,8 @@ auto test_subtract_1() -> result {
 /*
  * Subtract a large negative value from a large value.
  */
-auto test_subtract_2() -> result {
-    result r("sub 2");
+auto test_rational_subtract_2() -> result {
+    result r("rat sub 2");
     c8::rational s0("10000000000000000000000000000000000000000000000000000000000000000000000/707");
     c8::rational s1("-10000000000000000000000000000000000000000000000000000000000000000000000/7");
 
@@ -382,8 +318,8 @@ auto test_subtract_2() -> result {
 /*
  * Subtract a large value from a smaller one.
  */
-auto test_subtract_3() -> result {
-    result r("sub 3");
+auto test_rational_subtract_3() -> result {
+    result r("rat sub 3");
     c8::rational s0(2, 31459);
     c8::rational s1(52, 31459);
 
@@ -399,8 +335,8 @@ auto test_subtract_3() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0a() -> result {
-    result r("comp 0a");
+auto test_rational_compare_0a() -> result {
+    result r("rat comp 0a");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -416,8 +352,8 @@ auto test_compare_0a() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0b() -> result {
-    result r("comp 0b");
+auto test_rational_compare_0b() -> result {
+    result r("rat comp 0b");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -433,8 +369,8 @@ auto test_compare_0b() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0c() -> result {
-    result r("comp 0c");
+auto test_rational_compare_0c() -> result {
+    result r("rat comp 0c");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -450,8 +386,8 @@ auto test_compare_0c() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0d() -> result {
-    result r("comp 0d");
+auto test_rational_compare_0d() -> result {
+    result r("rat comp 0d");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -467,8 +403,8 @@ auto test_compare_0d() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0e() -> result {
-    result r("comp 0e");
+auto test_rational_compare_0e() -> result {
+    result r("rat comp 0e");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -484,8 +420,8 @@ auto test_compare_0e() -> result {
 /*
  * Compare two positive values.
  */
-auto test_compare_0f() -> result {
-    result r("comp 0f");
+auto test_rational_compare_0f() -> result {
+    result r("rat comp 0f");
     c8::rational co0(2, 303);
     c8::rational co1(1, 303);
 
@@ -501,8 +437,8 @@ auto test_compare_0f() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1a() -> result {
-    result r("comp 1a");
+auto test_rational_compare_1a() -> result {
+    result r("rat comp 1a");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -518,8 +454,8 @@ auto test_compare_1a() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1b() -> result {
-    result r("comp 1b");
+auto test_rational_compare_1b() -> result {
+    result r("rat comp 1b");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -535,8 +471,8 @@ auto test_compare_1b() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1c() -> result {
-    result r("comp 1c");
+auto test_rational_compare_1c() -> result {
+    result r("rat comp 1c");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -552,8 +488,8 @@ auto test_compare_1c() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1d() -> result {
-    result r("comp 1d");
+auto test_rational_compare_1d() -> result {
+    result r("rat comp 1d");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -569,8 +505,8 @@ auto test_compare_1d() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1e() -> result {
-    result r("comp 1e");
+auto test_rational_compare_1e() -> result {
+    result r("rat comp 1e");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -586,8 +522,8 @@ auto test_compare_1e() -> result {
 /*
  * Compare a negative value with a positive one.
  */
-auto test_compare_1f() -> result {
-    result r("comp 1f");
+auto test_rational_compare_1f() -> result {
+    result r("rat comp 1f");
     c8::rational co0(-0x987654321LL, 2787539);
     c8::rational co1(1, 1);
 
@@ -603,8 +539,8 @@ auto test_compare_1f() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2a() -> result {
-    result r("comp 2a");
+auto test_rational_compare_2a() -> result {
+    result r("rat comp 2a");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -620,8 +556,8 @@ auto test_compare_2a() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2b() -> result {
-    result r("comp 2b");
+auto test_rational_compare_2b() -> result {
+    result r("rat comp 2b");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -637,8 +573,8 @@ auto test_compare_2b() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2c() -> result {
-    result r("comp 2c");
+auto test_rational_compare_2c() -> result {
+    result r("rat comp 2c");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -654,8 +590,8 @@ auto test_compare_2c() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2d() -> result {
-    result r("comp 2d");
+auto test_rational_compare_2d() -> result {
+    result r("rat comp 2d");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -671,8 +607,8 @@ auto test_compare_2d() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2e() -> result {
-    result r("comp 2e");
+auto test_rational_compare_2e() -> result {
+    result r("rat comp 2e");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -688,8 +624,8 @@ auto test_compare_2e() -> result {
 /*
  * Compare a positive value with a negative one.
  */
-auto test_compare_2f() -> result {
-    result r("comp 2f");
+auto test_rational_compare_2f() -> result {
+    result r("rat comp 2f");
     c8::rational co0(1, 32787158);
     c8::rational co1(-0x987654321LL, 3);
 
@@ -705,8 +641,8 @@ auto test_compare_2f() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3a() -> result {
-    result r("comp 3a");
+auto test_rational_compare_3a() -> result {
+    result r("rat comp 3a");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -722,8 +658,8 @@ auto test_compare_3a() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3b() -> result {
-    result r("comp 3b");
+auto test_rational_compare_3b() -> result {
+    result r("rat comp 3b");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -739,8 +675,8 @@ auto test_compare_3b() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3c() -> result {
-    result r("comp 3c");
+auto test_rational_compare_3c() -> result {
+    result r("rat comp 3c");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -756,8 +692,8 @@ auto test_compare_3c() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3d() -> result {
-    result r("comp 3d");
+auto test_rational_compare_3d() -> result {
+    result r("rat comp 3d");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -773,8 +709,8 @@ auto test_compare_3d() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3e() -> result {
-    result r("comp 3e");
+auto test_rational_compare_3e() -> result {
+    result r("rat comp 3e");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -790,8 +726,8 @@ auto test_compare_3e() -> result {
 /*
  * Compare two negative values.
  */
-auto test_compare_3f() -> result {
-    result r("comp 3f");
+auto test_rational_compare_3f() -> result {
+    result r("rat comp 3f");
     c8::rational co0(-0x2f987654321LL);
     c8::rational co1(-0x2f987654321LL);
 
@@ -807,8 +743,8 @@ auto test_compare_3f() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_0() -> result {
-    result r("mul 0");
+auto test_rational_multiply_0() -> result {
+    result r("rat mul 0");
     c8::rational mu0(1, 50);
     c8::rational mu1(1, 25);
 
@@ -824,8 +760,8 @@ auto test_multiply_0() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_1() -> result {
-    result r("mul 1");
+auto test_rational_multiply_1() -> result {
+    result r("rat mul 1");
     c8::rational mu0(1000000000000000000LL, 7);
     c8::rational mu1("-9999999999999999999/999");
 
@@ -841,8 +777,8 @@ auto test_multiply_1() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_2() -> result {
-    result r("mul 2");
+auto test_rational_multiply_2() -> result {
+    result r("rat mul 2");
     c8::rational mu0(-0x3000000000000000LL, 1);
     c8::rational mu1(0x4000000000000000LL, 3);
 
@@ -858,8 +794,8 @@ auto test_multiply_2() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_3() -> result {
-    result r("mul 3");
+auto test_rational_multiply_3() -> result {
+    result r("rat mul 3");
     c8::rational mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
     c8::rational mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
 
@@ -875,8 +811,8 @@ auto test_multiply_3() -> result {
 /*
  * Test division.
  */
-auto test_divide_0() -> result {
-    result r("div 0");
+auto test_rational_divide_0() -> result {
+    result r("rat div 0");
     c8::rational d0(1000000000000000000LL,7);
     c8::rational d1(99999999999999999LL,7);
 
@@ -889,8 +825,8 @@ auto test_divide_0() -> result {
     return r;
 }
 
-auto test_divide_1() -> result {
-    result r("div 1");
+auto test_rational_divide_1() -> result {
+    result r("rat div 1");
     c8::rational d0("7829238792751875818917817519758789749174743847389742871867617465710657162/39");
     c8::rational d1(-99999999999999999LL, 39);
 
@@ -903,8 +839,8 @@ auto test_divide_1() -> result {
     return r;
 }
 
-auto test_divide_2() -> result {
-    result r("div 2");
+auto test_rational_divide_2() -> result {
+    result r("rat div 2");
     c8::rational d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000/2323978529");
     c8::rational d1("0x10000000000000001000000000000000100000000/0x17");
 
@@ -917,8 +853,8 @@ auto test_divide_2() -> result {
     return r;
 }
 
-auto test_divide_3() -> result {
-    result r("div 3");
+auto test_rational_divide_3() -> result {
+    result r("rat div 3");
 
     /*
      * Divide by zero.  This will throw an exception!
@@ -947,8 +883,8 @@ auto test_divide_3() -> result {
     return r;
 }
 
-auto test_divide_4() -> result {
-    result r("div 4");
+auto test_rational_divide_4() -> result {
+    result r("rat div 4");
     c8::rational d0(-1000000000000000000LL,23923758279);
     c8::rational d1(-99999999999999999LL,28279753);
 
@@ -964,8 +900,8 @@ auto test_divide_4() -> result {
 /*
  * Test to_double functionality.
  */
-auto test_to_double_0() -> result {
-    result r("todouble 0");
+auto test_rational_to_double_0() -> result {
+    result r("rat todouble 0");
     c8::rational v(0, 1);
 
     r.start_clock();
@@ -980,8 +916,8 @@ auto test_to_double_0() -> result {
 /*
  * Test to_double functionality.
  */
-auto test_to_double_1() -> result {
-    result r("todouble 1");
+auto test_rational_to_double_1() -> result {
+    result r("rat todouble 1");
     c8::rational v(-3000, 59);
 
     r.start_clock();
@@ -996,8 +932,8 @@ auto test_to_double_1() -> result {
 /*
  * Test to_double functionality.
  */
-auto test_to_double_2() -> result {
-    result r("todouble 2");
+auto test_rational_to_double_2() -> result {
+    result r("rat todouble 2");
     c8::rational v("47895748574857485728747548237543205782573485472759047548275024574207/389275892758257298");
 
     r.start_clock();
@@ -1012,8 +948,8 @@ auto test_to_double_2() -> result {
 /*
  * Test to_double functionality.
  */
-auto test_to_double_3() -> result {
-    result r("todouble 3");
+auto test_rational_to_double_3() -> result {
+    result r("rat todouble 3");
     c8::rational v(0.1);
 
     r.start_clock();
@@ -1028,8 +964,8 @@ auto test_to_double_3() -> result {
 /*
  * Test to_double functionality.
  */
-auto test_to_double_4() -> result {
-    result r("todouble 4");
+auto test_rational_to_double_4() -> result {
+    result r("rat todouble 4");
 
     c8::integer i = 1;
     c8::rational v(i << 2048, c8::natural(1));
@@ -1058,8 +994,8 @@ auto test_to_double_4() -> result {
 /*
  * Test to_parts functionality.
  */
-auto test_to_parts_0() -> result {
-    result r("toparts 0");
+auto test_rational_to_parts_0() -> result {
+    result r("rat toparts 0");
     c8::rational v(0, 1);
 
     r.start_clock();
@@ -1074,8 +1010,8 @@ auto test_to_parts_0() -> result {
 /*
  * Test to_parts functionality.
  */
-auto test_to_parts_1() -> result {
-    result r("toparts 1");
+auto test_rational_to_parts_1() -> result {
+    result r("rat toparts 1");
     c8::rational v(-3000, 58);
 
     r.start_clock();
@@ -1090,8 +1026,8 @@ auto test_to_parts_1() -> result {
 /*
  * Test printing.
  */
-auto test_print_0() -> result {
-    result r("prn 0");
+auto test_rational_print_0() -> result {
+    result r("rat prn 0");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1105,8 +1041,8 @@ auto test_print_0() -> result {
 /*
  * Test printing.
  */
-auto test_print_1() -> result {
-    result r("prn 1");
+auto test_rational_print_1() -> result {
+    result r("rat prn 1");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1120,8 +1056,8 @@ auto test_print_1() -> result {
 /*
  * Test printing.
  */
-auto test_print_2() -> result {
-    result r("prn 2");
+auto test_rational_print_2() -> result {
+    result r("rat prn 2");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1135,8 +1071,8 @@ auto test_print_2() -> result {
 /*
  * Test printing.
  */
-auto test_print_3() -> result {
-    result r("prn 3");
+auto test_rational_print_3() -> result {
+    result r("rat prn 3");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1150,8 +1086,8 @@ auto test_print_3() -> result {
 /*
  * Test printing.
  */
-auto test_print_4() -> result {
-    result r("prn 4");
+auto test_rational_print_4() -> result {
+    result r("rat prn 4");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1165,8 +1101,8 @@ auto test_print_4() -> result {
 /*
  * Test printing.
  */
-auto test_print_5() -> result {
-    result r("prn 5");
+auto test_rational_print_5() -> result {
+    result r("rat prn 5");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1180,8 +1116,8 @@ auto test_print_5() -> result {
 /*
  * Test printing.
  */
-auto test_print_6() -> result {
-    result r("prn 6");
+auto test_rational_print_6() -> result {
+    result r("rat prn 6");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1195,8 +1131,8 @@ auto test_print_6() -> result {
 /*
  * Test printing.
  */
-auto test_print_7() -> result {
-    result r("prn 7");
+auto test_rational_print_7() -> result {
+    result r("rat prn 7");
     c8::rational v("-0xfedcfedc0123456789/65689");
 
     r.start_clock();
@@ -1205,173 +1141,5 @@ auto test_print_7() -> result {
 
     r.check_pass("-0775563766700044321263611/0200231");
     return r;
-}
-
-/*
- * Report the usage for this test program.
- */
-static auto usage(const char *name) -> void {
-    std::cerr << "usage: " << name << " [OPTIONS]\n\n";
-    std::cerr << "Options\n";
-    std::cerr << "  -v  Verbose reporting (optional)\n\n";
-}
-
-typedef result (*test)();
-
-/*
- * List of tests to run.
- */
-test tests[] = {
-    test_construct_0,
-    test_construct_1,
-    test_construct_2,
-    test_construct_3,
-    test_construct_4,
-    test_construct_5,
-    test_construct_6,
-    test_construct_7,
-    test_construct_8,
-    test_construct_9,
-    test_construct_10,
-    test_add_0,
-    test_add_1,
-    test_add_2,
-    test_add_3,
-    test_subtract_0,
-    test_subtract_1,
-    test_subtract_2,
-    test_subtract_3,
-    test_compare_0a,
-    test_compare_0b,
-    test_compare_0c,
-    test_compare_0d,
-    test_compare_0e,
-    test_compare_0f,
-    test_compare_1a,
-    test_compare_1b,
-    test_compare_1c,
-    test_compare_1d,
-    test_compare_1e,
-    test_compare_1f,
-    test_compare_2a,
-    test_compare_2b,
-    test_compare_2c,
-    test_compare_2d,
-    test_compare_2e,
-    test_compare_2f,
-    test_compare_3a,
-    test_compare_3b,
-    test_compare_3c,
-    test_compare_3d,
-    test_compare_3e,
-    test_compare_3f,
-    test_multiply_0,
-    test_multiply_1,
-    test_multiply_2,
-    test_multiply_3,
-    test_divide_0,
-    test_divide_1,
-    test_divide_2,
-    test_divide_3,
-    test_divide_4,
-    test_to_double_0,
-    test_to_double_1,
-    test_to_double_2,
-    test_to_double_3,
-    test_to_double_4,
-    test_to_parts_0,
-    test_to_parts_1,
-    test_print_0,
-    test_print_1,
-    test_print_2,
-    test_print_3,
-    test_print_4,
-    test_print_5,
-    test_print_6,
-    test_print_7,
-    nullptr
-};
-
-/*
- * Entry point.
- */
-auto main(int argc, char **argv) -> int {
-    bool verbose = false;
-    int loops = 1;
-
-    /*
-     * Parse the command line options.
-     */
-    int ch;
-    while ((ch = getopt(argc, argv, "bv?")) != -1) {
-        switch (ch) {
-        case 'b':
-            loops = 10000;
-            break;
-
-        case 'v':
-            verbose = true;
-            break;
-
-        case '?':
-            usage(argv[0]);
-            exit(-1);
-        }
-    }
-
-    /*
-     * Run the tests.
-     */
-    bool res = true;
-
-    test *p = tests;
-    while (*p) {
-        std::vector<std::chrono::nanoseconds> duration;
-
-        /*
-         * Run one test every time.  This gives the pass/fail status.
-         */
-        bool rp = true;
-        result r = (*p)();
-        rp = r.get_pass();
-        duration.push_back(r.get_elapsed());
-
-        /*
-         * Run more tests if we're running a benchmark.
-         */
-        for (auto i = 1; i < loops; i++) {
-            result l = (*p)();
-            duration.push_back(l.get_elapsed());
-        }
-
-        /*
-         * If we're being verbose then print the results.  We print the 20th percentile result if
-         * this is a benchmark test.  Lower than the 10th percentile we can see some rather
-         * odd timing results and greater than the 50th percentile we can run into problems
-         * related to scheduling.  The 20th percentile number is an empirical choice.
-         */
-        if (verbose) {
-            std::nth_element(duration.begin(), duration.begin() + (duration.size() / 5), duration.end());
-            std::cout << std::setw(10) << std::left << r.get_name() << " | ";
-            std::cout << std::setw(10) << std::right << duration[duration.size() / 5].count() << " | " << (rp ? "pass" : "FAIL");
-            std::cout << " | " << r.get_stream().str();
-            if (!rp) {
-                std::cout << " (" << r.get_expected() << ')';
-            }
-
-            std::cout << '\n';
-        }
-
-        res &= rp;
-        p++;
-    }
-
-    if (!res) {
-        std::cout << "TESTS FAILED!\n";
-        exit(-1);
-    }
-
-    std::cout << "All tests passed\n";
-    return 0;
 }
 

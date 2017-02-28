@@ -1,78 +1,16 @@
 /*
- * natural_check.c
+ * natural_check.cpp
  */
-#include <algorithm>
-#include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <unistd.h>
-
 #include <natural.h>
 
-/*
- * Result class.
- */
-class result {
-public:
-    result(const std::string &name) {
-        name_ = name;
-    }
-
-    auto get_name() -> const std::string & {
-        return name_;
-    }
-
-    auto get_expected() -> const std::string & {
-        return expected_;
-    }
-
-    auto get_pass() -> bool {
-        return pass_;
-    }
-
-    auto set_pass(bool p) -> void {
-        pass_ = p;
-    }
-
-    auto check_pass(const std::string &expected) -> bool {
-        expected_ = expected;
-        pass_ = (expected == s_.str());
-        return pass_;
-    }
-
-    auto get_stream() -> std::stringstream & {
-        return s_;
-    }
-
-    auto start_clock() -> void {
-        start_time_ = std::chrono::high_resolution_clock::now();
-    }
-
-    auto stop_clock() -> void {
-        end_time_ = std::chrono::high_resolution_clock::now();
-    }
-
-    auto get_elapsed() -> std::chrono::high_resolution_clock::duration {
-        return end_time_ - start_time_;
-    }
-
-private:
-    std::string name_;                  // Test name
-    std::string expected_;              // Expected result
-    bool pass_;                         // Did this test pass?
-    std::chrono::high_resolution_clock::time_point start_time_;
-                                        // Start time
-    std::chrono::high_resolution_clock::time_point end_time_;
-                                        // End time
-    std::stringstream s_;               // Output string stream
-};
+#include "result.h"
+#include "natural_check.h"
 
 /*
  * Construct with a long integer 0.
  */
-auto test_construct_0() -> result {
-    result r("cons 0");
+auto test_natural_construct_0() -> result {
+    result r("nat cons 0");
 
     r.start_clock();
     c8::natural v(0);
@@ -86,8 +24,8 @@ auto test_construct_0() -> result {
 /*
  * Construct with a long integer.
  */
-auto test_construct_1() -> result {
-    result r("cons 1");
+auto test_natural_construct_1() -> result {
+    result r("nat cons 1");
 
     r.start_clock();
     c8::natural v(0x123456789abcULL);
@@ -101,8 +39,8 @@ auto test_construct_1() -> result {
 /*
  * Construct with a string 0.
  */
-auto test_construct_2() -> result {
-    result r("cons 2");
+auto test_natural_construct_2() -> result {
+    result r("nat cons 2");
 
     r.start_clock();
     c8::natural v("0");
@@ -116,8 +54,8 @@ auto test_construct_2() -> result {
 /*
  * Construct with a hexadecimal string.
  */
-auto test_construct_3() -> result {
-    result r("cons 3");
+auto test_natural_construct_3() -> result {
+    result r("nat cons 3");
 
     r.start_clock();
     c8::natural v("0x3837439787487386792386728abcd88379dc");
@@ -131,8 +69,8 @@ auto test_construct_3() -> result {
 /*
  * Construct with a decimal string.
  */
-auto test_construct_4() -> result {
-    result r("cons 4");
+auto test_natural_construct_4() -> result {
+    result r("nat cons 4");
 
     r.start_clock();
     c8::natural v("3897894117580750151618270927682762897697428275427542907478758957487582700682675349287325097");
@@ -146,8 +84,8 @@ auto test_construct_4() -> result {
 /*
  * Construct with an octal string.
  */
-auto test_construct_5() -> result {
-    result r("cons 5");
+auto test_natural_construct_5() -> result {
+    result r("nat cons 5");
 
     r.start_clock();
     c8::natural v("0115415157637671751");
@@ -161,8 +99,8 @@ auto test_construct_5() -> result {
 /*
  * Attempt to construct with an invalid octal string.
  */
-auto test_construct_6() -> result {
-    result r("cons 6");
+auto test_natural_construct_6() -> result {
+    result r("nat cons 6");
 
     r.start_clock();
     try {
@@ -189,8 +127,8 @@ auto test_construct_6() -> result {
 /*
  * Construct with a hexadecimal string.
  */
-auto test_construct_7() -> result {
-    result r("cons 7");
+auto test_natural_construct_7() -> result {
+    result r("nat cons 7");
 
     r.start_clock();
     c8::natural v("0x100000000000000000000000");
@@ -204,8 +142,8 @@ auto test_construct_7() -> result {
 /*
  * Test bit counting.
  */
-auto test_count_bits_0() -> result {
-    result r("count 0");
+auto test_natural_count_bits_0() -> result {
+    result r("nat count 0");
     c8::natural ct(0);
 
     r.start_clock();
@@ -220,8 +158,8 @@ auto test_count_bits_0() -> result {
 /*
  * Test bit counting.
  */
-auto test_count_bits_1() -> result {
-    result r("count 1");
+auto test_natural_count_bits_1() -> result {
+    result r("nat count 1");
     c8::natural ct(0xffffffffffffffffULL);
 
     r.start_clock();
@@ -236,8 +174,8 @@ auto test_count_bits_1() -> result {
 /*
  * Test bit counting.
  */
-auto test_count_bits_2() -> result {
-    result r("count 2");
+auto test_natural_count_bits_2() -> result {
+    result r("nat count 2");
     c8::natural ct(0x12345ULL);
 
     r.start_clock();
@@ -252,8 +190,8 @@ auto test_count_bits_2() -> result {
 /*
  * Test bit counting.
  */
-auto test_count_bits_3() -> result {
-    result r("count 3");
+auto test_natural_count_bits_3() -> result {
+    result r("nat count 3");
     c8::natural ct("0x123456789abcdef0123456789abcdef0123456789abcdef");
 
     r.start_clock();
@@ -268,8 +206,8 @@ auto test_count_bits_3() -> result {
 /*
  * Add a 1 digit value and a 1 digit value.
  */
-auto test_add_0() -> result {
-    result r("add 0");
+auto test_natural_add_0() -> result {
+    result r("nat add 0");
     c8::natural a0("31");
     c8::natural a1("42");
 
@@ -285,8 +223,8 @@ auto test_add_0() -> result {
 /*
  * Add a 0 digit value and a 1 digit value.
  */
-auto test_add_1() -> result {
-    result r("add 1");
+auto test_natural_add_1() -> result {
+    result r("nat add 1");
     c8::natural a0("0");
     c8::natural a1("42");
 
@@ -302,8 +240,8 @@ auto test_add_1() -> result {
 /*
  * Add a 2 digit value and a 1 digit value, causing an overflow to 3 digits.
  */
-auto test_add_2() -> result {
-    result r("add 2");
+auto test_natural_add_2() -> result {
+    result r("nat add 2");
     c8::natural a0(0xffffffffffffffffULL);
     c8::natural a1(0x2ULL);
 
@@ -319,8 +257,8 @@ auto test_add_2() -> result {
 /*
  * Add two very large values.
  */
-auto test_add_3() -> result {
-    result r("add 3");
+auto test_natural_add_3() -> result {
+    result r("nat add 3");
     c8::natural a0("10000000000000000000000000000000000000000000000000000000000000000008789");
     c8::natural a1("88888880000000000000000000000000000000000000000000000000000000999992000");
 
@@ -336,8 +274,8 @@ auto test_add_3() -> result {
 /*
  * Add a 1 digit value and a digit.
  */
-auto test_add_4() -> result {
-    result r("add 4");
+auto test_natural_add_4() -> result {
+    result r("nat add 4");
     c8::natural a0("13");
     c8::natural_digit a1 = 42;
 
@@ -353,8 +291,8 @@ auto test_add_4() -> result {
 /*
  * Add a 3 digit value and a 1 digit value, causing an overflow to 3 digits.
  */
-auto test_add_5() -> result {
-    result r("add 5");
+auto test_natural_add_5() -> result {
+    result r("nat add 5");
     c8::natural a0("0xffffffffffffffffffffffff");
     c8::natural_digit a1 = 2;
 
@@ -370,8 +308,8 @@ auto test_add_5() -> result {
 /*
  * Subtract a 1 digit value from another 1 digit value.
  */
-auto test_subtract_0() -> result {
-    result r("sub 0");
+auto test_natural_subtract_0() -> result {
+    result r("nat sub 0");
     c8::natural s0(52);
     c8::natural s1(2);
 
@@ -387,8 +325,8 @@ auto test_subtract_0() -> result {
 /*
  * Subtract a large value from another large value.
  */
-auto test_subtract_1() -> result {
-    result r("sub 1");
+auto test_natural_subtract_1() -> result {
+    result r("nat sub 1");
     c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
     c8::natural s1("842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
 
@@ -404,8 +342,8 @@ auto test_subtract_1() -> result {
 /*
  * Subtract a large value from another large value, resulting in a very much smaller value.
  */
-auto test_subtract_2() -> result {
-    result r("sub 2");
+auto test_natural_subtract_2() -> result {
+    result r("nat sub 2");
     c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
     c8::natural s1("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690000");
 
@@ -422,8 +360,8 @@ auto test_subtract_2() -> result {
  * Subtract a large value from a smaller one.  This will throw an exception because there
  * aren't any negative natural numbers.
  */
-auto test_subtract_3() -> result {
-    result r("sub 3");
+auto test_natural_subtract_3() -> result {
+    result r("nat sub 3");
     c8::natural s0(2);
     c8::natural s1(52);
 
@@ -452,8 +390,8 @@ auto test_subtract_3() -> result {
 /*
  * Subtract a digit from another 1 digit value.
  */
-auto test_subtract_4() -> result {
-    result r("sub 4");
+auto test_natural_subtract_4() -> result {
+    result r("nat sub 4");
     c8::natural s0(53);
 
     r.start_clock();
@@ -469,8 +407,8 @@ auto test_subtract_4() -> result {
  * Subtract a larger value from a smaller one.  This will throw an exception because there
  * aren't any negative natural numbers.
  */
-auto test_subtract_5() -> result {
-    result r("sub 5");
+auto test_natural_subtract_5() -> result {
+    result r("nat sub 5");
     c8::natural s0(100);
 
     r.start_clock();
@@ -498,8 +436,8 @@ auto test_subtract_5() -> result {
 /*
  * Subtract a digit from another 1 digit value.
  */
-auto test_subtract_6() -> result {
-    result r("sub 6");
+auto test_natural_subtract_6() -> result {
+    result r("nat sub 6");
     c8::natural s0(0);
 
     r.start_clock();
@@ -514,8 +452,8 @@ auto test_subtract_6() -> result {
 /*
  * Subtract a digit from a large value.
  */
-auto test_subtract_7() -> result {
-    result r("sub 7");
+auto test_natural_subtract_7() -> result {
+    result r("nat sub 7");
     c8::natural s0("0x1000000000000000000000000");
 
     r.start_clock();
@@ -530,8 +468,8 @@ auto test_subtract_7() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0a() -> result {
-    result r("comp 0a");
+auto test_natural_compare_0a() -> result {
+    result r("nat comp 0a");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -547,8 +485,8 @@ auto test_compare_0a() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0b() -> result {
-    result r("comp 0b");
+auto test_natural_compare_0b() -> result {
+    result r("nat comp 0b");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -564,8 +502,8 @@ auto test_compare_0b() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0c() -> result {
-    result r("comp 0c");
+auto test_natural_compare_0c() -> result {
+    result r("nat comp 0c");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -581,8 +519,8 @@ auto test_compare_0c() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0d() -> result {
-    result r("comp 0d");
+auto test_natural_compare_0d() -> result {
+    result r("nat comp 0d");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -598,8 +536,8 @@ auto test_compare_0d() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0e() -> result {
-    result r("comp 0e");
+auto test_natural_compare_0e() -> result {
+    result r("nat comp 0e");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -615,8 +553,8 @@ auto test_compare_0e() -> result {
 /*
  * Compare two dissimilar 1 digit values.
  */
-auto test_compare_0f() -> result {
-    result r("comp 0f");
+auto test_natural_compare_0f() -> result {
+    result r("nat comp 0f");
     c8::natural co0(2);
     c8::natural co1(1);
 
@@ -632,8 +570,8 @@ auto test_compare_0f() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1a() -> result {
-    result r("comp 1a");
+auto test_natural_compare_1a() -> result {
+    result r("nat comp 1a");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -649,8 +587,8 @@ auto test_compare_1a() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1b() -> result {
-    result r("comp 1b");
+auto test_natural_compare_1b() -> result {
+    result r("nat comp 1b");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -666,8 +604,8 @@ auto test_compare_1b() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1c() -> result {
-    result r("comp 1c");
+auto test_natural_compare_1c() -> result {
+    result r("nat comp 1c");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -683,8 +621,8 @@ auto test_compare_1c() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1d() -> result {
-    result r("comp 1d");
+auto test_natural_compare_1d() -> result {
+    result r("nat comp 1d");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -700,8 +638,8 @@ auto test_compare_1d() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1e() -> result {
-    result r("comp 1e");
+auto test_natural_compare_1e() -> result {
+    result r("nat comp 1e");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -717,8 +655,8 @@ auto test_compare_1e() -> result {
 /*
  * Compare a 2 digit value with a 1 digit value.
  */
-auto test_compare_1f() -> result {
-    result r("comp 1f");
+auto test_natural_compare_1f() -> result {
+    result r("nat comp 1f");
     c8::natural co0(0x987654321ULL);
     c8::natural co1(1);
 
@@ -734,8 +672,8 @@ auto test_compare_1f() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2a() -> result {
-    result r("comp 2a");
+auto test_natural_compare_2a() -> result {
+    result r("nat comp 2a");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -751,8 +689,8 @@ auto test_compare_2a() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2b() -> result {
-    result r("comp 2b");
+auto test_natural_compare_2b() -> result {
+    result r("nat comp 2b");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -768,8 +706,8 @@ auto test_compare_2b() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2c() -> result {
-    result r("comp 2c");
+auto test_natural_compare_2c() -> result {
+    result r("nat comp 2c");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -785,8 +723,8 @@ auto test_compare_2c() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2d() -> result {
-    result r("comp 2d");
+auto test_natural_compare_2d() -> result {
+    result r("nat comp 2d");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -802,8 +740,8 @@ auto test_compare_2d() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2e() -> result {
-    result r("comp 2e");
+auto test_natural_compare_2e() -> result {
+    result r("nat comp 2e");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -819,8 +757,8 @@ auto test_compare_2e() -> result {
 /*
  * Compare a 1 digit value with a 2 digit value.
  */
-auto test_compare_2f() -> result {
-    result r("comp 2f");
+auto test_natural_compare_2f() -> result {
+    result r("nat comp 2f");
     c8::natural co0(1);
     c8::natural co1(0x987654321ULL);
 
@@ -836,8 +774,8 @@ auto test_compare_2f() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3a() -> result {
-    result r("comp 3a");
+auto test_natural_compare_3a() -> result {
+    result r("nat comp 3a");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -853,8 +791,8 @@ auto test_compare_3a() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3b() -> result {
-    result r("comp 3b");
+auto test_natural_compare_3b() -> result {
+    result r("nat comp 3b");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -870,8 +808,8 @@ auto test_compare_3b() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3c() -> result {
-    result r("comp 3c");
+auto test_natural_compare_3c() -> result {
+    result r("nat comp 3c");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -887,8 +825,8 @@ auto test_compare_3c() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3d() -> result {
-    result r("comp 3d");
+auto test_natural_compare_3d() -> result {
+    result r("nat comp 3d");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -904,8 +842,8 @@ auto test_compare_3d() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3e() -> result {
-    result r("comp 3e");
+auto test_natural_compare_3e() -> result {
+    result r("nat comp 3e");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -921,8 +859,8 @@ auto test_compare_3e() -> result {
 /*
  * Compare two 2 digit values.
  */
-auto test_compare_3f() -> result {
-    result r("comp 3f");
+auto test_natural_compare_3f() -> result {
+    result r("nat comp 3f");
     c8::natural co0(0x2f987654321ULL);
     c8::natural co1(0x2f987654321ULL);
 
@@ -938,8 +876,8 @@ auto test_compare_3f() -> result {
 /*
  * Test left shifting.
  */
-auto test_lshift_0() -> result {
-    result r("lsh 0");
+auto test_natural_lshift_0() -> result {
+    result r("nat lsh 0");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -954,8 +892,8 @@ auto test_lshift_0() -> result {
 /*
  * Test left shifting.
  */
-auto test_lshift_1() -> result {
-    result r("lsh 1");
+auto test_natural_lshift_1() -> result {
+    result r("nat lsh 1");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -970,8 +908,8 @@ auto test_lshift_1() -> result {
 /*
  * Test left shifting.
  */
-auto test_lshift_2() -> result {
-    result r("lsh 2");
+auto test_natural_lshift_2() -> result {
+    result r("nat lsh 2");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -986,8 +924,8 @@ auto test_lshift_2() -> result {
 /*
  * Test left shifting.
  */
-auto test_lshift_3() -> result {
-    result r("lsh 3");
+auto test_natural_lshift_3() -> result {
+    result r("nat lsh 3");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -1002,8 +940,8 @@ auto test_lshift_3() -> result {
 /*
  * Test left shifting.
  */
-auto test_lshift_4() -> result {
-    result r("lsh 4");
+auto test_natural_lshift_4() -> result {
+    result r("nat lsh 4");
     c8::natural l0("0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
 
     r.start_clock();
@@ -1018,8 +956,8 @@ auto test_lshift_4() -> result {
 /*
  * Test right shifting.
  */
-auto test_rshift_0() -> result {
-    result r("rsh 0");
+auto test_natural_rshift_0() -> result {
+    result r("nat rsh 0");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1034,8 +972,8 @@ auto test_rshift_0() -> result {
 /*
  * Test right shifting.
  */
-auto test_rshift_1() -> result {
-    result r("rsh 1");
+auto test_natural_rshift_1() -> result {
+    result r("nat rsh 1");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1050,8 +988,8 @@ auto test_rshift_1() -> result {
 /*
  * Test right shifting.
  */
-auto test_rshift_2() -> result {
-    result r("rsh 2");
+auto test_natural_rshift_2() -> result {
+    result r("nat rsh 2");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1066,8 +1004,8 @@ auto test_rshift_2() -> result {
 /*
  * Test right shifting.
  */
-auto test_rshift_3() -> result {
-    result r("rsh 3");
+auto test_natural_rshift_3() -> result {
+    result r("nat rsh 3");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1082,8 +1020,8 @@ auto test_rshift_3() -> result {
 /*
  * Test right shifting.
  */
-auto test_rshift_4() -> result {
-    result r("rsh 4");
+auto test_natural_rshift_4() -> result {
+    result r("nat rsh 4");
     c8::natural r0("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
 
     r.start_clock();
@@ -1098,8 +1036,8 @@ auto test_rshift_4() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_0() -> result {
-    result r("mul 0");
+auto test_natural_multiply_0() -> result {
+    result r("nat mul 0");
     c8::natural mu0(3);
     c8::natural mu1(22);
 
@@ -1115,8 +1053,8 @@ auto test_multiply_0() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_1() -> result {
-    result r("mul 1");
+auto test_natural_multiply_1() -> result {
+    result r("nat mul 1");
     c8::natural mu0(1000000000000000000ULL);
     c8::natural mu1(9999999999999999999ULL);
 
@@ -1132,8 +1070,8 @@ auto test_multiply_1() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_2() -> result {
-    result r("mul 2");
+auto test_natural_multiply_2() -> result {
+    result r("nat mul 2");
     c8::natural mu0(0x2000000000000000ULL);
     c8::natural mu1(0x4000000000000000ULL);
 
@@ -1149,8 +1087,8 @@ auto test_multiply_2() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_3() -> result {
-    result r("mul 3");
+auto test_natural_multiply_3() -> result {
+    result r("nat mul 3");
     c8::natural mu0("12345678901234567890123456789012345678901234567890123456789012345678901234567890");
     c8::natural mu1("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
@@ -1166,8 +1104,8 @@ auto test_multiply_3() -> result {
 /*
  * Test multiplication.
  */
-auto test_multiply_4() -> result {
-    result r("mul 4");
+auto test_natural_multiply_4() -> result {
+    result r("nat mul 4");
     c8::natural mu0("0x1000000000000000100000000000000100000000");
     c8::natural mu1("0xabcdef12");
 
@@ -1183,8 +1121,8 @@ auto test_multiply_4() -> result {
 /*
  * Test division.
  */
-auto test_divide_0() -> result {
-    result r("div 0");
+auto test_natural_divide_0() -> result {
+    result r("nat div 0");
     c8::natural d0(1000000000000000000ULL);
     c8::natural d1(99999999999999999ULL);
 
@@ -1201,8 +1139,8 @@ auto test_divide_0() -> result {
 /*
  * Test division.
  */
-auto test_divide_1() -> result {
-    result r("div 1");
+auto test_natural_divide_1() -> result {
+    result r("nat div 1");
     c8::natural d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
     c8::natural d1(99999999999999999ULL);
 
@@ -1219,8 +1157,8 @@ auto test_divide_1() -> result {
 /*
  * Test division.
  */
-auto test_divide_2() -> result {
-    result r("div 2");
+auto test_natural_divide_2() -> result {
+    result r("nat div 2");
     c8::natural d0("0x100000000000000000000000000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000001000000000000000100000000");
 
@@ -1237,8 +1175,8 @@ auto test_divide_2() -> result {
 /*
  * Divide by zero.  This will throw an exception!
  */
-auto test_divide_3() -> result {
-    result r("div 3");
+auto test_natural_divide_3() -> result {
+    result r("nat div 3");
     c8::natural d0(2000);
     c8::natural d1(0);
 
@@ -1267,8 +1205,8 @@ auto test_divide_3() -> result {
 /*
  * Test division.
  */
-auto test_divide_4() -> result {
-    result r("div 4");
+auto test_natural_divide_4() -> result {
+    result r("nat div 4");
     c8::natural d0("0x10000000000000");
     c8::natural d1("0x100000000");
 
@@ -1285,8 +1223,8 @@ auto test_divide_4() -> result {
 /*
  * Test division.
  */
-auto test_divide_5() -> result {
-    result r("div 5");
+auto test_natural_divide_5() -> result {
+    result r("nat div 5");
     c8::natural d0("0x10000000000000001000000000000000100000000");
     c8::natural d1("1");
 
@@ -1303,8 +1241,8 @@ auto test_divide_5() -> result {
 /*
  * Trigger a divide that exercises a corner case in the divide estimation logic.
  */
-auto test_divide_6() -> result {
-    result r("div 6");
+auto test_natural_divide_6() -> result {
+    result r("nat div 6");
     c8::natural d0("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000000000000010000000000000000");
 
@@ -1321,8 +1259,8 @@ auto test_divide_6() -> result {
 /*
  * Test greatest common divisor.
  */
-auto test_gcd_0() -> result {
-    result r("gcd 0");
+auto test_natural_gcd_0() -> result {
+    result r("nat gcd 0");
     c8::natural g0(2000);
     c8::natural g1(56);
 
@@ -1338,8 +1276,8 @@ auto test_gcd_0() -> result {
 /*
  * Test greatest common divisor.
  */
-auto test_gcd_1() -> result {
-    result r("gcd 1");
+auto test_natural_gcd_1() -> result {
+    result r("nat gcd 1");
     c8::natural g0("47598475892456783750932574388878478947978888888");
     c8::natural g1("87987922283");
 
@@ -1355,8 +1293,8 @@ auto test_gcd_1() -> result {
 /*
  * Test greatest common divisor.
  */
-auto test_gcd_2() -> result {
-    result r("gcd 2");
+auto test_natural_gcd_2() -> result {
+    result r("nat gcd 2");
     c8::natural g0("8888888");
     c8::natural g1("8888888");
 
@@ -1372,8 +1310,8 @@ auto test_gcd_2() -> result {
 /*
  * Test greatest common divisor.
  */
-auto test_gcd_3() -> result {
-    result r("gcd 3");
+auto test_natural_gcd_3() -> result {
+    result r("nat gcd 3");
     c8::natural g0("2038355020176327696765561949673186971898109715960816150233379221718753632190267");
     c8::natural g1("1957628088684195906794648605131674616575412301467318480917205787195238636855999");
 
@@ -1389,8 +1327,8 @@ auto test_gcd_3() -> result {
 /*
  * Test to_unsigned_long_long functionality.
  */
-auto test_to_unsigned_long_long_0() -> result {
-    result r("toull 0");
+auto test_natural_to_unsigned_long_long_0() -> result {
+    result r("nat toull 0");
     c8::natural n(0);
 
     r.start_clock();
@@ -1405,8 +1343,8 @@ auto test_to_unsigned_long_long_0() -> result {
 /*
  * Test to_unsigned_long_long functionality.
  */
-auto test_to_unsigned_long_long_1() -> result {
-    result r("toull 1");
+auto test_natural_to_unsigned_long_long_1() -> result {
+    result r("nat toull 1");
     c8::natural n(2000);
 
     r.start_clock();
@@ -1421,8 +1359,8 @@ auto test_to_unsigned_long_long_1() -> result {
 /*
  * Test to_unsigned_long_long functionality.
  */
-auto test_to_unsigned_long_long_2() -> result {
-    result r("toull 2");
+auto test_natural_to_unsigned_long_long_2() -> result {
+    result r("nat toull 2");
     c8::natural n("47895748574857485728747548237543205782573485472759047548275024574207");
 
     r.start_clock();
@@ -1450,8 +1388,8 @@ auto test_to_unsigned_long_long_2() -> result {
 /*
  * Test to_unsigned_long_long functionality.
  */
-auto test_to_unsigned_long_long_3() -> result {
-    result r("toull 3");
+auto test_natural_to_unsigned_long_long_3() -> result {
+    result r("nat toull 3");
     c8::natural n(0x123456789a);
 
     r.start_clock();
@@ -1466,8 +1404,8 @@ auto test_to_unsigned_long_long_3() -> result {
 /*
  * Test to_unsigned_long_long functionality.
  */
-auto test_to_unsigned_long_long_4() -> result {
-    result r("toull 4");
+auto test_natural_to_unsigned_long_long_4() -> result {
+    result r("nat toull 4");
     c8::natural n0(1);
     c8::natural n1 = n0 << (sizeof(unsigned long long) * 8);
 
@@ -1499,8 +1437,8 @@ auto test_to_unsigned_long_long_4() -> result {
 /*
  * Test printing.
  */
-auto test_print_0() -> result {
-    result r("prn 0");
+auto test_natural_print_0() -> result {
+    result r("nat prn 0");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1514,8 +1452,8 @@ auto test_print_0() -> result {
 /*
  * Test printing.
  */
-auto test_print_1() -> result {
-    result r("prn 1");
+auto test_natural_print_1() -> result {
+    result r("nat prn 1");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1529,8 +1467,8 @@ auto test_print_1() -> result {
 /*
  * Test printing.
  */
-auto test_print_2() -> result {
-    result r("prn 2");
+auto test_natural_print_2() -> result {
+    result r("nat prn 2");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1544,8 +1482,8 @@ auto test_print_2() -> result {
 /*
  * Test printing.
  */
-auto test_print_3() -> result {
-    result r("prn 3");
+auto test_natural_print_3() -> result {
+    result r("nat prn 3");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1559,8 +1497,8 @@ auto test_print_3() -> result {
 /*
  * Test printing.
  */
-auto test_print_4() -> result {
-    result r("prn 4");
+auto test_natural_print_4() -> result {
+    result r("nat prn 4");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1574,8 +1512,8 @@ auto test_print_4() -> result {
 /*
  * Test printing.
  */
-auto test_print_5() -> result {
-    result r("prn 5");
+auto test_natural_print_5() -> result {
+    result r("nat prn 5");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1589,8 +1527,8 @@ auto test_print_5() -> result {
 /*
  * Test printing.
  */
-auto test_print_6() -> result {
-    result r("prn 6");
+auto test_natural_print_6() -> result {
+    result r("nat prn 6");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1604,8 +1542,8 @@ auto test_print_6() -> result {
 /*
  * Test printing.
  */
-auto test_print_7() -> result {
-    result r("prn 7");
+auto test_natural_print_7() -> result {
+    result r("nat prn 7");
     c8::natural v("0xfedcfedc0123456789");
 
     r.start_clock();
@@ -1614,196 +1552,5 @@ auto test_print_7() -> result {
 
     r.check_pass("0775563766700044321263611");
     return r;
-}
-
-/*
- * Report the usage for this test program.
- */
-static auto usage(const char *name) -> void {
-    std::cerr << "usage: " << name << " [OPTIONS]\n\n";
-    std::cerr << "Options\n";
-    std::cerr << "  -b  Generate benchmark results (optional)\n\n";
-    std::cerr << "  -v  Verbose reporting (optional)\n\n";
-}
-
-typedef result (*test)();
-
-/*
- * List of tests to run.
- */
-test tests[] = {
-    test_construct_0,
-    test_construct_1,
-    test_construct_2,
-    test_construct_3,
-    test_construct_4,
-    test_construct_5,
-    test_construct_6,
-    test_construct_7,
-    test_count_bits_0,
-    test_count_bits_1,
-    test_count_bits_2,
-    test_count_bits_3,
-    test_add_0,
-    test_add_1,
-    test_add_2,
-    test_add_3,
-    test_add_4,
-    test_add_5,
-    test_subtract_0,
-    test_subtract_1,
-    test_subtract_2,
-    test_subtract_3,
-    test_subtract_4,
-    test_subtract_5,
-    test_subtract_6,
-    test_subtract_7,
-    test_compare_0a,
-    test_compare_0b,
-    test_compare_0c,
-    test_compare_0d,
-    test_compare_0e,
-    test_compare_0f,
-    test_compare_1a,
-    test_compare_1b,
-    test_compare_1c,
-    test_compare_1d,
-    test_compare_1e,
-    test_compare_1f,
-    test_compare_2a,
-    test_compare_2b,
-    test_compare_2c,
-    test_compare_2d,
-    test_compare_2e,
-    test_compare_2f,
-    test_compare_3a,
-    test_compare_3b,
-    test_compare_3c,
-    test_compare_3d,
-    test_compare_3e,
-    test_compare_3f,
-    test_lshift_0,
-    test_lshift_1,
-    test_lshift_2,
-    test_lshift_3,
-    test_lshift_4,
-    test_rshift_0,
-    test_rshift_1,
-    test_rshift_2,
-    test_rshift_3,
-    test_rshift_4,
-    test_multiply_0,
-    test_multiply_1,
-    test_multiply_2,
-    test_multiply_3,
-    test_multiply_4,
-    test_divide_0,
-    test_divide_1,
-    test_divide_2,
-    test_divide_3,
-    test_divide_4,
-    test_divide_5,
-    test_divide_6,
-    test_gcd_0,
-    test_gcd_1,
-    test_gcd_2,
-    test_gcd_3,
-    test_to_unsigned_long_long_0,
-    test_to_unsigned_long_long_1,
-    test_to_unsigned_long_long_2,
-    test_to_unsigned_long_long_3,
-    test_to_unsigned_long_long_4,
-    test_print_0,
-    test_print_1,
-    test_print_2,
-    test_print_3,
-    test_print_4,
-    test_print_5,
-    test_print_6,
-    test_print_7,
-    nullptr
-};
-
-/*
- * Entry point.
- */
-auto main(int argc, char **argv) -> int {
-    bool verbose = false;
-    int loops = 1;
-
-    /*
-     * Parse the command line options.
-     */
-    int ch;
-    while ((ch = getopt(argc, argv, "bv?")) != -1) {
-        switch (ch) {
-        case 'b':
-            loops = 10000;
-            break;
-
-        case 'v':
-            verbose = true;
-            break;
-
-        case '?':
-            usage(argv[0]);
-            exit(-1);
-        }
-    }
-
-    /*
-     * Run the tests.
-     */
-    bool res = true;
-
-    test *p = tests;
-    while (*p) {
-        std::vector<std::chrono::nanoseconds> duration;
-
-        /*
-         * Run one test every time.  This gives the pass/fail status.
-         */
-        bool rp = true;
-        result r = (*p)();
-        rp = r.get_pass();
-        duration.push_back(r.get_elapsed());
-
-        /*
-         * Run more tests if we're running a benchmark.
-         */
-        for (auto i = 1; i < loops; i++) {
-            result l = (*p)();
-            duration.push_back(l.get_elapsed());
-        }
-
-        /*
-         * If we're being verbose then print the results.  We print the 20th percentile result if
-         * this is a benchmark test.  Lower than the 10th percentile we can see some rather
-         * odd timing results and greater than the 50th percentile we can run into problems
-         * related to scheduling.  The 20th percentile number is an empirical choice.
-         */
-        if (verbose) {
-            std::nth_element(duration.begin(), duration.begin() + (duration.size() / 5), duration.end());
-            std::cout << std::setw(10) << std::left << r.get_name() << " | ";
-            std::cout << std::setw(10) << std::right << duration[duration.size() / 5].count() << " | " << (rp ? "pass" : "FAIL");
-            std::cout << " | " << r.get_stream().str();
-            if (!rp) {
-                std::cout << " (" << r.get_expected() << ')';
-            }
-
-            std::cout << '\n';
-        }
-
-        res &= rp;
-        p++;
-    }
-
-    if (!res) {
-        std::cout << "TESTS FAILED!\n";
-        exit(-1);
-    }
-
-    std::cout << "All tests passed\n";
-    return 0;
 }
 
