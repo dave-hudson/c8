@@ -45,27 +45,31 @@ namespace c8 {
             return std::make_pair(num_, denom_);
         }
 
-        auto operator +=(const rational &v) {
+        auto operator +=(const rational &v) -> rational & {
             *this = *this + v;
+            return *this;
         }
 
         auto operator -() const -> rational {
-            rational res = *this;
+            rational res;
             res.num_ = -num_;
             res.denom_ = denom_;
             return res;
         }
 
-        auto operator -=(const rational &v) {
+        auto operator -=(const rational &v) -> rational & {
             *this = *this - v;
+            return *this;
         }
 
-        auto operator *=(const rational &v) {
+        auto operator *=(const rational &v) -> rational & {
             *this = *this * v;
+            return *this;
         }
 
-        auto operator /=(const rational &v) {
+        auto operator /=(const rational &v) -> rational & {
             *this = *this / v;
+            return *this;
         }
 
         auto operator ==(const rational &v) const -> bool {

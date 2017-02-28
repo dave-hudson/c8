@@ -49,6 +49,11 @@ namespace c8 {
             return magnitude_;
         }
 
+        auto negate() -> integer & {
+            negative_ ^= true;
+            return *this;
+        }
+
         auto gcd(const integer &v) const -> integer {
             integer res;
             res.magnitude_ = magnitude_.gcd(v.magnitude_);
@@ -56,8 +61,9 @@ namespace c8 {
             return res;
         }
 
-        auto operator +=(const integer &v) {
+        auto operator +=(const integer &v) -> integer & {
             *this = *this + v;
+            return *this;
         }
 
         auto operator -() const -> integer {
@@ -66,20 +72,24 @@ namespace c8 {
             return res;
         }
 
-        auto operator -=(const integer &v) {
+        auto operator -=(const integer &v) -> integer & {
             *this = *this - v;
+            return *this;
         }
 
-        auto operator >>=(unsigned int count) {
+        auto operator >>=(unsigned int count) -> integer & {
             *this = *this >> count;
+            return *this;
         }
 
-        auto operator <<=(unsigned int count) {
+        auto operator <<=(unsigned int count) -> integer & {
             *this = *this << count;
+            return *this;
         }
 
-        auto operator *=(const integer &v) {
+        auto operator *=(const integer &v) -> integer & {
             *this = *this * v;
+            return *this;
         }
 
         auto operator /(const integer &v) const -> integer {
@@ -87,8 +97,9 @@ namespace c8 {
             return std::move(dm.first);
         }
 
-        auto operator /=(const integer &v) {
+        auto operator /=(const integer &v) -> integer & {
             *this = *this / v;
+            return *this;
         }
 
         auto operator %(const integer &v) const -> integer {
@@ -96,8 +107,9 @@ namespace c8 {
             return std::move(dm.second);
         }
 
-        auto operator %=(const integer &v) {
+        auto operator %=(const integer &v) -> integer & {
             *this = *this % v;
+            return *this;
         }
 
         auto operator ==(const integer &v) const -> bool {

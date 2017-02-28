@@ -172,8 +172,8 @@ namespace c8 {
      */
     auto rational::normalize() -> void {
         if (C8_UNLIKELY(is_negative(denom_))) {
-            num_ = -num_;
-            denom_ = -denom_;
+            num_.negate();
+            denom_.negate();
         }
 
         /*
