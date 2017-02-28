@@ -9,7 +9,7 @@
  * Multiply test.
  */
 auto multiply_test(const c8::rational &r1, const c8::rational &r2) -> c8::rational {
-    return r1 / r2;
+    return r1 * r2;
 }
 
 /*
