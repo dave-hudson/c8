@@ -135,13 +135,12 @@ namespace c8 {
     auto integer::divide_modulus(const integer &v) const -> std::pair<integer, integer> {
         std::pair<natural, natural> dm = magnitude_.divide_modulus(v.magnitude_);
 
-        integer div_res;
-        div_res.negative_ = negative_ ^ v.negative_;
-        div_res.magnitude_ = dm.first;
+        std::pair<integer, integer> res;
+        res.first.negative_ = negative_ ^ v.negative_;
+        res.first.magnitude_ = std::move(dm.first);
+        res.second.magnitude_ = std::move(dm.second);
 
-        integer mod_res;
-        mod_res.magnitude_ = dm.second;
-        return std::make_pair(div_res, mod_res);
+        return res;
     }
 
     /*

@@ -77,7 +77,7 @@ namespace c8 {
 
         auto operator /(const integer &v) const -> integer {
             std::pair<integer, integer> dm = divide_modulus(v);
-            return dm.first;
+            return std::move(dm.first);
         }
 
         auto operator /=(const integer &v) {
@@ -86,7 +86,7 @@ namespace c8 {
 
         auto operator %(const integer &v) const -> integer {
             std::pair<integer, integer> dm = divide_modulus(v);
-            return dm.second;
+            return std::move(dm.second);
         }
 
         auto operator %=(const integer &v) {
