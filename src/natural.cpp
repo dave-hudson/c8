@@ -734,19 +734,19 @@ namespace c8 {
      * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
-        natural larger;
+        natural smaller;
 
         if (C8_UNLIKELY(v.is_zero())) {
-            larger = *this;
-            return larger;
+            smaller = *this;
+            return smaller;
         }
 
         if (C8_UNLIKELY(is_zero())) {
-            larger = v;
-            return larger;
+            smaller = v;
+            return smaller;
         }
 
-        natural smaller;
+        natural larger;
         if (*this < v) {
             smaller = *this;
             larger = v;
@@ -755,13 +755,17 @@ namespace c8 {
             larger = *this;
         }
 
-        do {
+        while (true) {
             natural mod = larger % smaller;
+            if (C8_UNLIKELY(mod.is_zero())) {
+                break;
+            }
+
             larger = std::move(smaller);
             smaller = std::move(mod);
-        } while (!smaller.is_zero());
+        }
 
-        return larger;
+        return smaller;
     }
 
     /*
