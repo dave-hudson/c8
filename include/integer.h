@@ -49,6 +49,13 @@ namespace c8 {
             return magnitude_;
         }
 
+        auto gcd(const integer &v) const -> integer {
+            integer res;
+            res.magnitude_ = magnitude_.gcd(v.magnitude_);
+
+            return res;
+        }
+
         auto operator +=(const integer &v) {
             *this = *this + v;
         }
@@ -128,6 +135,10 @@ namespace c8 {
 
     inline auto abs(integer v) -> natural {
         return v.abs();
+    }
+
+    inline auto gcd(const integer &v, const integer &u) -> integer {
+        return v.gcd(u);
     }
 
     inline auto to_long_long(const integer &v) -> long long {
