@@ -617,12 +617,8 @@ namespace c8 {
         t1.reserve(remaining_num_digits);
         natural_digit *t1_digits = t1.digits_;
 
-        natural t2;
-        t2.reserve(remaining_num_digits);
-        natural_digit *t2_digits = t2.digits_;
-
         natural divisor;
-        divisor.reserve(v.num_digits_ + 1);
+        divisor.reserve(v.num_digits_);
         natural_digit *divisor_digits = divisor.digits_;
         auto divisor_num_digits = left_shift_digit_array(divisor_digits, v.digits_, v.num_digits_, 0, normalize_shift);
 
@@ -648,6 +644,8 @@ namespace c8 {
              * If we compare the most significant digit of our remainder with that of the divisor
              * we can see if it's possibly 1.
              */
+            natural_digit q;
+            std::size_t t1_num_digits;
             auto d_hi = remaining_digits[i];
             if (d_hi >= upper_div_digit) {
                 /*
@@ -655,14 +653,14 @@ namespace c8 {
                  * that the subsequent digits of the divisor are large enough that it's actually
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
-                natural_digit q = 1;
-                auto t1_num_digits = left_shift_digit_array(t1_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits + 1), 0);
+                t1_num_digits = left_shift_digit_array(t1_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits + 1), 0);
                 if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remaining_digits, remaining_num_digits) != comparison::gt)) {
                     /*
                      * Our result was 1.  While we now know this digit, subtracting "m" may
                      * still leave us with a non-zero digit so we want to re-evaluate this
                      * one again.
                      */
+                    q = 1;
                     i++;
                 } else {
                     /*
@@ -670,43 +668,31 @@ namespace c8 {
                      * digit is it's maximum possible size.
                      */
                     q = static_cast<natural_digit>(-1);
-                    auto t2_num_digits = left_shift_digit_array(t2_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits), 0);
-                    t1_num_digits = subtract_digit_arrays(t1_digits, t1_digits, t1_num_digits, t2_digits, t2_num_digits);
+                    t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
+                    t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
                 }
+            } else {
+                /*
+                 * Estimate the next digit of the result.
+                 */
+                natural_double_digit d_lo_d = static_cast<natural_double_digit>(remaining_digits[i - 1]);
+                natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
+                natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
+                q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
 
-                res_digits[i - divisor_num_digits] = q;
-                remaining_num_digits = subtract_digit_arrays(remaining_digits, remaining_digits, remaining_num_digits, t1_digits, t1_num_digits);
-                if (C8_UNLIKELY(compare_digit_arrays(remaining_digits, remaining_num_digits, divisor_digits, divisor_num_digits) == comparison::lt)) {
-                    break;
+                t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
+                t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
+
+                /*
+                 * It's possible that our estimate might be slightly too large, so we have
+                 * to evaluate it on the basis of the full divisor, not just the shifted, most
+                 * significant digit.  This may mean we reduce our estimate slightly.
+                 */
+                if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remaining_digits, remaining_num_digits) == comparison::gt)) {
+                    q--;
+                    t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
+                    t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
                 }
-
-                if (C8_UNLIKELY(i > remaining_num_digits)) {
-                    i = remaining_num_digits;
-                }
-
-                continue;
-            }
-
-            /*
-             * Estimate the next digit of the result.
-             */
-            natural_double_digit d_lo_d = static_cast<natural_double_digit>(remaining_digits[i - 1]);
-            natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
-            natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
-            natural_digit q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
-
-            auto t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
-            t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
-
-            /*
-             * It's possible that our estimate might be slightly too large, so we have
-             * to evaluate it on the basis of the full divisor, not just the shifted, most
-             * significant digit.  This may mean we reduce our estimate slightly.
-             */
-            if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remaining_digits, remaining_num_digits) == comparison::gt)) {
-                q--;
-                auto t2_num_digits = left_shift_digit_array(t2_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits), 0);
-                t1_num_digits = subtract_digit_arrays(t1_digits, t1_digits, t1_num_digits, t2_digits, t2_num_digits);
             }
 
             res_digits[i - divisor_num_digits] = q;
