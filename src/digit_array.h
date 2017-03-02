@@ -62,11 +62,11 @@ namespace c8 {
         /*
          * If our sizes differ then this is really easy!
          */
-        if (C8_UNLIKELY(num_src1_digits > num_src2_digits)) {
+        if (num_src1_digits > num_src2_digits) {
             return comparison::gt;
         }
 
-        if (C8_UNLIKELY(num_src1_digits < num_src2_digits)) {
+        if (num_src1_digits < num_src2_digits) {
             return comparison::lt;
         }
 
