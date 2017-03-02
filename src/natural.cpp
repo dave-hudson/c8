@@ -23,7 +23,7 @@ namespace c8 {
         }
 
         digits_size_ = new_digits;
-        delete_on_final_ = true;
+        delete_digits_on_final_ = true;
         digits_ = new natural_digit[new_digits];
     }
 
@@ -40,7 +40,7 @@ namespace c8 {
 
         delete_digits();
         digits_size_ = new_digits;
-        delete_on_final_ = true;
+        delete_digits_on_final_ = true;
         digits_ = d;
     }
 
@@ -49,7 +49,7 @@ namespace c8 {
      */
     auto natural::copy_digits(const natural &v) -> void {
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
-        delete_on_final_ = false;
+        delete_digits_on_final_ = false;
         digits_ = small_digits_;
         num_digits_ = v.num_digits_;
         if (C8_UNLIKELY(!num_digits_)) {
@@ -83,8 +83,8 @@ namespace c8 {
         digits_size_ = v.digits_size_;
         v.digits_size_ = sizeof(v.small_digits_) / sizeof(natural_digit);
         v.digits_ = v.small_digits_;
-        delete_on_final_ = v.delete_on_final_;
-        v.delete_on_final_ = false;
+        delete_digits_on_final_ = v.delete_digits_on_final_;
+        v.delete_digits_on_final_ = false;
     }
 
     /*
@@ -94,7 +94,7 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        delete_on_final_ = false;
+        delete_digits_on_final_ = false;
 
         if (!v) {
             return;
@@ -124,7 +124,7 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        delete_on_final_ = false;
+        delete_digits_on_final_ = false;
 
         std::size_t v_sz = v.size();
         if (C8_UNLIKELY(v_sz == 0)) {
@@ -182,14 +182,21 @@ namespace c8 {
     }
 
     /*
+     * Compare this natural number with another one.
+     */
+    auto natural::compare(const natural &v) const noexcept -> comparison {
+        return compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
      * Add a natural digit to this one.
      */
     auto natural::operator +(natural_digit v) const -> natural {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
 
         natural res;
-        res.reserve(this_sz + 1);
-        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_sz, v);
+        res.reserve(this_num_digits + 1);
+        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
 
         return res;
     }
@@ -201,28 +208,28 @@ namespace c8 {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
-        std::size_t this_sz = num_digits_;
-        std::size_t v_sz = v.num_digits_;
+        std::size_t this_num_digits = num_digits_;
+        std::size_t v_num_digits = v.num_digits_;
 
         const natural_digit *larger_digits;
         const natural_digit *smaller_digits;
-        std::size_t larger_sz;
-        std::size_t smaller_sz;
-        if (this_sz >= v_sz) {
+        std::size_t larger_num_digits;
+        std::size_t smaller_num_digits;
+        if (this_num_digits >= v_num_digits) {
             larger_digits = digits_;
             smaller_digits = v.digits_;
-            larger_sz = this_sz;
-            smaller_sz = v_sz;
+            larger_num_digits = this_num_digits;
+            smaller_num_digits = v_num_digits;
         } else {
             larger_digits = v.digits_;
             smaller_digits = digits_;
-            larger_sz = v_sz;
-            smaller_sz = this_sz;
+            larger_num_digits = v_num_digits;
+            smaller_num_digits = this_num_digits;
         }
 
         natural res;
-        res.reserve(larger_sz + 1);
-        res.num_digits_ = add_digit_arrays(res.digits_, larger_digits, larger_sz, smaller_digits, smaller_sz);
+        res.reserve(larger_num_digits + 1);
+        res.num_digits_ = add_digit_arrays(res.digits_, larger_digits, larger_num_digits, smaller_digits, smaller_num_digits);
 
         return res;
     }
@@ -231,10 +238,10 @@ namespace c8 {
      * Add a natural digit to this number.
      */
     auto natural::operator +=(natural_digit v) -> natural & {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
 
-        expand(this_sz + 1);
-        num_digits_ = add_digit_array_digit(digits_, digits_, this_sz, v);
+        expand(this_num_digits + 1);
+        num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
 
         return *this;
     }
@@ -246,26 +253,26 @@ namespace c8 {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
-        std::size_t this_sz = num_digits_;
-        std::size_t v_sz = v.num_digits_;
+        std::size_t this_num_digits = num_digits_;
+        std::size_t v_num_digits = v.num_digits_;
         const natural_digit *larger_digits;
         const natural_digit *smaller_digits;
-        std::size_t larger_sz;
-        std::size_t smaller_sz;
-        if (this_sz >= v_sz) {
+        std::size_t larger_num_digits;
+        std::size_t smaller_num_digits;
+        if (this_num_digits >= v_num_digits) {
             larger_digits = digits_;
             smaller_digits = v.digits_;
-            larger_sz = this_sz;
-            smaller_sz = v_sz;
+            larger_num_digits = this_num_digits;
+            smaller_num_digits = v_num_digits;
         } else {
             larger_digits = v.digits_;
             smaller_digits = digits_;
-            larger_sz = v_sz;
-            smaller_sz = this_sz;
+            larger_num_digits = v_num_digits;
+            smaller_num_digits = this_num_digits;
         }
 
-        expand(larger_sz + 1);
-        num_digits_ = add_digit_arrays(digits_, larger_digits, larger_sz, smaller_digits, smaller_sz);
+        expand(larger_num_digits + 1);
+        num_digits_ = add_digit_arrays(digits_, larger_digits, larger_num_digits, smaller_digits, smaller_num_digits);
 
         return *this;
     }
@@ -274,24 +281,24 @@ namespace c8 {
      * Subtract a natural digit from this natural number.
      */
     auto natural::operator -(natural_digit v) const -> natural {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
 
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(this_sz == 1)) {
+        if (C8_UNLIKELY(this_num_digits == 1)) {
             if (C8_UNLIKELY(digits_[0] < v)) {
                 throw not_a_number();
             }
-        } else if (C8_UNLIKELY(!this_sz)) {
+        } else if (C8_UNLIKELY(!this_num_digits)) {
             if (C8_UNLIKELY(v)) {
                 throw not_a_number();
             }
         }
 
         natural res;
-        res.reserve(this_sz);
-        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_sz, v);
+        res.reserve(this_num_digits);
+        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v);
 
         return res;
     }
@@ -300,19 +307,19 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -(const natural &v) const -> natural {
+        std::size_t this_num_digits = num_digits_;
+        std::size_t v_num_digits = v.num_digits_;
+
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(*this < v)) {
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
             throw not_a_number();
         }
 
-        std::size_t this_sz = num_digits_;
-        std::size_t v_sz = v.num_digits_;
-
         natural res;
-        res.reserve(this_sz);
-        res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_sz, v.digits_, v_sz);
+        res.reserve(this_num_digits);
+        res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return res;
     }
@@ -321,22 +328,22 @@ namespace c8 {
      * Subtract a natural digit from this natural number.
      */
     auto natural::operator -=(natural_digit v) -> natural & {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
 
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(this_sz == 1)) {
+        if (C8_UNLIKELY(this_num_digits == 1)) {
             if (C8_UNLIKELY(digits_[0] < v)) {
                 throw not_a_number();
             }
-        } else if (C8_UNLIKELY(!this_sz)) {
+        } else if (C8_UNLIKELY(!this_num_digits)) {
             if (C8_UNLIKELY(v)) {
                 throw not_a_number();
             }
         }
 
-        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_sz, v);
+        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v);
 
         return *this;
     }
@@ -345,17 +352,17 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -=(const natural &v) -> natural & {
-        std::size_t this_sz = num_digits_;
-        std::size_t v_sz = v.num_digits_;
+        std::size_t this_num_digits = num_digits_;
+        std::size_t v_num_digits = v.num_digits_;
 
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(*this < v)) {
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
             throw not_a_number();
         }
 
-        num_digits_ = subtract_digit_arrays(digits_, digits_, this_sz, v.digits_, v_sz);
+        num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return *this;
     }
@@ -364,7 +371,7 @@ namespace c8 {
      * Left shift this natural number by a bit count.
      */
     auto natural::operator <<(unsigned int count) const -> natural {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
 
@@ -373,12 +380,12 @@ namespace c8 {
         /*
          * If our value is zero then return 0.
          */
-        if (C8_UNLIKELY(!this_sz)) {
+        if (C8_UNLIKELY(!this_num_digits)) {
             return res;
         }
 
-        res.reserve(this_sz + trailing_digits + 1);
-        res.num_digits_ = left_shift_digit_array(res.digits_, digits_, this_sz, trailing_digits, digit_shift);
+        res.reserve(this_num_digits + trailing_digits + 1);
+        res.num_digits_ = left_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
 
         return res;
     }
@@ -387,20 +394,20 @@ namespace c8 {
      * Left shift this natural number by a bit count.
      */
     auto natural::operator <<=(unsigned int count) -> natural & {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
 
         /*
          * If our value is zero then return 0.
          */
-        if (C8_UNLIKELY(!this_sz)) {
+        if (C8_UNLIKELY(!this_num_digits)) {
             return *this;
         }
 
-        expand(this_sz + trailing_digits + 1);
+        expand(this_num_digits + trailing_digits + 1);
 
-        num_digits_ = left_shift_digit_array(digits_, digits_, this_sz, trailing_digits, digit_shift);
+        num_digits_ = left_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
 
         return *this;
     }
@@ -409,7 +416,7 @@ namespace c8 {
      * Right shift this natural number by a bit count.
      */
     auto natural::operator >>(unsigned int count) const -> natural {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
 
@@ -418,12 +425,12 @@ namespace c8 {
         /*
          * If our shift is more than the total number of bits that we had then return 0.
          */
-        if (C8_UNLIKELY(this_sz <= trailing_digits)) {
+        if (C8_UNLIKELY(this_num_digits <= trailing_digits)) {
             return res;
         }
 
-        res.reserve(this_sz - trailing_digits);
-        res.num_digits_ = right_shift_digit_array(res.digits_, digits_, this_sz, trailing_digits, digit_shift);
+        res.reserve(this_num_digits - trailing_digits);
+        res.num_digits_ = right_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
 
         return res;
     }
@@ -432,19 +439,19 @@ namespace c8 {
      * Right shift this natural number by a bit count.
      */
     auto natural::operator >>=(unsigned int count) -> natural & {
-        std::size_t this_sz = num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
 
         /*
          * If our shift is more than the total number of bits that we had then return 0.
          */
-        if (C8_UNLIKELY(this_sz <= trailing_digits)) {
+        if (C8_UNLIKELY(this_num_digits <= trailing_digits)) {
             num_digits_ = 0;
             return *this;
         }
 
-        num_digits_ = right_shift_digit_array(digits_, digits_, this_sz, trailing_digits, digit_shift);
+        num_digits_ = right_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
 
         return *this;
     }
@@ -458,8 +465,8 @@ namespace c8 {
         /*
          * If either value is zero then our result is zero.
          */
-        std::size_t this_sz = num_digits_;
-        if (C8_UNLIKELY(!this_sz)) {
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
             return res;
         }
 
@@ -467,8 +474,8 @@ namespace c8 {
             return res;
         }
 
-        res.reserve(this_sz + 1);
-        res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_sz, v);
+        res.reserve(this_num_digits + 1);
+        res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v);
 
         return res;
     }
@@ -482,31 +489,31 @@ namespace c8 {
         /*
          * If either value is zero then our result is zero.
          */
-        std::size_t this_sz = num_digits_;
-        if (C8_UNLIKELY(!this_sz)) {
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
             return res;
         }
 
-        std::size_t v_sz = v.num_digits_;
-        if (C8_UNLIKELY(!v_sz)) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (C8_UNLIKELY(!v_num_digits)) {
             return res;
         }
 
         /*
          * Are we multiplying by a single digit?  If yes, then use the fast version.
          */
-        if (C8_UNLIKELY(v_sz == 1)) {
-            res.reserve(this_sz + 1);
-            res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_sz, v.digits_[0]);
+        if (C8_UNLIKELY(v_num_digits == 1)) {
+            res.reserve(this_num_digits + 1);
+            res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
 
         /*
          * We need to multiply two digit arrays.
          */
-        std::size_t res_sz = this_sz + v_sz - 1;
-        res.reserve(res_sz + 1);
-        res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_sz, v.digits_, v_sz);
+        std::size_t res_num_digits = this_num_digits + v_num_digits - 1;
+        res.reserve(res_num_digits + 1);
+        res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return res;
     }
@@ -518,8 +525,8 @@ namespace c8 {
         /*
          * If either value is zero then our result is zero.
          */
-        std::size_t this_sz = num_digits_;
-        if (C8_UNLIKELY(!this_sz)) {
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
             return *this;
         }
 
@@ -528,8 +535,8 @@ namespace c8 {
             return *this;
         }
 
-        expand(this_sz + 1);
-        num_digits_ = multiply_digit_array_digit(digits_, digits_, this_sz, v);
+        expand(this_num_digits + 1);
+        num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v);
 
         return *this;
     }
@@ -546,14 +553,14 @@ namespace c8 {
         }
 
         std::pair<natural, natural_digit> p;
-        std::size_t this_sz = num_digits_;
-        if (C8_UNLIKELY(!this_sz)) {
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
             p.second = 0;
             return p;
         }
 
-        p.first.reserve(this_sz);
-        p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_sz, v);
+        p.first.reserve(this_num_digits);
+        p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
 
         return p;
     }
@@ -574,7 +581,7 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (C8_UNLIKELY(*this < v)) {
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
             p.second = *this;
             return p;
         }
@@ -603,34 +610,32 @@ namespace c8 {
 
         natural remaining;
         remaining.reserve(num_digits_ + 1);
-        remaining.num_digits_ = left_shift_digit_array(remaining.digits_, digits_, num_digits_, 0, normalize_shift);
+        natural_digit *remaining_digits = remaining.digits_;
+        auto remaining_num_digits = left_shift_digit_array(remaining_digits, digits_, num_digits_, 0, normalize_shift);
+
+        natural t1;
+        t1.reserve(remaining_num_digits);
+        natural_digit *t1_digits = t1.digits_;
+
+        natural t2;
+        t2.reserve(remaining_num_digits);
+        natural_digit *t2_digits = t2.digits_;
 
         natural divisor;
         divisor.reserve(v.num_digits_ + 1);
-        divisor.num_digits_ = left_shift_digit_array(divisor.digits_, v.digits_, v.num_digits_, 0, normalize_shift);
+        natural_digit *divisor_digits = divisor.digits_;
+        auto divisor_num_digits = left_shift_digit_array(divisor_digits, v.digits_, v.num_digits_, 0, normalize_shift);
 
-        std::size_t remaining_sz = remaining.num_digits_;
-        std::size_t divisor_sz = divisor.num_digits_;
-        std::size_t res_sz = remaining_sz - divisor_sz + 1;
-
-        natural m;
-        m.reserve(remaining_sz);
-
-        natural m_adjust;
-        m_adjust.reserve(remaining_sz);
-
-        p.first.reserve(res_sz);
-
-        const natural_digit *divisor_digits = divisor.digits_;
-        const natural_digit *remaining_digits = remaining.digits_;
+        std::size_t res_num_digits = remaining_num_digits - divisor_num_digits + 1;
+        p.first.reserve(res_num_digits);
         natural_digit *res_digits = p.first.digits_;
-        zero_digit_array(res_digits, res_sz);
+        zero_digit_array(res_digits, res_num_digits);
 
         /*
          * Now we run a long divide algorithm.
          */
-        std::size_t i = remaining_sz;
-        auto upper_div_digit = divisor_digits[divisor_sz - 1];
+        std::size_t i = remaining_num_digits;
+        auto upper_div_digit = divisor_digits[divisor_num_digits - 1];
         while (true) {
             /*
              * Iterate through our dividend from the most significant digit to the least.
@@ -651,8 +656,8 @@ namespace c8 {
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
                 natural_digit q = 1;
-                m.num_digits_ = left_shift_digit_array(m.digits_, divisor.digits_, divisor_sz, (i - divisor_sz + 1), 0);
-                if (C8_LIKELY(remaining >= m)) {
+                auto t1_num_digits = left_shift_digit_array(t1_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits + 1), 0);
+                if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remaining_digits, remaining_num_digits) != comparison::gt)) {
                     /*
                      * Our result was 1.  While we now know this digit, subtracting "m" may
                      * still leave us with a non-zero digit so we want to re-evaluate this
@@ -665,18 +670,18 @@ namespace c8 {
                      * digit is it's maximum possible size.
                      */
                     q = static_cast<natural_digit>(-1);
-                    m_adjust.num_digits_ = left_shift_digit_array(m_adjust.digits_, divisor.digits_, divisor_sz, (i - divisor_sz), 0);
-                    m.num_digits_ = subtract_digit_arrays(m.digits_, m.digits_, m.num_digits_, m_adjust.digits_, m_adjust.num_digits_);
+                    auto t2_num_digits = left_shift_digit_array(t2_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits), 0);
+                    t1_num_digits = subtract_digit_arrays(t1_digits, t1_digits, t1_num_digits, t2_digits, t2_num_digits);
                 }
 
-                res_digits[i - divisor_sz] = q;
-                remaining.num_digits_ = subtract_digit_arrays(remaining.digits_, remaining.digits_, remaining.num_digits_, m.digits_, m.num_digits_);
-                if (C8_UNLIKELY(remaining < divisor)) {
+                res_digits[i - divisor_num_digits] = q;
+                remaining_num_digits = subtract_digit_arrays(remaining_digits, remaining_digits, remaining_num_digits, t1_digits, t1_num_digits);
+                if (C8_UNLIKELY(compare_digit_arrays(remaining_digits, remaining_num_digits, divisor_digits, divisor_num_digits) == comparison::lt)) {
                     break;
                 }
 
-                if (C8_UNLIKELY(i > remaining.num_digits_)) {
-                    i = remaining.num_digits_;
+                if (C8_UNLIKELY(i > remaining_num_digits)) {
+                    i = remaining_num_digits;
                 }
 
                 continue;
@@ -690,41 +695,41 @@ namespace c8 {
             natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
             natural_digit q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
 
-            m.num_digits_ = multiply_digit_array_digit(m.digits_, divisor.digits_, divisor_sz, q);
-            m.num_digits_ = left_shift_digit_array(m.digits_, m.digits_, m.num_digits_, (i - divisor_sz), 0);
+            auto t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
+            t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
 
             /*
              * It's possible that our estimate might be slightly too large, so we have
              * to evaluate it on the basis of the full divisor, not just the shifted, most
              * significant digit.  This may mean we reduce our estimate slightly.
              */
-            if (C8_UNLIKELY(m > remaining)) {
+            if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remaining_digits, remaining_num_digits) == comparison::gt)) {
                 q--;
-                m_adjust.num_digits_ = left_shift_digit_array(m_adjust.digits_, divisor.digits_, divisor_sz, (i - divisor_sz), 0);
-                m.num_digits_ = subtract_digit_arrays(m.digits_, m.digits_, m.num_digits_, m_adjust.digits_, m_adjust.num_digits_);
+                auto t2_num_digits = left_shift_digit_array(t2_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits), 0);
+                t1_num_digits = subtract_digit_arrays(t1_digits, t1_digits, t1_num_digits, t2_digits, t2_num_digits);
             }
 
-            res_digits[i - divisor_sz] = q;
-            remaining.num_digits_ = subtract_digit_arrays(remaining.digits_, remaining.digits_, remaining.num_digits_, m.digits_, m.num_digits_);
-            if (C8_UNLIKELY(remaining < divisor)) {
+            res_digits[i - divisor_num_digits] = q;
+            remaining_num_digits = subtract_digit_arrays(remaining_digits, remaining_digits, remaining_num_digits, t1_digits, t1_num_digits);
+            if (C8_UNLIKELY(compare_digit_arrays(remaining_digits, remaining_num_digits, divisor_digits, divisor_num_digits) == comparison::lt)) {
                 break;
             }
 
-            if (C8_UNLIKELY(i > remaining.num_digits_)) {
-                i = remaining.num_digits_;
+            if (C8_UNLIKELY(i > remaining_num_digits)) {
+                i = remaining_num_digits;
             }
         }
 
         /*
          * Calculate our resulting digits.
          */
-        if (!res_digits[res_sz - 1]) {
-            res_sz--;
+        if (!res_digits[res_num_digits - 1]) {
+            res_num_digits--;
         }
 
-        p.first.num_digits_ = res_sz;
-        if (remaining.num_digits_) {
-            p.second.num_digits_ = right_shift_digit_array(p.second.digits_, remaining.digits_, remaining.num_digits_, 0, normalize_shift);
+        p.first.num_digits_ = res_num_digits;
+        if (remaining_num_digits) {
+            p.second.num_digits_ = right_shift_digit_array(p.second.digits_, remaining_digits, remaining_num_digits, 0, normalize_shift);
         }
 
         return p;
@@ -736,18 +741,20 @@ namespace c8 {
     auto natural::gcd(const natural &v) const -> natural {
         natural smaller;
 
-        if (C8_UNLIKELY(v.is_zero())) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (C8_UNLIKELY(!v.num_digits_)) {
             smaller = *this;
             return smaller;
         }
 
-        if (C8_UNLIKELY(is_zero())) {
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!num_digits_)) {
             smaller = v;
             return smaller;
         }
 
         natural larger;
-        if (*this < v) {
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
             smaller = *this;
             larger = v;
         } else {
@@ -757,7 +764,7 @@ namespace c8 {
 
         while (true) {
             natural mod = larger % smaller;
-            if (C8_UNLIKELY(mod.is_zero())) {
+            if (C8_UNLIKELY(!mod.num_digits_)) {
                 break;
             }
 
@@ -801,8 +808,8 @@ namespace c8 {
      * << operator to print a natural.
      */
     auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream & {
-        std::size_t v_sz = v.num_digits_;
-        if (v_sz == 0) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (v_num_digits == 0) {
             outstr << '0';
             return outstr;
         }

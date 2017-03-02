@@ -58,6 +58,37 @@ namespace c8 {
         }
     }
 
+    inline auto compare_digit_arrays(const natural_digit *src1, std::size_t num_src1_digits, const natural_digit *src2, std::size_t num_src2_digits) noexcept -> comparison {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (C8_UNLIKELY(num_src1_digits > num_src2_digits)) {
+            return comparison::gt;
+        }
+
+        if (C8_UNLIKELY(num_src1_digits < num_src2_digits)) {
+            return comparison::lt;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = num_src1_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a > b) {
+                return comparison::gt;
+            }
+
+            if (a < b) {
+                return comparison::lt;
+            }
+        }
+
+        return comparison::eq;
+    }
+
     /*
      * Add a single digit to a digit array.
      *

@@ -43,7 +43,7 @@ namespace c8 {
             num_digits_ = 0;
             digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
             digits_ = small_digits_;
-            delete_on_final_ = false;
+            delete_digits_on_final_ = false;
         }
 
         natural(unsigned long long v);
@@ -132,6 +132,7 @@ namespace c8 {
             return static_cast<unsigned int>((this_sz + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
         }
 
+        auto compare(const natural &v) const noexcept -> comparison;
         auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
         auto operator +=(natural_digit v) -> natural &;
@@ -205,46 +206,6 @@ namespace c8 {
             return *this;
         }
 
-        /*
-         * Compare this natural number with another one.
-         */
-        auto compare(const natural &v) const noexcept -> comparison {
-            std::size_t this_sz = num_digits_;
-            std::size_t v_sz = v.num_digits_;
-
-            /*
-             * If our sizes differ then this is really easy!
-             */
-            if (C8_UNLIKELY(this_sz > v_sz)) {
-                return comparison::gt;
-            }
-
-            if (C8_UNLIKELY(this_sz < v_sz)) {
-                return comparison::lt;
-            }
-
-            const natural_digit *this_digits = digits_;
-            const natural_digit *v_digits = v.digits_;
-
-            /*
-             * Our sizes are the same so do digit-by-digit comparisons.
-             */
-            std::size_t i = this_sz;
-            while (i--) {
-                auto a = this_digits[i];
-                auto b = v_digits[i];
-                if (a > b) {
-                    return comparison::gt;
-                }
-
-                if (a < b) {
-                    return comparison::lt;
-                }
-            }
-
-            return comparison::eq;
-        }
-
         auto operator ==(const natural &v) const -> bool {
             return compare(v) == comparison::eq;
         }
@@ -273,7 +234,7 @@ namespace c8 {
         std::size_t num_digits_;            // The number of digits in this number
         std::size_t digits_size_;           // Number of digits_ allocated
         natural_digit *digits_;             // Digits of the natural number
-        bool delete_on_final_;              // Do we need to delete digits_ on finalizing?
+        bool delete_digits_on_final_;       // Do we need to delete digits_ on finalizing?
         natural_digit small_digits_[16];    // Small fixed-size digit buffer
 
         auto reserve(std::size_t new_digits) -> void;
@@ -285,7 +246,7 @@ namespace c8 {
          * Delete digits array if it is marked for deletion.
          */
         auto delete_digits() -> void {
-            if (C8_UNLIKELY(delete_on_final_)) {
+            if (C8_UNLIKELY(delete_digits_on_final_)) {
                 delete[] digits_;
             }
         }
