@@ -130,7 +130,7 @@ namespace c8 {
     }
 
     /*
-     * Divide this integer by another one, returning the quotient and modulus.
+     * Divide this integer by another one, returning the quotient and remainder.
      */
     auto integer::divide_modulus(const integer &v) const -> std::pair<integer, integer> {
         std::pair<natural, natural> dm = magnitude_.divide_modulus(v.magnitude_);
@@ -140,6 +140,26 @@ namespace c8 {
         res.first.magnitude_ = std::move(dm.first);
         res.second.magnitude_ = std::move(dm.second);
 
+        return res;
+    }
+
+    /*
+     * Divide this integer by another one, returning the quotient.
+     */
+    auto integer::operator /(const integer &v) const -> integer {
+        integer res;
+        res.negative_ = negative_ ^ v.negative_;
+        res.magnitude_ = magnitude_ / v.magnitude_;
+        return res;
+    }
+
+    /*
+     * Divide this integer by another one, returning the remainder.
+     */
+    auto integer::operator %(const integer &v) const -> integer {
+        integer res;
+        res.negative_ = negative_ ^ v.negative_;
+        res.magnitude_ = magnitude_ % v.magnitude_;
         return res;
     }
 

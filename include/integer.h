@@ -37,6 +37,8 @@ namespace c8 {
         auto operator <<(unsigned int count) const -> integer;
         auto operator *(const integer &v) const -> integer;
         auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
+        auto operator /(const integer &v) const -> integer;
+        auto operator %(const integer &v) const -> integer;
         auto compare(const integer &v) const -> comparison;
         auto to_long_long() const -> long long;
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
@@ -92,19 +94,9 @@ namespace c8 {
             return *this;
         }
 
-        auto operator /(const integer &v) const -> integer {
-            std::pair<integer, integer> dm = divide_modulus(v);
-            return std::move(dm.first);
-        }
-
         auto operator /=(const integer &v) -> integer & {
             *this = *this / v;
             return *this;
-        }
-
-        auto operator %(const integer &v) const -> integer {
-            std::pair<integer, integer> dm = divide_modulus(v);
-            return std::move(dm.second);
         }
 
         auto operator %=(const integer &v) -> integer & {
