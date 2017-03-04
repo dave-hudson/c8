@@ -8,6 +8,29 @@
 
 namespace c8 {
     /*
+     * Return the number of bits in this digit array.
+     */
+    auto count_bits_digit_array(const natural_digit *p, std::size_t p_num_digits) noexcept -> unsigned int {
+        /*
+         * If we have no digits then this is a simple (special) case.
+         */
+        if (C8_UNLIKELY(p_num_digits == 0)) {
+            return 0;
+        }
+
+        /*
+         * We can account for trailing digits easily, but the most significant digit is
+         * more tricky.  We use __builtin_clz() to count the leadign zeros of the digit,
+         * but if the size of a digit is smaller than the size of an integer (which is
+         * what __builtin_clz() uses) then we must compensate for the extra zeros that
+         * it returns.
+         */
+        natural_digit d = p[p_num_digits - 1];
+        auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
+        return static_cast<unsigned int>((p_num_digits + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
+    }
+
+    /*
      * Zero an array of digits.
      */
     inline auto zero_digit_array(natural_digit *p, std::size_t p_num_digits) -> void {
@@ -425,6 +448,115 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Divide two digit arrays.
+     *
+     * This function requires quite a lot of temporary digit arrays!
+     */
+    inline auto divide_modulus_digit_arrays(natural_digit *quotient, std::size_t &quotient_num_digits,
+                                            natural_digit *remainder, std::size_t &remainder_num_digits,
+                                            const natural_digit *src1, std::size_t src1_num_digits,
+                                            const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        zero_digit_array(quotient, quotient_num_digits);
+
+        /*
+         * Normalize the divisor and dividend.  We want our divisor to be aligned such
+         * that it's most significant digit has its top bit set.  This may seem a little odd,
+         * but we want to ensure that any quotient estimates are as accurate as possible.
+         */
+        auto divisor_bits = count_bits_digit_array(src2, src2_num_digits);
+        auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
+        unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
+
+        remainder_num_digits = left_shift_digit_array(remainder, src1, src1_num_digits, 0, normalize_shift);
+
+        natural_digit divisor[src2_num_digits];
+        auto divisor_num_digits = left_shift_digit_array(divisor, src2, src2_num_digits, 0, normalize_shift);
+
+        natural_digit t1[src1_num_digits + 1];
+
+        /*
+         * Now we run a long divide algorithm.
+         */
+        auto upper_div_digit = divisor[divisor_num_digits - 1];
+        while (true) {
+            std::size_t i = remainder_num_digits - 1;
+
+            /*
+             * We know that our divisor has been shifted so that the most significant digit has
+             * its top bit set.  This means that the quotient for our next digit can only be 0 or 1.
+             * If we compare the most significant digit of our remainder with that of the divisor
+             * we can see if it's possibly 1.
+             */
+            std::size_t t1_num_digits;
+            auto d_hi = remainder[i];
+            if (d_hi >= upper_div_digit) {
+                /*
+                 * Our next quotient digit is probably a 1, but we have to be sure.  It's possible
+                 * that the subsequent digits of the divisor are large enough that it's actually
+                 * still zero, but in that case our next digit will be as large as it can be.
+                 */
+                t1_num_digits = left_shift_digit_array(t1, divisor, divisor_num_digits, (i - divisor_num_digits + 1), 0);
+                if (compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) != comparison::gt) {
+                    /*
+                     * Our result was 1.
+                     */
+                    quotient[i - divisor_num_digits + 1] = 1;
+                } else {
+                    /*
+                     * Our digit was actually 0 after all, so we know definitively that the next
+                     * digit is it's maximum possible size.
+                     */
+                    const auto q = static_cast<natural_digit>(-1);
+
+                    t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
+                    t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+                    quotient[i - divisor_num_digits] = q;
+                }
+            } else {
+                /*
+                 * Estimate the next digit of the result.
+                 */
+                natural_double_digit d_lo_d = static_cast<natural_double_digit>(remainder[i - 1]);
+                natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
+                natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
+                auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
+
+                t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
+                t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+
+                /*
+                 * It's possible that our estimate might be slightly too large, so we have
+                 * to evaluate it on the basis of the full divisor, not just the shifted, most
+                 * significant digit.  This may mean we reduce our estimate slightly.
+                 */
+                if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) == comparison::gt)) {
+                    q--;
+                    t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
+                    t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+                }
+
+                quotient[i - divisor_num_digits] = q;
+            }
+
+            remainder_num_digits = subtract_digit_arrays(remainder, remainder, remainder_num_digits, t1, t1_num_digits);
+            if (C8_UNLIKELY(compare_digit_arrays(remainder, remainder_num_digits, divisor, divisor_num_digits) == comparison::lt)) {
+                break;
+            }
+        }
+
+        /*
+         * Calculate our resulting digits.
+         */
+        if (!quotient[quotient_num_digits - 1]) {
+            quotient_num_digits--;
+        }
+
+        if (remainder_num_digits) {
+            remainder_num_digits = right_shift_digit_array(remainder, remainder, remainder_num_digits, 0, normalize_shift);
+        }
     }
 }
 

@@ -108,30 +108,7 @@ namespace c8 {
             return *this;
         }
 
-        /*
-         * Return the number of bits required to represent this natural number.
-         */
-        auto count_bits() const noexcept -> unsigned int {
-            /*
-             * If we have no digits then this is a simple (special) case.
-             */
-            std::size_t this_sz = num_digits_;
-            if (C8_UNLIKELY(this_sz == 0)) {
-                return 0;
-            }
-
-            /*
-             * We can account for trailing digits easily, but the most significant digit is
-             * more tricky.  We use __builtin_clz() to count the leadign zeros of the digit,
-             * but if the size of a digit is smaller than the size of an integer (which is
-             * what __builtin_clz() uses) then we must compensate for the extra zeros that
-             * it returns.
-             */
-            natural_digit d = digits_[this_sz - 1];
-            auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
-            return static_cast<unsigned int>((this_sz + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
-        }
-
+        auto count_bits() const noexcept -> unsigned int;
         auto compare(const natural &v) const noexcept -> comparison;
         auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
@@ -148,6 +125,10 @@ namespace c8 {
         auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
         auto operator *=(natural_digit v) -> natural &;
+        auto operator /(natural_digit v) const -> natural;
+        auto operator /(const natural &v) const -> natural;
+        auto operator %(natural_digit v) const -> natural_digit;
+        auto operator %(const natural &v) const -> natural;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto gcd(const natural &v) const -> natural;
@@ -166,16 +147,6 @@ namespace c8 {
             return *this;
         }
 
-        auto operator /(natural_digit v) const -> natural {
-            std::pair<natural, natural_digit> dm = divide_modulus(v);
-            return std::move(dm.first);
-        }
-
-        auto operator /(const natural &v) const -> natural {
-            std::pair<natural, natural> dm = divide_modulus(v);
-            return std::move(dm.first);
-        }
-
         auto operator /=(natural_digit v) -> natural & {
             *this = *this / v;
             return *this;
@@ -184,16 +155,6 @@ namespace c8 {
         auto operator /=(const natural &v) -> natural & {
             *this = *this / v;
             return *this;
-        }
-
-        auto operator %(natural_digit v) const -> natural_digit {
-            std::pair<natural, natural_digit> dm = divide_modulus(v);
-            return dm.second;
-        }
-
-        auto operator %(const natural &v) const -> natural {
-            std::pair<natural, natural> dm = divide_modulus(v);
-            return std::move(dm.second);
         }
 
         auto operator %=(natural_digit v) -> natural & {

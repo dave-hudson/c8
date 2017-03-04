@@ -187,6 +187,13 @@ namespace c8 {
     }
 
     /*
+     * Return the number of bits required to represent this natural number.
+     */
+    auto natural::count_bits() const noexcept -> unsigned int {
+        return count_bits_digit_array(digits_, num_digits_);
+    }
+
+    /*
      * Compare this natural number with another one.
      */
     auto natural::compare(const natural &v) const noexcept -> comparison {
@@ -504,11 +511,13 @@ namespace c8 {
             return res;
         }
 
+        std::size_t res_num_digits = this_num_digits + v_num_digits;
+        res.reserve(res_num_digits);
+
         /*
          * Are we multiplying by a single digit?  If yes, then use the fast version.
          */
         if (C8_UNLIKELY(v_num_digits == 1)) {
-            res.reserve(this_num_digits + 1);
             res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
@@ -516,8 +525,6 @@ namespace c8 {
         /*
          * We need to multiply two digit arrays.
          */
-        std::size_t res_num_digits = this_num_digits + v_num_digits - 1;
-        res.reserve(res_num_digits + 1);
         res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return res;
@@ -571,6 +578,55 @@ namespace c8 {
     }
 
     /*
+     * Divide this natural number by a single digit, returning the quotient.
+     */
+    auto natural::operator /(natural_digit v) const -> natural {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v)) {
+            throw divide_by_zero();
+        }
+
+        natural quotient;
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
+            return quotient;
+        }
+
+        natural_digit remainder;
+        quotient.reserve(this_num_digits);
+        quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
+
+        return quotient;
+    }
+
+    /*
+     * Divide this natural number by a single digit, returning the remainder.
+     */
+    auto natural::operator %(natural_digit v) const -> natural_digit {
+        std::pair<natural, natural_digit> dm = divide_modulus(v);
+        return dm.second;
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v)) {
+            throw divide_by_zero();
+        }
+
+        natural_digit remainder = 0;
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
+            return remainder;
+        }
+
+        natural_digit res_digits[this_num_digits];
+        divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
+
+        return remainder;
+    }
+
+    /*
      * Divide this natural number by another one, returning the quotient and remainder.
      */
     auto natural::divide_modulus(const natural &v) const -> std::pair<natural, natural> {
@@ -591,130 +647,113 @@ namespace c8 {
             return p;
         }
 
+        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        p.first.reserve(quotient_num_digits);
+
         /*
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
         if (C8_UNLIKELY(v.num_digits_ == 1)) {
             natural_digit mod;
-            p.first.reserve(num_digits_);
             p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, num_digits_, v.digits_[0]);
             p.second = natural(mod);
             return p;
         }
 
-        natural t1;
-        t1.reserve(num_digits_ + 1);
-        natural_digit *t1_digits = t1.digits_;
-
-        natural divisor;
-        divisor.reserve(v.num_digits_);
-        natural_digit *divisor_digits = divisor.digits_;
-
-        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
-        p.first.reserve(quotient_num_digits);
-        natural_digit *quotient_digits = p.first.digits_;
-        zero_digit_array(quotient_digits, quotient_num_digits);
-
-        p.second.reserve(v.num_digits_ + 1);
-        natural_digit *remainder_digits = p.second.digits_;
-
-        /*
-         * Normalize the divisor and dividend.  We want our divisor to be aligned such
-         * that it's most significant digit has its top bit set.  This may seem a little odd,
-         * but we want to ensure that any quotient estimates are as accurate as possible.
-         */
-        auto divisor_bits = v.count_bits();
-        auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
-
-        unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
-
-        auto remainder_num_digits = left_shift_digit_array(remainder_digits, digits_, num_digits_, 0, normalize_shift);
-        auto divisor_num_digits = left_shift_digit_array(divisor_digits, v.digits_, v.num_digits_, 0, normalize_shift);
-
-        /*
-         * Now we run a long divide algorithm.
-         */
-        auto upper_div_digit = divisor_digits[divisor_num_digits - 1];
-        while (true) {
-            std::size_t i = remainder_num_digits - 1;
-
-            /*
-             * We know that our divisor has been shifted so that the most significant digit has
-             * its top bit set.  This means that the quotient for our next digit can only be 0 or 1.
-             * If we compare the most significant digit of our remainder with that of the divisor
-             * we can see if it's possibly 1.
-             */
-            std::size_t t1_num_digits;
-            auto d_hi = remainder_digits[i];
-            if (d_hi >= upper_div_digit) {
-                /*
-                 * Our next quotient digit is probably a 1, but we have to be sure.  It's possible
-                 * that the subsequent digits of the divisor are large enough that it's actually
-                 * still zero, but in that case our next digit will be as large as it can be.
-                 */
-                t1_num_digits = left_shift_digit_array(t1_digits, divisor_digits, divisor_num_digits, (i - divisor_num_digits + 1), 0);
-                if (compare_digit_arrays(t1_digits, t1_num_digits, remainder_digits, remainder_num_digits) != comparison::gt) {
-                    /*
-                     * Our result was 1.
-                     */
-                    quotient_digits[i - divisor_num_digits + 1] = 1;
-                } else {
-                    /*
-                     * Our digit was actually 0 after all, so we know definitively that the next
-                     * digit is it's maximum possible size.
-                     */
-                    const auto q = static_cast<natural_digit>(-1);
-
-                    t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
-                    t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
-                    quotient_digits[i - divisor_num_digits] = q;
-                }
-            } else {
-                /*
-                 * Estimate the next digit of the result.
-                 */
-                natural_double_digit d_lo_d = static_cast<natural_double_digit>(remainder_digits[i - 1]);
-                natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
-                natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
-                auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
-
-                t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
-                t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
-
-                /*
-                 * It's possible that our estimate might be slightly too large, so we have
-                 * to evaluate it on the basis of the full divisor, not just the shifted, most
-                 * significant digit.  This may mean we reduce our estimate slightly.
-                 */
-                if (C8_UNLIKELY(compare_digit_arrays(t1_digits, t1_num_digits, remainder_digits, remainder_num_digits) == comparison::gt)) {
-                    q--;
-                    t1_num_digits = multiply_digit_array_digit(t1_digits, divisor_digits, divisor_num_digits, q);
-                    t1_num_digits = left_shift_digit_array(t1_digits, t1_digits, t1_num_digits, (i - divisor_num_digits), 0);
-                }
-
-                quotient_digits[i - divisor_num_digits] = q;
-            }
-
-            remainder_num_digits = subtract_digit_arrays(remainder_digits, remainder_digits, remainder_num_digits, t1_digits, t1_num_digits);
-            if (C8_UNLIKELY(compare_digit_arrays(remainder_digits, remainder_num_digits, divisor_digits, divisor_num_digits) == comparison::lt)) {
-                break;
-            }
-        }
-
-        /*
-         * Calculate our resulting digits.
-         */
-        if (!quotient_digits[quotient_num_digits - 1]) {
-            quotient_num_digits--;
-        }
-
         p.first.num_digits_ = quotient_num_digits;
-        if (remainder_num_digits) {
-            p.second.num_digits_ = right_shift_digit_array(remainder_digits, remainder_digits, remainder_num_digits, 0, normalize_shift);
-        }
+
+        std::size_t remainder_num_digits = num_digits_ + 1;
+        p.second.reserve(remainder_num_digits);
+        p.second.num_digits_ = remainder_num_digits;
+
+        divide_modulus_digit_arrays(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
+                                    digits_, num_digits_, v.digits_, v.num_digits_);
 
         return p;
+    }
+
+    auto natural::operator /(const natural &v) const -> natural {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v.num_digits_)) {
+            throw divide_by_zero();
+        }
+
+        natural quotient;
+
+        /*
+         * Is the result zero?  If yes then we're done.
+         */
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
+            return quotient;
+        }
+
+        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        quotient.reserve(quotient_num_digits);
+
+        /*
+         * Are we dividing by a single digit?  If yes, then use the fast version
+         * of divide_modulus!
+         */
+        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+            natural_digit mod;
+            quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, num_digits_, v.digits_[0]);
+            return quotient;
+        }
+
+        quotient.num_digits_ = quotient_num_digits;
+
+        std::size_t remainder_num_digits = num_digits_ + 1;
+        natural_digit remainder_digits[remainder_num_digits];
+
+        divide_modulus_digit_arrays(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
+                                    digits_, num_digits_, v.digits_, v.num_digits_);
+
+        return quotient;
+    }
+
+    auto natural::operator %(const natural &v) const -> natural {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v.num_digits_)) {
+            throw divide_by_zero();
+        }
+
+        natural remainder;
+
+        /*
+         * Is the result zero?  If yes then we're done.
+         */
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
+            remainder = *this;
+            return remainder;
+        }
+
+        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        natural_digit quotient_digits[quotient_num_digits];
+
+        /*
+         * Are we dividing by a single digit?  If yes, then use the fast version
+         * of divide_modulus!
+         */
+        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+            natural_digit mod;
+            divide_modulus_digit_array_digit(quotient_digits, mod, digits_, num_digits_, v.digits_[0]);
+            remainder = natural(mod);
+            return remainder;
+        }
+
+        std::size_t remainder_num_digits = num_digits_ + 1;
+        remainder.reserve(remainder_num_digits);
+        remainder.num_digits_ = remainder_num_digits;
+
+        divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
+                                    digits_, num_digits_, v.digits_, v.num_digits_);
+
+        return remainder;
     }
 
     /*
