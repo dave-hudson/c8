@@ -158,7 +158,6 @@ namespace c8 {
      */
     auto integer::operator %(const integer &v) const -> integer {
         integer res;
-        res.negative_ = negative_ ^ v.negative_;
         res.magnitude_ = magnitude_ % v.magnitude_;
         return res;
     }
