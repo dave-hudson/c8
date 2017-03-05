@@ -217,12 +217,23 @@ namespace c8 {
      * Add another natural number to this one.
      */
     auto natural::operator +(const natural &v) const -> natural {
-        /*
-         * Work out which of the two numbers is larger and which is smaller.
-         */
         std::size_t this_num_digits = num_digits_;
         std::size_t v_num_digits = v.num_digits_;
 
+        natural res;
+
+        /*
+         * Are we adding a single digit?  If yes, then use the fast version.
+         */
+        if (C8_UNLIKELY(v_num_digits == 1)) {
+            res.reserve(this_num_digits + 1);
+            res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
+            return res;
+        }
+
+        /*
+         * Work out which of the two numbers is larger and which is smaller.
+         */
         const natural_digit *larger_digits;
         const natural_digit *smaller_digits;
         std::size_t larger_num_digits;
@@ -239,7 +250,6 @@ namespace c8 {
             smaller_num_digits = this_num_digits;
         }
 
-        natural res;
         res.reserve(larger_num_digits + 1);
         res.num_digits_ = add_digit_arrays(res.digits_, larger_digits, larger_num_digits, smaller_digits, smaller_num_digits);
 
@@ -262,11 +272,21 @@ namespace c8 {
      * Add another natural number to this one.
      */
     auto natural::operator +=(const natural &v) -> natural & {
+        std::size_t this_num_digits = num_digits_;
+        std::size_t v_num_digits = v.num_digits_;
+
+        /*
+         * Are we adding a single digit?  If yes, then use the fast version.
+         */
+        if (C8_UNLIKELY(v_num_digits == 1)) {
+            expand(this_num_digits + 1);
+            num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
+            return *this;
+        }
+
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
-        std::size_t this_num_digits = num_digits_;
-        std::size_t v_num_digits = v.num_digits_;
         const natural_digit *larger_digits;
         const natural_digit *smaller_digits;
         std::size_t larger_num_digits;
@@ -322,6 +342,29 @@ namespace c8 {
         std::size_t this_num_digits = num_digits_;
         std::size_t v_num_digits = v.num_digits_;
 
+        natural res;
+        res.reserve(this_num_digits);
+
+        /*
+         * Are we subtracting a single digit?  If yes, then use the fast version.
+         */
+        if (C8_UNLIKELY(v_num_digits == 1)) {
+            auto v_digit = v.digits_[0];
+
+            if (C8_UNLIKELY(this_num_digits == 1)) {
+                if (C8_UNLIKELY(digits_[0] < v_digit)) {
+                    throw not_a_number();
+                }
+            } else if (C8_UNLIKELY(!this_num_digits)) {
+                if (C8_UNLIKELY(v_digit)) {
+                    throw not_a_number();
+                }
+            }
+
+            res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
+            return res;
+        }
+
         /*
          * We should not have a negative result!
          */
@@ -329,8 +372,6 @@ namespace c8 {
             throw not_a_number();
         }
 
-        natural res;
-        res.reserve(this_num_digits);
         res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return res;
@@ -366,6 +407,14 @@ namespace c8 {
     auto natural::operator -=(const natural &v) -> natural & {
         std::size_t this_num_digits = num_digits_;
         std::size_t v_num_digits = v.num_digits_;
+
+        /*
+         * Are we subtracting a single digit?  If yes, then use the fast version.
+         */
+        if (C8_UNLIKELY(v_num_digits == 1)) {
+            num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
+            return *this;
+        }
 
         /*
          * We should not have a negative result!
