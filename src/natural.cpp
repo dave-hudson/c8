@@ -605,8 +605,6 @@ namespace c8 {
      * Divide this natural number by a single digit, returning the remainder.
      */
     auto natural::operator %(natural_digit v) const -> natural_digit {
-        std::pair<natural, natural_digit> dm = divide_modulus(v);
-        return dm.second;
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
@@ -789,8 +787,9 @@ namespace c8 {
                 break;
             }
 
-            larger = std::move(smaller);
-            smaller = std::move(mod);
+            larger.delete_digits();
+            larger.steal_digits(smaller);
+            smaller.steal_digits(mod);
         }
 
         return smaller;
