@@ -231,27 +231,8 @@ namespace c8 {
             return res;
         }
 
-        /*
-         * Work out which of the two numbers is larger and which is smaller.
-         */
-        const natural_digit *larger_digits;
-        const natural_digit *smaller_digits;
-        std::size_t larger_num_digits;
-        std::size_t smaller_num_digits;
-        if (this_num_digits >= v_num_digits) {
-            larger_digits = digits_;
-            smaller_digits = v.digits_;
-            larger_num_digits = this_num_digits;
-            smaller_num_digits = v_num_digits;
-        } else {
-            larger_digits = v.digits_;
-            smaller_digits = digits_;
-            larger_num_digits = v_num_digits;
-            smaller_num_digits = this_num_digits;
-        }
-
-        res.reserve(larger_num_digits + 1);
-        res.num_digits_ = add_digit_arrays(res.digits_, larger_digits, larger_num_digits, smaller_digits, smaller_num_digits);
+        res.reserve(this_num_digits + v_num_digits);
+        res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return res;
     }
@@ -284,27 +265,8 @@ namespace c8 {
             return *this;
         }
 
-        /*
-         * Work out which of the two numbers is larger and which is smaller.
-         */
-        const natural_digit *larger_digits;
-        const natural_digit *smaller_digits;
-        std::size_t larger_num_digits;
-        std::size_t smaller_num_digits;
-        if (this_num_digits >= v_num_digits) {
-            larger_digits = digits_;
-            smaller_digits = v.digits_;
-            larger_num_digits = this_num_digits;
-            smaller_num_digits = v_num_digits;
-        } else {
-            larger_digits = v.digits_;
-            smaller_digits = digits_;
-            larger_num_digits = v_num_digits;
-            smaller_num_digits = this_num_digits;
-        }
-
-        expand(larger_num_digits + 1);
-        num_digits_ = add_digit_arrays(digits_, larger_digits, larger_num_digits, smaller_digits, smaller_num_digits);
+        expand(this_num_digits + v_num_digits);
+        num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
         return *this;
     }

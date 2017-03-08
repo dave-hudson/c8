@@ -158,12 +158,31 @@ namespace c8 {
      */
     inline auto add_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
+         * Work out which of the two numbers is larger and which is smaller.
+         */
+        const natural_digit *larger;
+        const natural_digit *smaller;
+        std::size_t larger_num_digits;
+        std::size_t smaller_num_digits;
+        if (src1_num_digits >= src2_num_digits) {
+            larger = src1;
+            larger_num_digits = src1_num_digits;
+            smaller = src2;
+            smaller_num_digits = src2_num_digits;
+        } else {
+            larger = src2;
+            larger_num_digits = src2_num_digits;
+            smaller = src1;
+            smaller_num_digits = src1_num_digits;
+        }
+
+        /*
          * Add the parts together until we run out of digits in the smaller part.
          */
         natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < src2_num_digits; i++) {
-            auto a = static_cast<natural_double_digit>(src1[i]);
-            auto b = static_cast<natural_double_digit>(src2[i]);
+        for (std::size_t i = 0; i < smaller_num_digits; i++) {
+            auto a = static_cast<natural_double_digit>(larger[i]);
+            auto b = static_cast<natural_double_digit>(smaller[i]);
             acc += (a + b);
             res[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
@@ -172,13 +191,13 @@ namespace c8 {
         /*
          * Add the remaining digits and any carries.
          */
-        for (std::size_t i = src2_num_digits; i < src1_num_digits; i++) {
-            acc += static_cast<natural_double_digit>(src1[i]);
+        for (std::size_t i = smaller_num_digits; i < larger_num_digits; i++) {
+            acc += static_cast<natural_double_digit>(larger[i]);
             res[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
 
-        std::size_t res_num_digits = src1_num_digits;
+        std::size_t res_num_digits = larger_num_digits;
         if (C8_UNLIKELY(acc)) {
             res[res_num_digits++] = static_cast<natural_digit>(acc);
         }
