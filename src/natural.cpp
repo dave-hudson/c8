@@ -208,8 +208,13 @@ namespace c8 {
 
         natural res;
         res.reserve(this_num_digits + 1);
-        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
 
+        if (C8_LIKELY(this_num_digits == 1)) {
+            res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v);
+            return res;
+        }
+
+        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -223,17 +228,28 @@ namespace c8 {
         natural res;
 
         /*
-         * Are we adding a single digit?  If yes, then use the fast version.
+         * Is one or more of our values a single digit?  If yes, then use a fast version.
          */
-        if (C8_UNLIKELY(v_num_digits == 1)) {
+        if (C8_LIKELY(v_num_digits == 1)) {
             res.reserve(this_num_digits + 1);
+
+            if (C8_LIKELY(this_num_digits == 1)) {
+                res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v.digits_[0]);
+                return res;
+            }
+
             res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
 
-        res.reserve(this_num_digits + v_num_digits);
-        res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.reserve(v_num_digits + this_num_digits);
 
+        if (C8_LIKELY(this_num_digits == 1)) {
+            res.num_digits_ = add_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
+            return res;
+        }
+
+        res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -244,8 +260,13 @@ namespace c8 {
         std::size_t this_num_digits = num_digits_;
 
         expand(this_num_digits + 1);
-        num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
 
+        if (C8_LIKELY(this_num_digits == 1)) {
+            num_digits_ = add_digit_digit(digits_, digits_[0], v);
+            return *this;
+        }
+
+        num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -257,17 +278,28 @@ namespace c8 {
         std::size_t v_num_digits = v.num_digits_;
 
         /*
-         * Are we adding a single digit?  If yes, then use the fast version.
+         * Is one or more of our values a single digit?  If yes, then use a fast version.
          */
-        if (C8_UNLIKELY(v_num_digits == 1)) {
+        if (C8_LIKELY(v_num_digits == 1)) {
             expand(this_num_digits + 1);
+
+            if (C8_LIKELY(this_num_digits == 1)) {
+                num_digits_ = add_digit_digit(digits_, digits_[0], v.digits_[0]);
+                return *this;
+            }
+
             num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
             return *this;
         }
 
-        expand(this_num_digits + v_num_digits);
-        num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        expand(v_num_digits + this_num_digits);
 
+        if (C8_LIKELY(this_num_digits == 1)) {
+            num_digits_ = add_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
+            return *this;
+        }
+
+        num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -280,7 +312,7 @@ namespace c8 {
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(this_num_digits == 1)) {
+        if (C8_LIKELY(this_num_digits == 1)) {
             if (C8_UNLIKELY(digits_[0] < v)) {
                 throw not_a_number();
             }
