@@ -1566,10 +1566,10 @@ auto test_natural_multiply_6b() -> result {
 }
 
 /*
- * Test division.
+ * Divide a 2 digit natural number by another 2 digit natural number.
  */
-auto test_natural_divide_0() -> result {
-    result r("nat div 0");
+auto test_natural_divide_0a() -> result {
+    result r("nat div 0a");
     c8::natural d0(1000000000000000000ULL);
     c8::natural d1(99999999999999999ULL);
 
@@ -1584,10 +1584,29 @@ auto test_natural_divide_0() -> result {
 }
 
 /*
- * Test division.
+ * Divide a 2 digit natural number by another 2 digit natural number.
  */
-auto test_natural_divide_1() -> result {
-    result r("nat div 1");
+auto test_natural_divide_0b() -> result {
+    result r("nat div 0b");
+    c8::natural d0(1000000000000000000ULL);
+    auto mo0 = d0;
+    c8::natural d1(99999999999999999ULL);
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("10,10");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another 2 digit natural number.
+ */
+auto test_natural_divide_1a() -> result {
+    result r("nat div 1a");
     c8::natural d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
     c8::natural d1(99999999999999999ULL);
 
@@ -1602,10 +1621,29 @@ auto test_natural_divide_1() -> result {
 }
 
 /*
- * Test division.
+ * Divide a large natural number by another 2 digit natural number.
  */
-auto test_natural_divide_2() -> result {
-    result r("nat div 2");
+auto test_natural_divide_1b() -> result {
+    result r("nat div 1b");
+    c8::natural d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
+    auto mo0 = d0;
+    c8::natural d1(99999999999999999ULL);
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("78292387927518758972102054472775487212767983201652300846,35600667362958008");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_2a() -> result {
+    result r("nat div 2a");
     c8::natural d0("0x100000000000000000000000000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000001000000000000000100000000");
 
@@ -1620,10 +1658,29 @@ auto test_natural_divide_2() -> result {
 }
 
 /*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_2b() -> result {
+    result r("nat div 2b");
+    c8::natural d0("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+    auto mo0 = d0;
+    c8::natural d1("0x10000000000000001000000000000000100000000");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("ffffffffffffffff000000000000000,100000000000000000000000");
+    return r;
+}
+
+/*
  * Divide by zero.  This will throw an exception!
  */
-auto test_natural_divide_3() -> result {
-    result r("nat div 3");
+auto test_natural_divide_3a() -> result {
+    result r("nat div 3a");
     c8::natural d0(2000);
     c8::natural d1(0);
 
@@ -1650,12 +1707,42 @@ auto test_natural_divide_3() -> result {
 }
 
 /*
- * Test division.
+ * Divide by zero.  This will throw an exception!
  */
-auto test_natural_divide_4() -> result {
-    result r("nat div 4");
+auto test_natural_divide_3b() -> result {
+    result r("nat div 3b");
+    c8::natural d0(2000);
+    c8::natural d1(0);
+
+    r.start_clock();
+    try {
+        d0 /= d1;
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::divide_by_zero &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+/*
+ * Divide a 2 digit natural number by a 1 digit natural number.
+ */
+auto test_natural_divide_4a() -> result {
+    result r("nat div 4a");
     c8::natural d0("0x10000000000000");
-    c8::natural d1("0x100000000");
+    c8::natural d1("0x10000000");
 
     r.start_clock();
     auto d2 = d0 / d1;
@@ -1663,15 +1750,34 @@ auto test_natural_divide_4() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d2 << ',' << mo2;
-    r.check_pass("100000,0");
+    r.check_pass("1000000,0");
     return r;
 }
 
 /*
- * Test division.
+ * Divide a 2 digit natural number by a 1 digit natural number.
  */
-auto test_natural_divide_5() -> result {
-    result r("nat div 5");
+auto test_natural_divide_4b() -> result {
+    result r("nat div 4b");
+    c8::natural d0("0x10000000000000");
+    auto mo0 = d0;
+    c8::natural d1("0x10000000");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("1000000,0");
+    return r;
+}
+
+/*
+ * Divide a large digit natural number by a 1 digit natural number.
+ */
+auto test_natural_divide_5a() -> result {
+    result r("nat div 5a");
     c8::natural d0("0x10000000000000001000000000000000100000000");
     c8::natural d1("1");
 
@@ -1686,10 +1792,29 @@ auto test_natural_divide_5() -> result {
 }
 
 /*
+ * Divide a large digit natural number by a 1 digit natural number.
+ */
+auto test_natural_divide_5b() -> result {
+    result r("nat div 5b");
+    c8::natural d0("0x10000000000000001000000000000000100000000");
+    auto mo0 = d0;
+    c8::natural d1("1");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("10000000000000001000000000000000100000000,0");
+    return r;
+}
+
+/*
  * Trigger a divide that exercises a corner case in the divide estimation logic.
  */
-auto test_natural_divide_6() -> result {
-    result r("nat div 6");
+auto test_natural_divide_6a() -> result {
+    result r("nat div 6a");
     c8::natural d0("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
     c8::natural d1("0x10000000000000000000000010000000000000000");
 
@@ -1700,6 +1825,95 @@ auto test_natural_divide_6() -> result {
 
     r.get_stream() << std::hex << d2 << ',' << mo2;
     r.check_pass("1000000000000000000000000ffffffff,ffffffffffffffff000000010000000000000000");
+    return r;
+}
+
+/*
+ * Trigger a divide that exercises a corner case in the divide estimation logic.
+ */
+auto test_natural_divide_6b() -> result {
+    result r("nat div 6b");
+    c8::natural d0("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
+    auto mo0 = d0;
+    c8::natural d1("0x10000000000000000000000010000000000000000");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("1000000000000000000000000ffffffff,ffffffffffffffff000000010000000000000000");
+    return r;
+}
+
+/*
+ * Divide a 3 digit natural number by a single digit value.
+ */
+auto test_natural_divide_7a() -> result {
+    result r("nat div 7a");
+    c8::natural d0("0x100000000000000000");
+
+    r.start_clock();
+    auto d2 = d0 / 0x10000000;
+    auto mo2 = d0 % 0x10000000;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d2 << ',' << mo2;
+    r.check_pass("10000000000,0");
+    return r;
+}
+
+/*
+ * Divide a 3 digit natural number by a single digit value.
+ */
+auto test_natural_divide_7b() -> result {
+    result r("nat div 7b");
+    c8::natural d0("0x100000000000000000");
+    auto mo0 = d0;
+
+    r.start_clock();
+    d0 /= 0x10000000;
+    mo0 %= 0x10000000;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("10000000000,0");
+    return r;
+}
+
+/*
+ * Divide a 1 digit natural number by a single digit value.
+ */
+auto test_natural_divide_8a() -> result {
+    result r("nat div 8a");
+    c8::natural d0("894597578");
+
+    r.start_clock();
+    auto d2 = d0 / 33;
+    auto mo2 = d0 % 33;
+    r.stop_clock();
+
+    r.get_stream() << d2 << ',' << mo2;
+    r.check_pass("27109017,17");
+    return r;
+}
+
+/*
+ * Divide a 1 digit natural number by a single digit value.
+ */
+auto test_natural_divide_8b() -> result {
+    result r("nat div 8b");
+    c8::natural d0("894597578");
+    auto mo0 = d0;
+
+    r.start_clock();
+    d0 /= 33;
+    mo0 %= 33;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("27109017,17");
     return r;
 }
 
