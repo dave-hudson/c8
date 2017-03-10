@@ -1330,10 +1330,10 @@ auto test_natural_rshift_4() -> result {
 }
 
 /*
- * Test multiplication.
+ * Multiply a 1 digit natural number by another 1 digit natural number.
  */
-auto test_natural_multiply_0() -> result {
-    result r("nat mul 0");
+auto test_natural_multiply_0a() -> result {
+    result r("nat mul 0a");
     c8::natural mu0(3);
     c8::natural mu1(22);
 
@@ -1347,10 +1347,27 @@ auto test_natural_multiply_0() -> result {
 }
 
 /*
- * Test multiplication.
+ * Multiply a 1 digit natural number by another 1 digit natural number.
  */
-auto test_natural_multiply_1() -> result {
-    result r("nat mul 1");
+auto test_natural_multiply_0b() -> result {
+    result r("nat mul 0b");
+    c8::natural mu0(3);
+    c8::natural mu1(22);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("66");
+    return r;
+}
+
+/*
+ * Multiply a multi-digit natural number by another multi-digit natural number.
+ */
+auto test_natural_multiply_1a() -> result {
+    result r("nat mul 1a");
     c8::natural mu0(1000000000000000000ULL);
     c8::natural mu1(9999999999999999999ULL);
 
@@ -1364,10 +1381,27 @@ auto test_natural_multiply_1() -> result {
 }
 
 /*
- * Test multiplication.
+ * Multiply a multi-digit natural number by another multi-digit natural number.
  */
-auto test_natural_multiply_2() -> result {
-    result r("nat mul 2");
+auto test_natural_multiply_1b() -> result {
+    result r("nat mul 1b");
+    c8::natural mu0(1000000000000000000ULL);
+    c8::natural mu1(9999999999999999999ULL);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("9999999999999999999000000000000000000");
+    return r;
+}
+
+/*
+ * Multiply a multi-digit natural number by another multi-digit natural number.
+ */
+auto test_natural_multiply_2a() -> result {
+    result r("nat mul 2a");
     c8::natural mu0(0x2000000000000000ULL);
     c8::natural mu1(0x4000000000000000ULL);
 
@@ -1381,10 +1415,27 @@ auto test_natural_multiply_2() -> result {
 }
 
 /*
- * Test multiplication.
+ * Multiply a multi-digit natural number by another multi-digit natural number.
  */
-auto test_natural_multiply_3() -> result {
-    result r("nat mul 3");
+auto test_natural_multiply_2b() -> result {
+    result r("nat mul 2b");
+    c8::natural mu0(0x2000000000000000ULL);
+    c8::natural mu1(0x4000000000000000ULL);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
+    r.check_pass("8000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Multiply a large natural number by another large natural number.
+ */
+auto test_natural_multiply_3a() -> result {
+    result r("nat mul 3a");
     c8::natural mu0("12345678901234567890123456789012345678901234567890123456789012345678901234567890");
     c8::natural mu1("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
@@ -1398,10 +1449,27 @@ auto test_natural_multiply_3() -> result {
 }
 
 /*
- * Test multiplication.
+ * Multiply a large natural number by another large natural number.
  */
-auto test_natural_multiply_4() -> result {
-    result r("nat mul 4");
+auto test_natural_multiply_3b() -> result {
+    result r("nat mul 3b");
+    c8::natural mu0("12345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    c8::natural mu1("1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("15241578753238836750495351562566681945008382873376009755225118122311263526910001371743100137174310012193273126047859425087639153757049236500533455762536198787501905199875019052100");
+    return r;
+}
+
+/*
+ * Multiply a large natural number by 1 digit natural number.
+ */
+auto test_natural_multiply_4a() -> result {
+    result r("nat mul 4a");
     c8::natural mu0("0x1000000000000000100000000000000100000000");
     c8::natural mu1("0xabcdef12");
 
@@ -1410,6 +1478,89 @@ auto test_natural_multiply_4() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << mu2;
+    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
+    return r;
+}
+
+/*
+ * Multiply a large natural number by 1 digit natural number.
+ */
+auto test_natural_multiply_4b() -> result {
+    result r("nat mul 4b");
+    c8::natural mu0("0x1000000000000000100000000000000100000000");
+    c8::natural mu1("0xabcdef12");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
+    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
+    return r;
+}
+
+/*
+ * Multiply a 1 digit natural number by a large natural number.
+ */
+auto test_natural_multiply_5a() -> result {
+    result r("nat mul 5a");
+    c8::natural mu0("0xabcdef12");
+    c8::natural mu1("0x1000000000000000100000000000000100000000");
+
+    r.start_clock();
+    auto mu2 = mu0 * mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu2;
+    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
+    return r;
+}
+
+/*
+ * Multiply a 1 digit natural number by a large natural number.
+ */
+auto test_natural_multiply_5b() -> result {
+    result r("nat mul 5b");
+    c8::natural mu0("0xabcdef12");
+    c8::natural mu1("0x1000000000000000100000000000000100000000");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
+    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
+    return r;
+}
+
+/*
+ * Multiply a large natural number by a single digit.
+ */
+auto test_natural_multiply_6a() -> result {
+    result r("nat mul 6a");
+    c8::natural mu0("0x1000000000000000100000000000000100000000");
+
+    r.start_clock();
+    auto mu2 = mu0 * 0x0abcdef12;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu2;
+    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
+    return r;
+}
+
+/*
+ * Multiply a large natural number by a single digit.
+ */
+auto test_natural_multiply_6b() -> result {
+    result r("nat mul 6b");
+    c8::natural mu0("0x1000000000000000100000000000000100000000");
+
+    r.start_clock();
+    mu0 *= 0x0abcdef12;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
     r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
     return r;
 }
