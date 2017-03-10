@@ -439,18 +439,18 @@ namespace c8 {
         std::size_t v_num_digits = v.num_digits_;
 
         /*
+         * We should not have a negative result!
+         */
+        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
+            throw not_a_number();
+        }
+
+        /*
          * Are we subtracting a single digit?  If yes, then use the fast version.
          */
         if (C8_UNLIKELY(v_num_digits == 1)) {
             num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
             return *this;
-        }
-
-        /*
-         * We should not have a negative result!
-         */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
-            throw not_a_number();
         }
 
         num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
