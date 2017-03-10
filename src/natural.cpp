@@ -641,6 +641,14 @@ namespace c8 {
     }
 
     /*
+     * Multiply this natural number with another one.
+     */
+    auto natural::operator *=(const natural &v) -> natural & {
+        *this = *this * v;
+        return *this;
+    }
+
+    /*
      * Divide this natural number by a natural digit, returning the quotient and remainder.
      */
     auto natural::divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit> {
@@ -662,53 +670,6 @@ namespace c8 {
         p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
 
         return p;
-    }
-
-    /*
-     * Divide this natural number by a single digit, returning the quotient.
-     */
-    auto natural::operator /(natural_digit v) const -> natural {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        if (C8_UNLIKELY(!v)) {
-            throw divide_by_zero();
-        }
-
-        natural quotient;
-        std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
-            return quotient;
-        }
-
-        natural_digit remainder;
-        quotient.reserve(this_num_digits);
-        quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
-
-        return quotient;
-    }
-
-    /*
-     * Divide this natural number by a single digit, returning the remainder.
-     */
-    auto natural::operator %(natural_digit v) const -> natural_digit {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        if (C8_UNLIKELY(!v)) {
-            throw divide_by_zero();
-        }
-
-        natural_digit remainder = 0;
-        std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
-            return remainder;
-        }
-
-        natural_digit res_digits[this_num_digits];
-        divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
-
-        return remainder;
     }
 
     /*
@@ -758,6 +719,33 @@ namespace c8 {
         return p;
     }
 
+    /*
+     * Divide this natural number by a single digit, returning the quotient.
+     */
+    auto natural::operator /(natural_digit v) const -> natural {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v)) {
+            throw divide_by_zero();
+        }
+
+        natural quotient;
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
+            return quotient;
+        }
+
+        natural_digit remainder;
+        quotient.reserve(this_num_digits);
+        quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
+
+        return quotient;
+    }
+
+    /*
+     * Divide this natural number by another one, returning the quotient.
+     */
     auto natural::operator /(const natural &v) const -> natural {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
@@ -799,6 +787,48 @@ namespace c8 {
         return quotient;
     }
 
+    /*
+     * Divide this natural number by a single digit, returning the quotient.
+     */
+    auto natural::operator /=(natural_digit v) -> natural & {
+        *this = *this / v;
+        return *this;
+    }
+
+    /*
+     * Divide this natural number by another one, returning the quotient.
+     */
+    auto natural::operator /=(const natural &v) -> natural & {
+        *this = *this / v;
+        return *this;
+    }
+
+    /*
+     * Divide this natural number by a single digit, returning the remainder.
+     */
+    auto natural::operator %(natural_digit v) const -> natural_digit {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (C8_UNLIKELY(!v)) {
+            throw divide_by_zero();
+        }
+
+        natural_digit remainder = 0;
+        std::size_t this_num_digits = num_digits_;
+        if (C8_UNLIKELY(!this_num_digits)) {
+            return remainder;
+        }
+
+        natural_digit res_digits[this_num_digits];
+        divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
+
+        return remainder;
+    }
+
+    /*
+     * Divide this natural number by another one, returning the remainder.
+     */
     auto natural::operator %(const natural &v) const -> natural {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
@@ -839,6 +869,22 @@ namespace c8 {
                                     digits_, num_digits_, v.digits_, v.num_digits_);
 
         return remainder;
+    }
+
+    /*
+     * Divide this natural number by a single digit, returning the remainder.
+     */
+    auto natural::operator %=(natural_digit v) -> natural & {
+        *this = *this % v;
+        return *this;
+    }
+
+    /*
+     * Divide this natural number by another one, returning the remainder.
+     */
+    auto natural::operator %=(const natural &v) -> natural & {
+        *this = *this % v;
+        return *this;
     }
 
     /*

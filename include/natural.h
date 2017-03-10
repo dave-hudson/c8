@@ -125,10 +125,15 @@ namespace c8 {
         auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
         auto operator *=(natural_digit v) -> natural &;
+        auto operator *=(const natural &v) -> natural &;
         auto operator /(natural_digit v) const -> natural;
         auto operator /(const natural &v) const -> natural;
+        auto operator /=(natural_digit v) -> natural &;
+        auto operator /=(const natural &v) -> natural &;
         auto operator %(natural_digit v) const -> natural_digit;
         auto operator %(const natural &v) const -> natural;
+        auto operator %=(natural_digit v) -> natural &;
+        auto operator %=(const natural &v) -> natural &;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto gcd(const natural &v) const -> natural;
@@ -140,31 +145,6 @@ namespace c8 {
          */
         auto is_zero() const noexcept -> bool {
             return (num_digits_ == 0) ? true : false;
-        }
-
-        auto operator *=(const natural &v) -> natural & {
-            *this = *this * v;
-            return *this;
-        }
-
-        auto operator /=(natural_digit v) -> natural & {
-            *this = *this / v;
-            return *this;
-        }
-
-        auto operator /=(const natural &v) -> natural & {
-            *this = *this / v;
-            return *this;
-        }
-
-        auto operator %=(natural_digit v) -> natural & {
-            *this = *this % v;
-            return *this;
-        }
-
-        auto operator %=(const natural &v) -> natural & {
-            *this = *this % v;
-            return *this;
         }
 
         auto operator ==(const natural &v) const -> bool {
