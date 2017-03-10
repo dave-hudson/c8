@@ -378,10 +378,10 @@ namespace c8 {
         /*
          * Are we subtracting a single digit?  If yes, then use the fast version.
          */
-        if (C8_UNLIKELY(v_num_digits == 1)) {
+        if (C8_LIKELY(v_num_digits == 1)) {
             auto v_digit = v.digits_[0];
 
-            if (C8_UNLIKELY(this_num_digits == 1)) {
+            if (C8_LIKELY(this_num_digits == 1)) {
                 if (C8_UNLIKELY(digits_[0] < v_digit)) {
                     throw not_a_number();
                 }
@@ -416,7 +416,7 @@ namespace c8 {
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(this_num_digits == 1)) {
+        if (C8_LIKELY(this_num_digits == 1)) {
             if (C8_UNLIKELY(digits_[0] < v)) {
                 throw not_a_number();
             }
@@ -448,7 +448,7 @@ namespace c8 {
         /*
          * Are we subtracting a single digit?  If yes, then use the fast version.
          */
-        if (C8_UNLIKELY(v_num_digits == 1)) {
+        if (C8_LIKELY(v_num_digits == 1)) {
             num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
             return *this;
         }
@@ -594,15 +594,23 @@ namespace c8 {
         res.reserve(res_num_digits);
 
         /*
-         * Are we multiplying by a single digit?  If yes, then use the fast version.
+         * Is our second number only one digit?
          */
-        if (C8_UNLIKELY(v_num_digits == 1)) {
+        if (C8_LIKELY(v_num_digits == 1)) {
             res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
 
         /*
-         * We need to multiply two digit arrays.
+         * Are we multiply n digits to a single digit?
+         */
+        if (C8_LIKELY(this_num_digits == 1)) {
+            res.num_digits_ = multiply_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
+            return res;
+        }
+
+        /*
+         * Worst case scenario:  We're multiplying two arrays of digits.
          */
         res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
 
@@ -731,7 +739,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+        if (C8_LIKELY(v.num_digits_ == 1)) {
             natural_digit mod;
             p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, num_digits_, v.digits_[0]);
             p.second = natural(mod);
@@ -774,7 +782,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+        if (C8_LIKELY(v.num_digits_ == 1)) {
             natural_digit mod;
             quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, num_digits_, v.digits_[0]);
             return quotient;
@@ -816,7 +824,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_UNLIKELY(v.num_digits_ == 1)) {
+        if (C8_LIKELY(v.num_digits_ == 1)) {
             natural_digit mod;
             divide_modulus_digit_array_digit(quotient_digits, mod, digits_, num_digits_, v.digits_[0]);
             remainder = natural(mod);
