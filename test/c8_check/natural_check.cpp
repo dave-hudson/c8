@@ -204,10 +204,10 @@ auto test_natural_count_bits_3() -> result {
 }
 
 /*
- * Add a 1 digit value and a 1 digit value.
+ * Add a 1 digit natural number and another 1 digit natural number.
  */
-auto test_natural_add_0() -> result {
-    result r("nat add 0");
+auto test_natural_add_0a() -> result {
+    result r("nat add 0a");
     c8::natural a0("31");
     c8::natural a1("42");
 
@@ -221,10 +221,27 @@ auto test_natural_add_0() -> result {
 }
 
 /*
- * Add a 0 digit value and a 1 digit value.
+ * Add a 1 digit natural number and another 1 digit natural number.
  */
-auto test_natural_add_1() -> result {
-    result r("nat add 1");
+auto test_natural_add_0b() -> result {
+    result r("nat add 0b");
+    c8::natural a0("31");
+    c8::natural a1("42");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("73");
+    return r;
+}
+
+/*
+ * Add a 0 digit natural number and a 1 digit natural number.
+ */
+auto test_natural_add_1a() -> result {
+    result r("nat add 1a");
     c8::natural a0("0");
     c8::natural a1("42");
 
@@ -238,10 +255,27 @@ auto test_natural_add_1() -> result {
 }
 
 /*
- * Add a 2 digit value and a 1 digit value, causing an overflow to 3 digits.
+ * Add a 0 digit natural number and a 1 digit natural number.
  */
-auto test_natural_add_2() -> result {
-    result r("nat add 2");
+auto test_natural_add_1b() -> result {
+    result r("nat add 1b");
+    c8::natural a0("0");
+    c8::natural a1("42");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("42");
+    return r;
+}
+
+/*
+ * Add a 2 digit natural number and a 1 digit natural number, resulting in a 3 digit natural number.
+ */
+auto test_natural_add_2a() -> result {
+    result r("nat add 2a");
     c8::natural a0(0xffffffffffffffffULL);
     c8::natural a1(0x2ULL);
 
@@ -255,10 +289,27 @@ auto test_natural_add_2() -> result {
 }
 
 /*
+ * Add a 2 digit natural number and a 1 digit natural number, resulting in a 3 digit natural number.
+ */
+auto test_natural_add_2b() -> result {
+    result r("nat add 2b");
+    c8::natural a0(0xffffffffffffffffULL);
+    c8::natural a1(0x2ULL);
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << a0;
+    r.check_pass("10000000000000001");
+    return r;
+}
+
+/*
  * Add two very large values.
  */
-auto test_natural_add_3() -> result {
-    result r("nat add 3");
+auto test_natural_add_3a() -> result {
+    result r("nat add 3a");
     c8::natural a0("10000000000000000000000000000000000000000000000000000000000000000008789");
     c8::natural a1("88888880000000000000000000000000000000000000000000000000000000999992000");
 
@@ -272,10 +323,27 @@ auto test_natural_add_3() -> result {
 }
 
 /*
- * Add a 1 digit value and a digit.
+ * Add two very large values.
  */
-auto test_natural_add_4() -> result {
-    result r("nat add 4");
+auto test_natural_add_3b() -> result {
+    result r("nat add 3b");
+    c8::natural a0("10000000000000000000000000000000000000000000000000000000000000000008789");
+    c8::natural a1("88888880000000000000000000000000000000000000000000000000000000999992000");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("98888880000000000000000000000000000000000000000000000000000001000000789");
+    return r;
+}
+
+/*
+ * Add a single digit value and a 1 digit natural number.
+ */
+auto test_natural_add_4a() -> result {
+    result r("nat add 4a");
     c8::natural a0("13");
     c8::natural_digit a1 = 42;
 
@@ -289,10 +357,27 @@ auto test_natural_add_4() -> result {
 }
 
 /*
- * Add a 3 digit value and a 1 digit value, causing an overflow to 3 digits.
+ * Add a single digit value and a 1 digit natural number.
  */
-auto test_natural_add_5() -> result {
-    result r("nat add 5");
+auto test_natural_add_4b() -> result {
+    result r("nat add 4b");
+    c8::natural a0("13");
+    c8::natural_digit a1 = 42;
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("55");
+    return r;
+}
+
+/*
+ * Add a 3 digit natural number and a 1 digit value, resulting in a 4 digit natural number.
+ */
+auto test_natural_add_5a() -> result {
+    result r("nat add 5a");
     c8::natural a0("0xffffffffffffffffffffffff");
     c8::natural_digit a1 = 2;
 
@@ -306,10 +391,61 @@ auto test_natural_add_5() -> result {
 }
 
 /*
- * Subtract a 1 digit value from another 1 digit value.
+ * Add a 3 digit natural number and a 1 digit value, resulting in a 4 digit natural number.
  */
-auto test_natural_subtract_0() -> result {
-    result r("nat sub 0");
+auto test_natural_add_5b() -> result {
+    result r("nat add 5b");
+    c8::natural a0("0xffffffffffffffffffffffff");
+    c8::natural_digit a1 = 2;
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << a0;
+    r.check_pass("1000000000000000000000001");
+    return r;
+}
+
+/*
+ * Add a 1 digit natural number and a 2 digit natural number, resulting in a 3 digit natural number.
+ */
+auto test_natural_add_6a() -> result {
+    result r("nat add 6a");
+    c8::natural a0(0x9ULL);
+    c8::natural a1(0xffffffffffffffffULL);
+
+    r.start_clock();
+    auto a2 = a0 + a1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << a2;
+    r.check_pass("10000000000000008");
+    return r;
+}
+
+/*
+ * Add a 1 digit natural number and a 2 digit natural number, resulting in a 3 digit natural number.
+ */
+auto test_natural_add_6b() -> result {
+    result r("nat add 6b");
+    c8::natural a0(0x9ULL);
+    c8::natural a1(0xffffffffffffffffULL);
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << a0;
+    r.check_pass("10000000000000008");
+    return r;
+}
+
+/*
+ * Subtract a 1 digit natural number from another 1 digit natural number.
+ */
+auto test_natural_subtract_0a() -> result {
+    result r("nat sub 0a");
     c8::natural s0(52);
     c8::natural s1(2);
 
@@ -323,10 +459,27 @@ auto test_natural_subtract_0() -> result {
 }
 
 /*
- * Subtract a large value from another large value.
+ * Subtract a 1 digit natural number from another 1 digit natural number.
  */
-auto test_natural_subtract_1() -> result {
-    result r("nat sub 1");
+auto test_natural_subtract_0b() -> result {
+    result r("nat sub 0b");
+    c8::natural s0(52);
+    c8::natural s1(2);
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("50");
+    return r;
+}
+
+/*
+ * Subtract a large natural number from another large natural number.
+ */
+auto test_natural_subtract_1a() -> result {
+    result r("nat sub 1a");
     c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
     c8::natural s1("842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
 
@@ -340,10 +493,27 @@ auto test_natural_subtract_1() -> result {
 }
 
 /*
- * Subtract a large value from another large value, resulting in a very much smaller value.
+ * Subtract a large natural number from another large natural number.
  */
-auto test_natural_subtract_2() -> result {
-    result r("nat sub 2");
+auto test_natural_subtract_1b() -> result {
+    result r("nat sub 1b");
+    c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::natural s1("842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("5872488729698595999749602411500766185722239445613509099777952305512191704320129156897500143");
+    return r;
+}
+
+/*
+ * Subtract a large natural number from another large natural number, resulting in a very much smaller one.
+ */
+auto test_natural_subtract_2a() -> result {
+    result r("nat sub 2a");
     c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
     c8::natural s1("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690000");
 
@@ -357,11 +527,28 @@ auto test_natural_subtract_2() -> result {
 }
 
 /*
- * Subtract a large value from a smaller one.  This will throw an exception because there
+ * Subtract a large natural number from another large natural number, resulting in a very much smaller one.
+ */
+auto test_natural_subtract_2b() -> result {
+    result r("nat sub 2b");
+    c8::natural s0("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::natural s1("5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690000");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("897");
+    return r;
+}
+
+/*
+ * Subtract a large natural number from a smaller one.  This will throw an exception because there
  * aren't any negative natural numbers.
  */
-auto test_natural_subtract_3() -> result {
-    result r("nat sub 3");
+auto test_natural_subtract_3a() -> result {
+    result r("nat sub 3a");
     c8::natural s0(2);
     c8::natural s1(52);
 
@@ -388,10 +575,41 @@ auto test_natural_subtract_3() -> result {
 }
 
 /*
- * Subtract a digit from another 1 digit value.
+ * Subtract a large natural number from a smaller one.  This will throw an exception because there
+ * aren't any negative natural numbers.
  */
-auto test_natural_subtract_4() -> result {
-    result r("nat sub 4");
+auto test_natural_subtract_3b() -> result {
+    result r("nat sub 3b");
+    c8::natural s0(2);
+    c8::natural s1(52);
+
+    r.start_clock();
+    try {
+        s0 -= s1;
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::not_a_number &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+/*
+ * Subtract a single digit from a 1 digit natural number.
+ */
+auto test_natural_subtract_4a() -> result {
+    result r("nat sub 4a");
     c8::natural s0(53);
 
     r.start_clock();
@@ -404,11 +622,27 @@ auto test_natural_subtract_4() -> result {
 }
 
 /*
- * Subtract a larger value from a smaller one.  This will throw an exception because there
- * aren't any negative natural numbers.
+ * Subtract a single digit from a 1 digit natural number.
  */
-auto test_natural_subtract_5() -> result {
-    result r("nat sub 5");
+auto test_natural_subtract_4b() -> result {
+    result r("nat sub 4b");
+    c8::natural s0(53);
+
+    r.start_clock();
+    s0 -= 15;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("38");
+    return r;
+}
+
+/*
+ * Subtract a larger single digit from a smaller natural number.  This will throw an exception
+ * because there aren't any negative natural numbers.
+ */
+auto test_natural_subtract_5a() -> result {
+    result r("nat sub 5a");
     c8::natural s0(100);
 
     r.start_clock();
@@ -434,10 +668,40 @@ auto test_natural_subtract_5() -> result {
 }
 
 /*
- * Subtract a digit from another 1 digit value.
+ * Subtract a larger single digit from a smaller natural number.  This will throw an exception
+ * because there aren't any negative natural numbers.
  */
-auto test_natural_subtract_6() -> result {
-    result r("nat sub 6");
+auto test_natural_subtract_5b() -> result {
+    result r("nat sub 5b");
+    c8::natural s0(100);
+
+    r.start_clock();
+    try {
+        s0 -= 127;
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::not_a_number &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+/*
+ * Subtract a single digit zero from a zero natural number.
+ */
+auto test_natural_subtract_6a() -> result {
+    result r("nat sub 6a");
     c8::natural s0(0);
 
     r.start_clock();
@@ -450,10 +714,26 @@ auto test_natural_subtract_6() -> result {
 }
 
 /*
- * Subtract a digit from a large value.
+ * Subtract a single digit zero from a zero natural number.
  */
-auto test_natural_subtract_7() -> result {
-    result r("nat sub 7");
+auto test_natural_subtract_6b() -> result {
+    result r("nat sub 6b");
+    c8::natural s0(0);
+
+    r.start_clock();
+    s0 -= 0;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("0");
+    return r;
+}
+
+/*
+ * Subtract a single digit from a larger natural number.
+ */
+auto test_natural_subtract_7a() -> result {
+    result r("nat sub 7a");
     c8::natural s0("0x1000000000000000000000000");
 
     r.start_clock();
@@ -461,6 +741,22 @@ auto test_natural_subtract_7() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << s2;
+    r.check_pass("ffffffffffffffffffffffff");
+    return r;
+}
+
+/*
+ * Subtract a single digit from a larger natural number.
+ */
+auto test_natural_subtract_7b() -> result {
+    result r("nat sub 7b");
+    c8::natural s0("0x1000000000000000000000000");
+
+    r.start_clock();
+    s0 -= 1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << s0;
     r.check_pass("ffffffffffffffffffffffff");
     return r;
 }
