@@ -226,20 +226,13 @@ namespace c8 {
      * Subtract a single digit from another single digit.
      */
     inline auto subtract_digit_digit(natural_digit *res, natural_digit v1, natural_digit v2) -> std::size_t {
-        natural_double_digit r = static_cast<natural_double_digit>(v1);
-        r -= static_cast<natural_double_digit>(v2);
+        natural_digit r = v1 - v2;
         if (!r) {
             return 0;
         }
 
-        res[0] = static_cast<natural_digit>(r);
-        r >>= natural_digit_bits;
-        if (C8_LIKELY(!r)) {
-            return 1;
-        }
-
-        res[1] = static_cast<natural_digit>(r);
-        return 2;
+        res[0] = r;
+        return 1;
     }
 
     /*
