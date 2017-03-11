@@ -18,10 +18,17 @@ namespace c8 {
      * Reserve a number of digits in this natural number.
      */
     inline auto natural::reserve(std::size_t new_digits) -> void {
+        /*
+         * If our digit array is already large enough (which is very likely) then
+         * we don't need to do anything.
+         */
         if (C8_LIKELY(digits_size_ >= new_digits)) {
             return;
         }
 
+        /*
+         * Allocate a new digit array and update book-keeping info.
+         */
         digits_size_ = new_digits;
         delete_digits_on_final_ = true;
         digits_ = new natural_digit[new_digits];
@@ -31,10 +38,17 @@ namespace c8 {
      * Expand the number of digits in this natural number.
      */
     inline auto natural::expand(std::size_t new_digits) -> void {
+        /*
+         * If our digit array is already large enough (which is very likely) then
+         * we don't need to do anything.
+         */
         if (C8_LIKELY(digits_size_ >= new_digits)) {
             return;
         }
 
+        /*
+         * Replace the old digit array with the new one.
+         */
         auto d = new natural_digit[new_digits];
         copy_digit_array(d, digits_, num_digits_);
 
@@ -201,24 +215,41 @@ namespace c8 {
     }
 
     /*
-     * Add a natural digit to this one.
+     * Add a natural digit to this natural number.
      */
     auto natural::operator +(natural_digit v) const -> natural {
-        std::size_t this_num_digits = num_digits_;
-
         natural res;
+
+        /*
+         * Is v zero?  If yes, then our result is just this number.
+         */
+        if (!v) {
+            res = *this;
+            return res;
+        }
+
+        std::size_t this_num_digits = num_digits_;
         res.reserve(this_num_digits + 1);
 
         /*
-         * Is this two single digits being added together?
+         * Does this number have zero digits?  If yes, then our result is just v.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
+        if (!this_num_digits) {
+            res.digits_[0] = v;
+            res.num_digits_ = 1;
+            return res;
+        }
+
+        /*
+         * Does this number have only one digit?  If yes, then just add that digit and v together.
+         */
+        if (this_num_digits == 1) {
             res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v);
             return res;
         }
 
         /*
-         * We're adding a single digit to n digits.
+         * Add v to the n digits of this number.
          */
         res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
@@ -228,38 +259,56 @@ namespace c8 {
      * Add another natural number to this one.
      */
     auto natural::operator +(const natural &v) const -> natural {
-        std::size_t this_num_digits = num_digits_;
-        std::size_t v_num_digits = v.num_digits_;
-
         natural res;
 
         /*
-         * Is our second number only one digit?
+         * Does v have zero digits?  If yes, then our result is just this number.
          */
-        if (C8_LIKELY(v_num_digits == 1)) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
+            res = *this;
+            return res;
+        }
+
+        /*
+         * Does this number have zero digits?  If yes, then our result is just v.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            res = v;
+            return res;
+        }
+
+        /*
+         * Does v have only one digit?
+         */
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
             res.reserve(this_num_digits + 1);
 
             /*
-             * Are we adding two single digits? 
+             * Does this number have only one digit?  If yes, just add the two digits.
              */
-            if (C8_LIKELY(this_num_digits == 1)) {
-                res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v.digits_[0]);
+            if (this_num_digits == 1) {
+                res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v_digit);
                 return res;
             }
 
             /*
-             * We're adding a single digit to n digits.
+             * Add v's single digit to the n digits of this number.
              */
-            res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
+            res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
             return res;
         }
 
-        res.reserve(v_num_digits + this_num_digits);
-
         /*
-         * Are we adding n digits to a single digit?
+         * Does this number have only one digit?  If yes then add that digit to the n digits of v.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
+        if (this_num_digits == 1) {
+            /*
+             * Add this number's single digit to the n digits of v.
+             */
+            res.reserve(v_num_digits + 1);
             res.num_digits_ = add_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
             return res;
         }
@@ -267,6 +316,7 @@ namespace c8 {
         /*
          * Worst case scenario:  We're adding two arrays of digits.
          */
+        res.reserve(v_num_digits + this_num_digits);
         res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
@@ -275,20 +325,35 @@ namespace c8 {
      * Add a natural digit to this number.
      */
     auto natural::operator +=(natural_digit v) -> natural & {
-        std::size_t this_num_digits = num_digits_;
+        /*
+         * Is v zero?  If yes, then our result is just this number.
+         */
+        if (!v) {
+            return *this;
+        }
 
+        std::size_t this_num_digits = num_digits_;
         expand(this_num_digits + 1);
 
         /*
-         * Is this two single digits being added together?
+         * Does this number have zero digits?  If yes, then our result is just v.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
+        if (!this_num_digits) {
+            digits_[0] = v;
+            num_digits_ = 1;
+            return *this;
+        }
+
+        /*
+         * Does this number have only one digit?  If yes, then just add that digit and v together.
+         */
+        if (this_num_digits == 1) {
             num_digits_ = add_digit_digit(digits_, digits_[0], v);
             return *this;
         }
 
         /*
-         * We're adding a single digit to n digits.
+         * Add v to the n digits of this number.
          */
         num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
@@ -298,36 +363,50 @@ namespace c8 {
      * Add another natural number to this one.
      */
     auto natural::operator +=(const natural &v) -> natural & {
-        std::size_t this_num_digits = num_digits_;
+        /*
+         * Does v have zero digits?  If yes, then our result is just this number.
+         */
         std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
+            return *this;
+        }
 
         /*
-         * Is our second number only one digit?
+         * Does this number have zero digits?  If yes, then our result is just v.
          */
-        if (C8_LIKELY(v_num_digits == 1)) {
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            *this = v;
+            return *this;
+        }
+
+        /*
+         * Does v have only one digit?
+         */
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
             expand(this_num_digits + 1);
 
             /*
-             * Are we adding two single digits? 
+             * Does v only have only one digit?  If yes, just add the two digits.
              */
-            if (C8_LIKELY(this_num_digits == 1)) {
-                num_digits_ = add_digit_digit(digits_, digits_[0], v.digits_[0]);
+            if (this_num_digits == 1) {
+                num_digits_ = add_digit_digit(digits_, digits_[0], v_digit);
                 return *this;
             }
 
             /*
-             * We're adding a single digit to n digits.
+             * Add v's single digit to the n digits of this number.
              */
-            num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
+            num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
             return *this;
         }
 
-        expand(v_num_digits + this_num_digits);
-
         /*
-         * Are we adding n digits to a single digit?
+         * Does this number have only one digit?  If yes then add that digit to the n digits of v.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
+        if (this_num_digits == 1) {
+            expand(v_num_digits + 1);
             num_digits_ = add_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
             return *this;
         }
@@ -335,6 +414,7 @@ namespace c8 {
         /*
          * Worst case scenario:  We're adding two arrays of digits.
          */
+        expand(v_num_digits + this_num_digits);
         num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
@@ -343,25 +423,42 @@ namespace c8 {
      * Subtract a natural digit from this natural number.
      */
     auto natural::operator -(natural_digit v) const -> natural {
-        std::size_t this_num_digits = num_digits_;
+        natural res;
 
         /*
-         * We should not have a negative result!
+         * Is v zero?  If yes, then our result is just this number.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
-            if (C8_UNLIKELY(digits_[0] < v)) {
-                throw not_a_number();
-            }
-        } else if (C8_UNLIKELY(!this_num_digits)) {
-            if (C8_UNLIKELY(v)) {
-                throw not_a_number();
-            }
+        if (!v) {
+            res = *this;
+            return res;
         }
 
-        natural res;
-        res.reserve(this_num_digits);
-        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        /*
+         * Does this number have zero digits?  If yes, then we have an exception.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            throw not_a_number();
+        }
 
+        res.reserve(this_num_digits);
+
+        /*
+         * Does this number have only one digit?  If yes, then subtract v from just that digit.
+         */
+        if (this_num_digits == 1) {
+            if (digits_[0] < v) {
+                throw not_a_number();
+            }
+
+            res.num_digits_ = subtract_digit_digit(res.digits_, digits_[0], v);
+            return res;
+        }
+
+        /*
+         * Subtract v from the n digits of this number.
+         */
+        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -369,28 +466,48 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -(const natural &v) const -> natural {
-        std::size_t this_num_digits = num_digits_;
-        std::size_t v_num_digits = v.num_digits_;
-
         natural res;
+
+        /*
+         * Does v have zero digits?  If yes, then our result is just this number.
+         */
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
+            res = *this;
+            return res;
+        }
+
+        /*
+         * Does this number have zero digits?  If yes, then we have an exception.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            throw not_a_number();
+        }
+
         res.reserve(this_num_digits);
 
         /*
-         * Are we subtracting a single digit?  If yes, then use the fast version.
+         * Does v have only one digit?  If yes, then we can use faster approaches.
          */
-        if (C8_LIKELY(v_num_digits == 1)) {
+        if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
 
-            if (C8_LIKELY(this_num_digits == 1)) {
-                if (C8_UNLIKELY(digits_[0] < v_digit)) {
+            /*
+             * Does this number have only one digit?  If yes, then subtract v from just that digit.
+             */
+            if (this_num_digits == 1) {
+                if (digits_[0] < v_digit) {
                     throw not_a_number();
                 }
-            } else if (C8_UNLIKELY(!this_num_digits)) {
-                if (C8_UNLIKELY(v_digit)) {
-                    throw not_a_number();
-                }
+
+                res.num_digits_ = subtract_digit_digit(res.digits_, digits_[0], v_digit);
+                return res;
             }
 
+            /*
+             * Subtract v from the n digits of this number.
+             */
             res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
             return res;
         }
@@ -398,12 +515,11 @@ namespace c8 {
         /*
          * We should not have a negative result!
          */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
             throw not_a_number();
         }
 
         res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
-
         return res;
     }
 
@@ -411,23 +527,37 @@ namespace c8 {
      * Subtract a natural digit from this natural number.
      */
     auto natural::operator -=(natural_digit v) -> natural & {
-        std::size_t this_num_digits = num_digits_;
-
         /*
-         * We should not have a negative result!
+         * Is v zero?  If yes, then our result is just this number.
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
-            if (C8_UNLIKELY(digits_[0] < v)) {
-                throw not_a_number();
-            }
-        } else if (C8_UNLIKELY(!this_num_digits)) {
-            if (C8_UNLIKELY(v)) {
-                throw not_a_number();
-            }
+        if (!v) {
+            return *this;
         }
 
-        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v);
+        /*
+         * Does this number have zero digits?  If yes, then we have an exception.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            throw not_a_number();
+        }
 
+        /*
+         * Does this number have only one digit?  If yes, then subtract v from just that digit.
+         */
+        if (this_num_digits == 1) {
+            if (digits_[0] < v) {
+                throw not_a_number();
+            }
+
+            num_digits_ = subtract_digit_digit(digits_, digits_[0], v);
+            return *this;
+        }
+
+        /*
+         * Subtract v from the n digits of this number.
+         */
+        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -435,26 +565,55 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -=(const natural &v) -> natural & {
-        std::size_t this_num_digits = num_digits_;
+        /*
+         * Does v have zero digits?  If yes, then our result is just this number.
+         */
         std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
+            return *this;
+        }
 
         /*
-         * We should not have a negative result!
+         * Does this number have zero digits?  If yes, then we have an exception.
          */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             throw not_a_number();
         }
 
         /*
-         * Are we subtracting a single digit?  If yes, then use the fast version.
+         * Does v have only one digit?  If yes, then we can use faster approaches.
          */
-        if (C8_LIKELY(v_num_digits == 1)) {
-            num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
+
+            /*
+             * Does this number have only one digit?  If yes, then subtract v from just that digit.
+             */
+            if (this_num_digits == 1) {
+                if (digits_[0] < v_digit) {
+                    throw not_a_number();
+                }
+
+                num_digits_ = subtract_digit_digit(digits_, digits_[0], v_digit);
+                return *this;
+            }
+
+            /*
+             * Subtract v from the n digits of this number.
+             */
+            num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
             return *this;
         }
 
-        num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        /*
+         * We should not have a negative result!
+         */
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+            throw not_a_number();
+        }
 
+        num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -462,18 +621,18 @@ namespace c8 {
      * Left shift this natural number by a bit count.
      */
     auto natural::operator <<(unsigned int count) const -> natural {
-        std::size_t this_num_digits = num_digits_;
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
         natural res;
 
         /*
          * If our value is zero then return 0.
          */
-        if (C8_UNLIKELY(!this_num_digits)) {
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             return res;
         }
+
+        std::size_t trailing_digits = count / natural_digit_bits;
+        std::size_t digit_shift = count % natural_digit_bits;
 
         res.reserve(this_num_digits + trailing_digits + 1);
         res.num_digits_ = left_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
@@ -485,21 +644,19 @@ namespace c8 {
      * Left shift this natural number by a bit count.
      */
     auto natural::operator <<=(unsigned int count) -> natural & {
-        std::size_t this_num_digits = num_digits_;
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
         /*
          * If our value is zero then return 0.
          */
-        if (C8_UNLIKELY(!this_num_digits)) {
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             return *this;
         }
 
+        std::size_t trailing_digits = count / natural_digit_bits;
+        std::size_t digit_shift = count % natural_digit_bits;
+
         expand(this_num_digits + trailing_digits + 1);
-
         num_digits_ = left_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
-
         return *this;
     }
 
@@ -507,22 +664,21 @@ namespace c8 {
      * Right shift this natural number by a bit count.
      */
     auto natural::operator >>(unsigned int count) const -> natural {
+        natural res;
+
         std::size_t this_num_digits = num_digits_;
         std::size_t trailing_digits = count / natural_digit_bits;
         std::size_t digit_shift = count % natural_digit_bits;
 
-        natural res;
-
         /*
          * If our shift is more than the total number of bits that we had then return 0.
          */
-        if (C8_UNLIKELY(this_num_digits <= trailing_digits)) {
+        if (this_num_digits <= trailing_digits) {
             return res;
         }
 
         res.reserve(this_num_digits - trailing_digits);
         res.num_digits_ = right_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
-
         return res;
     }
 
@@ -537,13 +693,12 @@ namespace c8 {
         /*
          * If our shift is more than the total number of bits that we had then return 0.
          */
-        if (C8_UNLIKELY(this_num_digits <= trailing_digits)) {
+        if (this_num_digits <= trailing_digits) {
             num_digits_ = 0;
             return *this;
         }
 
         num_digits_ = right_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
-
         return *this;
     }
 
@@ -554,20 +709,22 @@ namespace c8 {
         natural res;
 
         /*
-         * If either value is zero then our result is zero.
+         * Is v zero?  If yes, then our result is zero too.
          */
-        std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        if (!v) {
             return res;
         }
 
-        if (C8_UNLIKELY(!v)) {
+        /*
+         * Does this number have zero digits?  If yes, then our result is zero.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             return res;
         }
 
         res.reserve(this_num_digits + 1);
         res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v);
-
         return res;
     }
 
@@ -578,15 +735,18 @@ namespace c8 {
         natural res;
 
         /*
-         * If either value is zero then our result is zero.
+         * Does this number have zero digits?  If yes, then our result is zero.
          */
-        std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
             return res;
         }
 
-        std::size_t v_num_digits = v.num_digits_;
-        if (C8_UNLIKELY(!v_num_digits)) {
+        /*
+         * If either value is zero then our result is zero.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             return res;
         }
 
@@ -596,7 +756,7 @@ namespace c8 {
         /*
          * Is our second number only one digit?
          */
-        if (C8_LIKELY(v_num_digits == 1)) {
+        if (v_num_digits == 1) {
             res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
@@ -604,7 +764,7 @@ namespace c8 {
         /*
          * Are we multiply n digits to a single digit?
          */
-        if (C8_LIKELY(this_num_digits == 1)) {
+        if (this_num_digits == 1) {
             res.num_digits_ = multiply_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
             return res;
         }
@@ -613,7 +773,6 @@ namespace c8 {
          * Worst case scenario:  We're multiplying two arrays of digits.
          */
         res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
-
         return res;
     }
 
@@ -622,21 +781,23 @@ namespace c8 {
      */
     auto natural::operator *=(natural_digit v) -> natural & {
         /*
-         * If either value is zero then our result is zero.
+         * Is v zero?  If yes, then our result is zero too.
          */
-        std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        if (!v) {
+            num_digits_ = 0;
             return *this;
         }
 
-        if (C8_UNLIKELY(!v)) {
-            num_digits_ = 0;
+        /*
+         * Does this number have zero digits?  If yes, then our result is zero.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
             return *this;
         }
 
         expand(this_num_digits + 1);
         num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v);
-
         return *this;
     }
 
@@ -655,20 +816,23 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v)) {
+        if (!v) {
             throw divide_by_zero();
         }
 
         std::pair<natural, natural_digit> p;
+
+        /*
+         * Is the result zero?  If yes then we're done.
+         */
         std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        if (!this_num_digits) {
             p.second = 0;
             return p;
         }
 
         p.first.reserve(this_num_digits);
         p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
-
         return p;
     }
 
@@ -679,7 +843,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v.num_digits_)) {
+        if (!v.num_digits_) {
             throw divide_by_zero();
         }
 
@@ -688,7 +852,7 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
+        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
             p.second = *this;
             return p;
         }
@@ -700,7 +864,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_LIKELY(v.num_digits_ == 1)) {
+        if (v.num_digits_ == 1) {
             natural_digit mod;
             p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, num_digits_, v.digits_[0]);
             p.second = natural(mod);
@@ -715,7 +879,6 @@ namespace c8 {
 
         divide_modulus_digit_arrays(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
                                     digits_, num_digits_, v.digits_, v.num_digits_);
-
         return p;
     }
 
@@ -726,20 +889,23 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v)) {
+        if (!v) {
             throw divide_by_zero();
         }
 
         natural quotient;
+
+        /*
+         * Is the result zero?  If yes then we're done.
+         */
         std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        if (!this_num_digits) {
             return quotient;
         }
 
         natural_digit remainder;
         quotient.reserve(this_num_digits);
         quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
-
         return quotient;
     }
 
@@ -750,7 +916,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v.num_digits_)) {
+        if (!v.num_digits_) {
             throw divide_by_zero();
         }
 
@@ -759,7 +925,7 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
+        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
             return quotient;
         }
 
@@ -770,7 +936,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_LIKELY(v.num_digits_ == 1)) {
+        if (v.num_digits_ == 1) {
             natural_digit mod;
             quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, num_digits_, v.digits_[0]);
             return quotient;
@@ -783,7 +949,6 @@ namespace c8 {
 
         divide_modulus_digit_arrays(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
                                     digits_, num_digits_, v.digits_, v.num_digits_);
-
         return quotient;
     }
 
@@ -810,19 +975,18 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v)) {
+        if (!v) {
             throw divide_by_zero();
         }
 
         natural_digit remainder = 0;
         std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!this_num_digits)) {
+        if (!this_num_digits) {
             return remainder;
         }
 
         natural_digit res_digits[this_num_digits];
         divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
-
         return remainder;
     }
 
@@ -833,7 +997,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (C8_UNLIKELY(!v.num_digits_)) {
+        if (!v.num_digits_) {
             throw divide_by_zero();
         }
 
@@ -842,7 +1006,7 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt)) {
+        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
             remainder = *this;
             return remainder;
         }
@@ -854,7 +1018,7 @@ namespace c8 {
          * Are we dividing by a single digit?  If yes, then use the fast version
          * of divide_modulus!
          */
-        if (C8_LIKELY(v.num_digits_ == 1)) {
+        if (v.num_digits_ == 1) {
             natural_digit mod;
             divide_modulus_digit_array_digit(quotient_digits, mod, digits_, num_digits_, v.digits_[0]);
             remainder = natural(mod);
@@ -867,7 +1031,6 @@ namespace c8 {
 
         divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
                                     digits_, num_digits_, v.digits_, v.num_digits_);
-
         return remainder;
     }
 
@@ -894,19 +1057,19 @@ namespace c8 {
         natural smaller;
 
         std::size_t v_num_digits = v.num_digits_;
-        if (C8_UNLIKELY(!v.num_digits_)) {
+        if (!v.num_digits_) {
             smaller = *this;
             return smaller;
         }
 
         std::size_t this_num_digits = num_digits_;
-        if (C8_UNLIKELY(!num_digits_)) {
+        if (!num_digits_) {
             smaller = v;
             return smaller;
         }
 
         natural larger;
-        if (C8_UNLIKELY(compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt)) {
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
             smaller = *this;
             larger = v;
         } else {
@@ -916,7 +1079,7 @@ namespace c8 {
 
         while (true) {
             natural mod = larger % smaller;
-            if (C8_UNLIKELY(!mod.num_digits_)) {
+            if (!mod.num_digits_) {
                 break;
             }
 
@@ -936,7 +1099,7 @@ namespace c8 {
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
          */
-        if (C8_UNLIKELY(count_bits() > (8 * sizeof(long long)))) {
+        if (count_bits() > (8 * sizeof(long long))) {
             throw overflow_error();
         }
 
