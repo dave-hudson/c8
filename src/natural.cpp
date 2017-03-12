@@ -962,6 +962,15 @@ namespace c8 {
         }
 
         p.first.reserve(this_num_digits);
+
+        /*
+         * Does this number have only one digit?  If yes, then divide that digit by v.
+         */
+        if (this_num_digits == 1) {
+            p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, p.second, digits_[0], v);
+            return p;
+        }
+
         p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
         return p;
     }
@@ -973,7 +982,8 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (!v.num_digits_) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
             throw divide_by_zero();
         }
 
@@ -982,33 +992,44 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
+        std::size_t this_num_digits = num_digits_;
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
             p.second = *this;
             return p;
         }
 
-        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        std::size_t quotient_num_digits = this_num_digits - v_num_digits + 1;
         p.first.reserve(quotient_num_digits);
 
         /*
-         * Are we dividing by a single digit?  If yes, then use the fast version
-         * of divide_modulus!
+         * Does, our divisor v, only have one digit?  If yes, then use the fast version
+         * of divide_modulus.
          */
-        if (v.num_digits_ == 1) {
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
             natural_digit mod;
-            p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, num_digits_, v.digits_[0]);
+
+            /*
+             * Does this number have only one digit?  If yes, then divide that digit by v.
+             */
+            if (this_num_digits == 1) {
+                p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, mod, digits_[0], v_digit);
+                return p;
+            }
+
+            p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, this_num_digits, v_digit);
             p.second = natural(mod);
             return p;
         }
 
         p.first.num_digits_ = quotient_num_digits;
 
-        std::size_t remainder_num_digits = num_digits_ + 1;
+        std::size_t remainder_num_digits = this_num_digits + 1;
         p.second.reserve(remainder_num_digits);
         p.second.num_digits_ = remainder_num_digits;
 
         divide_modulus_digit_arrays(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
-                                    digits_, num_digits_, v.digits_, v.num_digits_);
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return p;
     }
 
@@ -1035,6 +1056,15 @@ namespace c8 {
 
         natural_digit remainder;
         quotient.reserve(this_num_digits);
+
+        /*
+         * Does this number have only one digit?  If yes, then divide that digit by v.
+         */
+        if (this_num_digits == 1) {
+            quotient.num_digits_ = divide_modulus_digit_digit(quotient.digits_, remainder, digits_[0], v);
+            return quotient;
+        }
+
         quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
         return quotient;
     }
@@ -1046,7 +1076,8 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (!v.num_digits_) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
             throw divide_by_zero();
         }
 
@@ -1055,30 +1086,41 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
+        std::size_t this_num_digits = num_digits_;
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
             return quotient;
         }
 
-        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        std::size_t quotient_num_digits = this_num_digits - v_num_digits + 1;
         quotient.reserve(quotient_num_digits);
 
         /*
-         * Are we dividing by a single digit?  If yes, then use the fast version
-         * of divide_modulus!
+         * Does, our divisor v, only have one digit?  If yes, then use the fast version
+         * of divide_modulus.
          */
-        if (v.num_digits_ == 1) {
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
             natural_digit mod;
-            quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, num_digits_, v.digits_[0]);
+
+            /*
+             * Does this number have only one digit?  If yes, then divide that digit by v.
+             */
+            if (this_num_digits == 1) {
+                quotient.num_digits_ = divide_modulus_digit_digit(quotient.digits_, mod, digits_[0], v_digit);
+                return quotient;
+            }
+
+            quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, this_num_digits, v_digit);
             return quotient;
         }
 
         quotient.num_digits_ = quotient_num_digits;
 
-        std::size_t remainder_num_digits = num_digits_ + 1;
+        std::size_t remainder_num_digits = this_num_digits + 1;
         natural_digit remainder_digits[remainder_num_digits];
 
         divide_modulus_digit_arrays(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
-                                    digits_, num_digits_, v.digits_, v.num_digits_);
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return quotient;
     }
 
@@ -1116,6 +1158,15 @@ namespace c8 {
         }
 
         natural_digit res_digits[this_num_digits];
+
+        /*
+         * Does this number have only one digit?  If yes, then divide that digit by v.
+         */
+        if (this_num_digits == 1) {
+            divide_modulus_digit_digit(res_digits, remainder, digits_[0], v);
+            return remainder;
+        }
+
         divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
         return remainder;
     }
@@ -1127,7 +1178,8 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (!v.num_digits_) {
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
             throw divide_by_zero();
         }
 
@@ -1136,31 +1188,43 @@ namespace c8 {
         /*
          * Is the result zero?  If yes then we're done.
          */
-        if (compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_) == comparison::lt) {
+        std::size_t this_num_digits = num_digits_;
+        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
             remainder = *this;
             return remainder;
         }
 
-        std::size_t quotient_num_digits = num_digits_ - v.num_digits_ + 1;
+        std::size_t quotient_num_digits = this_num_digits - v_num_digits + 1;
         natural_digit quotient_digits[quotient_num_digits];
 
         /*
-         * Are we dividing by a single digit?  If yes, then use the fast version
-         * of divide_modulus!
+         * Does, our divisor v, only have one digit?  If yes, then use the fast version
+         * of divide_modulus.
          */
-        if (v.num_digits_ == 1) {
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
             natural_digit mod;
-            divide_modulus_digit_array_digit(quotient_digits, mod, digits_, num_digits_, v.digits_[0]);
+
+            /*
+             * Does this number have only one digit?  If yes, then divide that digit by v.
+             */
+            if (this_num_digits == 1) {
+                divide_modulus_digit_digit(quotient_digits, mod, digits_[0], v_digit);
+                remainder = natural(mod);
+                return remainder;
+            }
+
+            divide_modulus_digit_array_digit(quotient_digits, mod, digits_, this_num_digits, v_digit);
             remainder = natural(mod);
             return remainder;
         }
 
-        std::size_t remainder_num_digits = num_digits_ + 1;
+        std::size_t remainder_num_digits = this_num_digits + 1;
         remainder.reserve(remainder_num_digits);
         remainder.num_digits_ = remainder_num_digits;
 
         divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
-                                    digits_, num_digits_, v.digits_, v.num_digits_);
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return remainder;
     }
 
