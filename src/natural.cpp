@@ -241,7 +241,7 @@ namespace c8 {
         }
 
         /*
-         * Does this number have only one digit?  If yes, then just add that digit and v together.
+         * Does this number have only one digit?  If yes, then just add that digit and v.
          */
         if (this_num_digits == 1) {
             res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v);
@@ -345,7 +345,7 @@ namespace c8 {
         }
 
         /*
-         * Does this number have only one digit?  If yes, then just add that digit and v together.
+         * Does this number have only one digit?  If yes, then just add that digit and v.
          */
         if (this_num_digits == 1) {
             num_digits_ = add_digit_digit(digits_, digits_[0], v);
@@ -724,6 +724,18 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits + 1);
+
+        /*
+         * Does this number have only one digit?  If yes, then just multiply that digit and v.
+         */
+        if (this_num_digits == 1) {
+            res.num_digits_ = multiply_digit_digit(res.digits_, digits_[0], v);
+            return res;
+        }
+
+        /*
+         * Multiply the n digits of this number by v.
+         */
         res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
@@ -743,7 +755,7 @@ namespace c8 {
         }
 
         /*
-         * If either value is zero then our result is zero.
+         * Does this number have zero digits?  If yes, then our result is zero.
          */
         std::size_t this_num_digits = num_digits_;
         if (!this_num_digits) {
@@ -754,15 +766,28 @@ namespace c8 {
         res.reserve(res_num_digits);
 
         /*
-         * Is our second number only one digit?
+         * Does v have only one digit?  If yes, then we can use faster approaches.
          */
         if (v_num_digits == 1) {
-            res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
+            auto v_digit = v.digits_[0];
+
+            /*
+             * Does this number have only one digit?  If yes, then just multiply that digit and v.
+             */
+            if (this_num_digits == 1) {
+                res.num_digits_ = multiply_digit_digit(res.digits_, digits_[0], v_digit);
+                return res;
+            }
+
+            /*
+             * Multiply the n digits of this number by v.
+             */
+            res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
             return res;
         }
 
         /*
-         * Are we multiply n digits to a single digit?
+         * Does this number have only one digit?  If yes then multiply that digit and the n digits of v.
          */
         if (this_num_digits == 1) {
             res.num_digits_ = multiply_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
@@ -797,6 +822,18 @@ namespace c8 {
         }
 
         expand(this_num_digits + 1);
+
+        /*
+         * Does this number have only one digit?  If yes, then just multiply that digit and v.
+         */
+        if (this_num_digits == 1) {
+            num_digits_ = multiply_digit_digit(digits_, digits_[0], v);
+            return *this;
+        }
+
+        /*
+         * Multiply the n digits of this number by v.
+         */
         num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
@@ -805,7 +842,60 @@ namespace c8 {
      * Multiply this natural number with another one.
      */
     auto natural::operator *=(const natural &v) -> natural & {
-        *this = *this * v;
+        /*
+         * Does this number have zero digits?  If yes, then our result is zero.
+         */
+        std::size_t v_num_digits = v.num_digits_;
+        if (!v_num_digits) {
+            return *this;
+        }
+
+        /*
+         * Does this number have zero digits?  If yes, then our result is zero.
+         */
+        std::size_t this_num_digits = num_digits_;
+        if (!this_num_digits) {
+            return *this;
+        }
+
+        std::size_t res_num_digits = this_num_digits + v_num_digits;
+        expand(res_num_digits);
+
+        /*
+         * Does v have only one digit?  If yes, then we can use faster approaches.
+         */
+        if (v_num_digits == 1) {
+            auto v_digit = v.digits_[0];
+
+            /*
+             * Does this number have only one digit?  If yes, then just multiply that digit and v.
+             */
+            if (this_num_digits == 1) {
+                num_digits_ = multiply_digit_digit(digits_, digits_[0], v_digit);
+                return *this;
+            }
+
+            /*
+             * Multiply the n digits of this number by v.
+             */
+            num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
+            return *this;
+        }
+
+        /*
+         * Does this number have only one digit?  If yes then multiply that digit and the n digits of v.
+         */
+        if (this_num_digits == 1) {
+            num_digits_ = multiply_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
+            return *this;
+        }
+
+        /*
+         * Worst case scenario:  We're multiplying two arrays of digits.
+         */
+        natural_digit this_digits[this_num_digits];
+        copy_digit_array(this_digits, digits_, this_num_digits);
+        num_digits_ = multiply_digit_arrays(digits_, this_digits, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 

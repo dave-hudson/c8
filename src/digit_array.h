@@ -113,7 +113,7 @@ namespace c8 {
     }
 
     /*
-     * Add a single digits to a non-zero single digit.
+     * Add two non-zero single digits.
      */
     inline auto add_digit_digit(natural_digit *res, natural_digit v1, natural_digit v2) -> std::size_t {
         natural_double_digit r = static_cast<natural_double_digit>(v1);
@@ -394,6 +394,23 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Multiply two non-zero single digits.
+     */
+    inline auto multiply_digit_digit(natural_digit *res, natural_digit v1, natural_digit v2) -> std::size_t {
+        natural_double_digit r = static_cast<natural_double_digit>(v1);
+        r *= static_cast<natural_double_digit>(v2);
+
+        res[0] = static_cast<natural_digit>(r);
+        r >>= natural_digit_bits;
+        if (C8_LIKELY(!r)) {
+            return 1;
+        }
+
+        res[1] = static_cast<natural_digit>(r);
+        return 2;
     }
 
     /*
