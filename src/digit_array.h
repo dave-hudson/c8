@@ -629,6 +629,7 @@ namespace c8 {
         auto upper_div_digit = divisor[divisor_num_digits - 1];
         while (true) {
             std::size_t i = remainder_num_digits - 1;
+            std::size_t next_res_digit = i - divisor_num_digits;
 
             /*
              * We know that our divisor has been shifted so that the most significant digit has
@@ -644,21 +645,20 @@ namespace c8 {
                  * that the subsequent digits of the divisor are large enough that it's actually
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
-                t1_num_digits = left_shift_digit_array(t1, divisor, divisor_num_digits, (i - divisor_num_digits + 1), 0);
+                t1_num_digits = left_shift_digit_array(t1, divisor, divisor_num_digits, (next_res_digit + 1), 0);
                 if (compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) != comparison::gt) {
                     /*
                      * Our result was 1.
                      */
-                    quotient[i - divisor_num_digits + 1] = 1;
+                    quotient[next_res_digit + 1] = 1;
                 } else {
                     /*
                      * Our digit was actually 0 after all, so we know definitively that the next
                      * digit is it's maximum possible size.
                      */
                     const auto q = static_cast<natural_digit>(-1);
-
-                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
-                    quotient[i - divisor_num_digits] = q;
+                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, next_res_digit);
+                    quotient[next_res_digit] = q;
                 }
             } else {
                 /*
@@ -668,8 +668,7 @@ namespace c8 {
                 natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
                 natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
                 auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
-
-                t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
+                t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, next_res_digit);
 
                 /*
                  * It's possible that our estimate might be slightly too large, so we have
@@ -678,10 +677,10 @@ namespace c8 {
                  */
                 if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) == comparison::gt)) {
                     q--;
-                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
+                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, next_res_digit);
                 }
 
-                quotient[i - divisor_num_digits] = q;
+                quotient[next_res_digit] = q;
             }
 
             remainder_num_digits = subtract_digit_arrays(remainder, remainder, remainder_num_digits, t1, t1_num_digits);
