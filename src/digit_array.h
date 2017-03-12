@@ -538,6 +538,33 @@ namespace c8 {
     }
 
     /*
+     * Multiply a digit array by a single digit and left shift by an integer number of digits.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto multiply_digit_array_digit_and_left_shift(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v, std::size_t shift_digits) -> std::size_t {
+        zero_digit_array(res, shift_digits);
+        std::size_t res_num_digits = src_num_digits + shift_digits;
+
+        /*
+         * Long multiply, but include the digit shift in the result.
+         */
+        natural_double_digit acc = 0;
+        for (std::size_t i = 0; i < src_num_digits; i++) {
+            auto a = src[i];
+            acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+            res[shift_digits + i] = static_cast<natural_digit>(acc);
+            acc >>= natural_digit_bits;
+        }
+
+        if (acc) {
+            res[res_num_digits++] = static_cast<natural_digit>(acc);
+        }
+
+        return res_num_digits;
+    }
+
+    /*
      * Divide/modulus a digit array by a single digit.
      *
      * Note: It is OK for res and src to be the same pointer.
@@ -630,8 +657,7 @@ namespace c8 {
                      */
                     const auto q = static_cast<natural_digit>(-1);
 
-                    t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
-                    t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
                     quotient[i - divisor_num_digits] = q;
                 }
             } else {
@@ -643,8 +669,7 @@ namespace c8 {
                 natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
                 auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
 
-                t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
-                t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+                t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
 
                 /*
                  * It's possible that our estimate might be slightly too large, so we have
@@ -653,8 +678,7 @@ namespace c8 {
                  */
                 if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) == comparison::gt)) {
                     q--;
-                    t1_num_digits = multiply_digit_array_digit(t1, divisor, divisor_num_digits, q);
-                    t1_num_digits = left_shift_digit_array(t1, t1, t1_num_digits, (i - divisor_num_digits), 0);
+                    t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, (i - divisor_num_digits));
                 }
 
                 quotient[i - divisor_num_digits] = q;
