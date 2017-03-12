@@ -279,12 +279,14 @@ namespace c8 {
             return res;
         }
 
+        std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
+        res.reserve(max_num_digits + 1);
+
         /*
          * Does v have only one digit?
          */
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
-            res.reserve(this_num_digits + 1);
 
             /*
              * Does this number have only one digit?  If yes, just add the two digits.
@@ -308,7 +310,6 @@ namespace c8 {
             /*
              * Add this number's single digit to the n digits of v.
              */
-            res.reserve(v_num_digits + 1);
             res.num_digits_ = add_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
             return res;
         }
@@ -316,7 +317,6 @@ namespace c8 {
         /*
          * Worst case scenario:  We're adding two arrays of digits.
          */
-        res.reserve(v_num_digits + this_num_digits);
         res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
@@ -380,12 +380,14 @@ namespace c8 {
             return *this;
         }
 
+        std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
+        expand(max_num_digits + 1);
+
         /*
          * Does v have only one digit?
          */
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
-            expand(this_num_digits + 1);
 
             /*
              * Does v only have only one digit?  If yes, just add the two digits.
@@ -406,7 +408,6 @@ namespace c8 {
          * Does this number have only one digit?  If yes then add that digit to the n digits of v.
          */
         if (this_num_digits == 1) {
-            expand(v_num_digits + 1);
             num_digits_ = add_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
             return *this;
         }
@@ -414,7 +415,6 @@ namespace c8 {
         /*
          * Worst case scenario:  We're adding two arrays of digits.
          */
-        expand(v_num_digits + this_num_digits);
         num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
