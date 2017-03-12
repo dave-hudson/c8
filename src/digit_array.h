@@ -321,6 +321,36 @@ namespace c8 {
     }
 
     /*
+     * Left shift a digit.
+     */
+    inline auto left_shift_digit(natural_digit *res, natural_digit v, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+        std::size_t res_num_digits = 1 + shift_digits;
+
+        /*
+         * Are we shifting by whole digits?
+         */
+        if (C8_UNLIKELY(shift_bits == 0)) {
+            res[shift_digits] = v;
+            zero_digit_array(res, shift_digits);
+            return res_num_digits;
+        }
+
+        /*
+         * Shift the original value by the remaining number of bits that we
+         * need, and insert those in the result.
+         */
+        auto d = static_cast<natural_double_digit>(v) << shift_bits;
+        res[shift_digits] = static_cast<natural_digit>(d);
+        auto d_hi = static_cast<natural_digit>(d >> natural_digit_bits);
+        if (d_hi) {
+            res[res_num_digits++] = d_hi;
+        }
+
+        zero_digit_array(res, shift_digits);
+        return res_num_digits;
+    }
+
+    /*
      * Left shift a digit array.
      *
      * Note: It is OK for res and src to be the same pointer.
@@ -334,7 +364,6 @@ namespace c8 {
         if (C8_UNLIKELY(shift_bits == 0)) {
             rcopy_digit_array(&res[shift_digits], src, src_num_digits);
             zero_digit_array(res, shift_digits);
-
             return res_num_digits;
         }
 
@@ -355,10 +384,21 @@ namespace c8 {
         }
 
         res[shift_digits] = d << shift_bits;
-
         zero_digit_array(res, shift_digits);
-
         return res_num_digits;
+    }
+
+    /*
+     * Right shift a digit.
+     */
+    inline auto right_shift_digit(natural_digit *res, natural_digit v, std::size_t shift_bits) -> std::size_t {
+        auto r = v >> shift_bits;
+        if (!r) {
+            return 0;
+        }
+
+        res[0] = r;
+        return 1;
     }
 
     /*
@@ -375,7 +415,6 @@ namespace c8 {
         if (C8_UNLIKELY(shift_bits == 0)) {
             res_num_digits++;
             copy_digit_array(res, &src[shift_digits], res_num_digits);
-
             return res_num_digits;
         }
 

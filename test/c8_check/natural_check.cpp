@@ -1172,8 +1172,8 @@ auto test_natural_compare_3f() -> result {
 /*
  * Test left shifting.
  */
-auto test_natural_lshift_0() -> result {
-    result r("nat lsh 0");
+auto test_natural_lshift_0a() -> result {
+    result r("nat lsh 0a");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -1188,8 +1188,24 @@ auto test_natural_lshift_0() -> result {
 /*
  * Test left shifting.
  */
-auto test_natural_lshift_1() -> result {
-    result r("nat lsh 1");
+auto test_natural_lshift_0b() -> result {
+    result r("nat lsh 0b");
+    c8::natural l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 0;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("349f");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_1a() -> result {
+    result r("nat lsh 1a");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -1204,8 +1220,24 @@ auto test_natural_lshift_1() -> result {
 /*
  * Test left shifting.
  */
-auto test_natural_lshift_2() -> result {
-    result r("nat lsh 2");
+auto test_natural_lshift_1b() -> result {
+    result r("nat lsh 1b");
+    c8::natural l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("693e");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_2a() -> result {
+    result r("nat lsh 2a");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -1220,8 +1252,24 @@ auto test_natural_lshift_2() -> result {
 /*
  * Test left shifting.
  */
-auto test_natural_lshift_3() -> result {
-    result r("nat lsh 3");
+auto test_natural_lshift_2b() -> result {
+    result r("nat lsh 2b");
+    c8::natural l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 18;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("d27c0000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_3a() -> result {
+    result r("nat lsh 3a");
     c8::natural l0(0x349f);
 
     r.start_clock();
@@ -1236,8 +1284,24 @@ auto test_natural_lshift_3() -> result {
 /*
  * Test left shifting.
  */
-auto test_natural_lshift_4() -> result {
-    result r("nat lsh 4");
+auto test_natural_lshift_3b() -> result {
+    result r("nat lsh 3b");
+    c8::natural l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 187;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("1a4f80000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_4a() -> result {
+    result r("nat lsh 4a");
     c8::natural l0("0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
 
     r.start_clock();
@@ -1250,10 +1314,90 @@ auto test_natural_lshift_4() -> result {
 }
 
 /*
+ * Test left shifting.
+ */
+auto test_natural_lshift_4b() -> result {
+    result r("nat lsh 4b");
+    c8::natural l0("0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
+
+    r.start_clock();
+    l0 <<= 69;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_5a() -> result {
+    result r("nat lsh 5a");
+    c8::natural l0("0x349f2983753239856562");
+
+    r.start_clock();
+    auto l1 = l0 << 64;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l1;
+    r.check_pass("349f29837532398565620000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_5b() -> result {
+    result r("nat lsh 5b");
+    c8::natural l0("0x349f2983753239856562");
+
+    r.start_clock();
+    l0 <<= 64;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("349f29837532398565620000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_6a() -> result {
+    result r("nat lsh 6a");
+    c8::natural l0(0x349f2);
+
+    r.start_clock();
+    auto l1 = l0 << 64;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l1;
+    r.check_pass("349f20000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_natural_lshift_6b() -> result {
+    result r("nat lsh 6b");
+    c8::natural l0(0x349f2);
+
+    r.start_clock();
+    l0 <<= 64;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("349f20000000000000000");
+    return r;
+}
+
+/*
  * Test right shifting.
  */
-auto test_natural_rshift_0() -> result {
-    result r("nat rsh 0");
+auto test_natural_rshift_0a() -> result {
+    result r("nat rsh 0a");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1268,8 +1412,23 @@ auto test_natural_rshift_0() -> result {
 /*
  * Test right shifting.
  */
-auto test_natural_rshift_1() -> result {
-    result r("nat rsh 1");
+auto test_natural_rshift_0b() -> result {
+    result r("nat rsh 0b");
+    c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 0;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("23490000000000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/* * Test right shifting.
+ */
+auto test_natural_rshift_1a() -> result {
+    result r("nat rsh 1a");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1284,8 +1443,24 @@ auto test_natural_rshift_1() -> result {
 /*
  * Test right shifting.
  */
-auto test_natural_rshift_2() -> result {
-    result r("nat rsh 2");
+auto test_natural_rshift_1b() -> result {
+    result r("nat rsh 1b");
+    c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("11a48000000000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_2a() -> result {
+    result r("nat rsh 2a");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1300,8 +1475,24 @@ auto test_natural_rshift_2() -> result {
 /*
  * Test right shifting.
  */
-auto test_natural_rshift_3() -> result {
-    result r("nat rsh 3");
+auto test_natural_rshift_2b() -> result {
+    result r("nat rsh 2b");
+    c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 19;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("469200000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_3a() -> result {
+    result r("nat rsh 3a");
     c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -1316,8 +1507,24 @@ auto test_natural_rshift_3() -> result {
 /*
  * Test right shifting.
  */
-auto test_natural_rshift_4() -> result {
-    result r("nat rsh 4");
+auto test_natural_rshift_3b() -> result {
+    result r("nat rsh 3b");
+    c8::natural r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 197;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("11a4800");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_4a() -> result {
+    result r("nat rsh 4a");
     c8::natural r0("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
 
     r.start_clock();
@@ -1326,6 +1533,86 @@ auto test_natural_rshift_4() -> result {
 
     r.get_stream() << std::hex << r1;
     r.check_pass("d27ca60dd4c8e616bef3a60de4a1e61e277ffbffba61d9e1a");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_4b() -> result {
+    result r("nat rsh 4b");
+    c8::natural r0("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+
+    r.start_clock();
+    r0 >>= 123;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("d27ca60dd4c8e616bef3a60de4a1e61e277ffbffba61d9e1a");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_5a() -> result {
+    result r("nat rsh 5a");
+    c8::natural r0("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+
+    r.start_clock();
+    auto r1 = r0 >> 1234;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r1;
+    r.check_pass("0");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_5b() -> result {
+    result r("nat rsh 5b");
+    c8::natural r0("0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+
+    r.start_clock();
+    r0 >>= 1234;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("0");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_6a() -> result {
+    result r("nat rsh 6a");
+    c8::natural r0(0x693e);
+
+    r.start_clock();
+    auto r1 = r0 >> 16;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r1;
+    r.check_pass("0");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_natural_rshift_6b() -> result {
+    result r("nat rsh 6b");
+    c8::natural r0(0x693e);
+
+    r.start_clock();
+    r0 >>= 16;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("0");
     return r;
 }
 
