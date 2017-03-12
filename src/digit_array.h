@@ -648,7 +648,7 @@ namespace c8 {
 
                 /*
                  * It's possible that our estimate might be slightly too large, so we have
-                 * to evaluate it on the basis of the full divisor, not just the shifted, most
+                 * to evaluate it on the basis of the full divisor, not just the shifted most
                  * significant digit.  This may mean we reduce our estimate slightly.
                  */
                 if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) == comparison::gt)) {
