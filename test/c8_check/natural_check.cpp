@@ -1890,6 +1890,23 @@ auto test_natural_divide_0b() -> result {
 }
 
 /*
+ * Divide a 2 digit natural number by another 2 digit natural number.
+ */
+auto test_natural_divide_0c() -> result {
+    result r("nat div 0c");
+    c8::natural d0(1000000000000000000ULL);
+    c8::natural d1(99999999999999999ULL);
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << dm.first << ',' << dm.second;
+    r.check_pass("10,10");
+    return r;
+}
+
+/*
  * Divide a large natural number by another 2 digit natural number.
  */
 auto test_natural_divide_1a() -> result {
@@ -1927,6 +1944,23 @@ auto test_natural_divide_1b() -> result {
 }
 
 /*
+ * Divide a large natural number by another 2 digit natural number.
+ */
+auto test_natural_divide_1c() -> result {
+    result r("nat div 1c");
+    c8::natural d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
+    c8::natural d1(99999999999999999ULL);
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << dm.first << ',' << dm.second;
+    r.check_pass("78292387927518758972102054472775487212767983201652300846,35600667362958008");
+    return r;
+}
+
+/*
  * Divide a large natural number by another large natural number.
  */
 auto test_natural_divide_2a() -> result {
@@ -1959,6 +1993,23 @@ auto test_natural_divide_2b() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("ffffffffffffffff000000000000000,100000000000000000000000");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_2c() -> result {
+    result r("nat div 2c");
+    c8::natural d0("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::natural d1("0x10000000000000001000000000000000100000000");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
     r.check_pass("ffffffffffffffff000000000000000,100000000000000000000000");
     return r;
 }
@@ -2024,6 +2075,36 @@ auto test_natural_divide_3b() -> result {
 }
 
 /*
+ * Divide by zero.  This will throw an exception!
+ */
+auto test_natural_divide_3c() -> result {
+    result r("nat div 3c");
+    c8::natural d0(2000);
+    c8::natural d1(0);
+
+    r.start_clock();
+    try {
+        auto dm = d0.divide_modulus(d1);
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::divide_by_zero &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+/*
  * Divide a 2 digit natural number by a 1 digit natural number.
  */
 auto test_natural_divide_4a() -> result {
@@ -2056,6 +2137,23 @@ auto test_natural_divide_4b() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("1000000,0");
+    return r;
+}
+
+/*
+ * Divide a 2 digit natural number by a 1 digit natural number.
+ */
+auto test_natural_divide_4c() -> result {
+    result r("nat div 4c");
+    c8::natural d0("0x10000000000000");
+    c8::natural d1("0x10000000");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
     r.check_pass("1000000,0");
     return r;
 }
@@ -2098,6 +2196,23 @@ auto test_natural_divide_5b() -> result {
 }
 
 /*
+ * Divide a large digit natural number by a 1 digit natural number.
+ */
+auto test_natural_divide_5c() -> result {
+    result r("nat div 5c");
+    c8::natural d0("0x10000000000000001000000000000000100000000");
+    c8::natural d1("1");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
+    r.check_pass("10000000000000001000000000000000100000000,0");
+    return r;
+}
+
+/*
  * Trigger a divide that exercises a corner case in the divide estimation logic.
  */
 auto test_natural_divide_6a() -> result {
@@ -2130,6 +2245,23 @@ auto test_natural_divide_6b() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("1000000000000000000000000ffffffff,ffffffffffffffff000000010000000000000000");
+    return r;
+}
+
+/*
+ * Trigger a divide that exercises a corner case in the divide estimation logic.
+ */
+auto test_natural_divide_6c() -> result {
+    result r("nat div 6c");
+    c8::natural d0("0x1000000000000000000000002000000000000000000000000000000000000000000000000");
+    c8::natural d1("0x10000000000000000000000010000000000000000");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
     r.check_pass("1000000000000000000000000ffffffff,ffffffffffffffff000000010000000000000000");
     return r;
 }
@@ -2170,6 +2302,22 @@ auto test_natural_divide_7b() -> result {
 }
 
 /*
+ * Divide a 3 digit natural number by a single digit value.
+ */
+auto test_natural_divide_7c() -> result {
+    result r("nat div 7c");
+    c8::natural d0("0x100000000000000000");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(0x10000000);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
+    r.check_pass("10000000000,0");
+    return r;
+}
+
+/*
  * Divide a 1 digit natural number by a single digit value.
  */
 auto test_natural_divide_8a() -> result {
@@ -2200,6 +2348,22 @@ auto test_natural_divide_8b() -> result {
     r.stop_clock();
 
     r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("27109017,17");
+    return r;
+}
+
+/*
+ * Divide a 1 digit natural number by a single digit value.
+ */
+auto test_natural_divide_8c() -> result {
+    result r("nat div 8c");
+    c8::natural d0("894597578");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(33);
+    r.stop_clock();
+
+    r.get_stream() << dm.first << ',' << dm.second;
     r.check_pass("27109017,17");
     return r;
 }
