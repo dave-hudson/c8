@@ -1007,18 +1007,25 @@ namespace c8 {
          */
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
-            natural_digit mod;
+            p.first.reserve(1);
 
             /*
              * Does this number have only one digit?  If yes, then divide that digit by v.
              */
             if (this_num_digits == 1) {
-                p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, mod, digits_[0], v_digit);
+                p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, p.second.digits_[0], digits_[0], v_digit);
+                if (p.second.digits_[0]) {
+                    p.second.num_digits_ = 1;
+                }
+
                 return p;
             }
 
-            p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, mod, digits_, this_num_digits, v_digit);
-            p.second = natural(mod);
+            p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second.digits_[0], digits_, this_num_digits, v_digit);
+            if (p.second.digits_[0]) {
+                p.second.num_digits_ = 1;
+            }
+
             return p;
         }
 
@@ -1203,19 +1210,25 @@ namespace c8 {
          */
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
-            natural_digit mod;
+            remainder.reserve(1);
 
             /*
              * Does this number have only one digit?  If yes, then divide that digit by v.
              */
             if (this_num_digits == 1) {
-                divide_modulus_digit_digit(quotient_digits, mod, digits_[0], v_digit);
-                remainder = natural(mod);
+                divide_modulus_digit_digit(quotient_digits, remainder.digits_[0], digits_[0], v_digit);
+                if (remainder.digits_[0]) {
+                    remainder.num_digits_ = 1;
+                }
+
                 return remainder;
             }
 
-            divide_modulus_digit_array_digit(quotient_digits, mod, digits_, this_num_digits, v_digit);
-            remainder = natural(mod);
+            divide_modulus_digit_array_digit(quotient_digits, remainder.digits_[0], digits_, this_num_digits, v_digit);
+            if (remainder.digits_[0]) {
+                remainder.num_digits_ = 1;
+            }
+
             return remainder;
         }
 
