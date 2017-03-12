@@ -1,7 +1,12 @@
 # Ignore build artifacts.
 
-*.a
-*.o
-*.d
-*~
+# Don't ignore directories.
+!*/
+
+# Ignore lots of files!
+**/*~
+**/*.a
+**/*.d
+**/*.o
+**/*.swp
 
