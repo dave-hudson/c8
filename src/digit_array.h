@@ -524,20 +524,6 @@ namespace c8 {
     }
 
     /*
-     * Divide/modulus a single digit by another single digit.
-     */
-    inline auto divide_modulus_digit_digit(natural_digit *res, natural_digit &mod, natural_digit v1, natural_digit v2) -> std::size_t {
-        natural_digit d = v1 / v2;
-        mod = v1 % v2;
-        if (!d) {
-            return 0;
-        }
-
-        res[0] = d;
-        return 1;
-    }
-
-    /*
      * Multiply a digit array by a single digit and left shift by an integer number of digits.
      *
      * Note: It is OK for res and src to be the same pointer.
@@ -562,6 +548,20 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Divide/modulus a single digit by another single digit.
+     */
+    inline auto divide_modulus_digit_digit(natural_digit *res, natural_digit &mod, natural_digit v1, natural_digit v2) -> std::size_t {
+        natural_digit d = v1 / v2;
+        mod = v1 % v2;
+        if (!d) {
+            return 0;
+        }
+
+        res[0] = d;
+        return 1;
     }
 
     /*
