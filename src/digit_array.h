@@ -608,6 +608,25 @@ namespace c8 {
     }
 
     /*
+     * Multiply a digit array by a single digit.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto multiply2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+        /*
+         * Does this number have only one digit?  If yes, then just multiply that digit and v.
+         */
+        if (src_num_digits == 1) {
+            return multiply_digit_digit(res, src[0], v);
+        }
+
+        /*
+         * Multiply the n digits of this number by v.
+         */
+        return multiply_digit_array_digit(res, src, src_num_digits, v);
+    }
+
+    /*
      * Multiply two digit arrays.
      */
     inline auto multiply_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
@@ -723,6 +742,22 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Divide/modulus a digit array by a single digit.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto divide_modulus2_digit_array_digit(natural_digit *res, natural_digit &mod, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+        /*
+         * Does this number have only one digit?  If yes, then divide that digit by v.
+         */
+        if (src_num_digits == 1) {
+            return divide_modulus_digit_digit(res, mod, src[0], v);
+        }
+
+        return divide_modulus_digit_array_digit(res, mod, src, src_num_digits, v);
     }
 
     /*

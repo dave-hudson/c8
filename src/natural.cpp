@@ -536,19 +536,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits + 1);
-
-        /*
-         * Does this number have only one digit?  If yes, then just multiply that digit and v.
-         */
-        if (this_num_digits == 1) {
-            res.num_digits_ = multiply_digit_digit(res.digits_, digits_[0], v);
-            return res;
-        }
-
-        /*
-         * Multiply the n digits of this number by v.
-         */
-        res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = multiply2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -581,20 +569,7 @@ namespace c8 {
          * Does v have only one digit?  If yes, then we can use faster approaches.
          */
         if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does this number have only one digit?  If yes, then just multiply that digit and v.
-             */
-            if (this_num_digits == 1) {
-                res.num_digits_ = multiply_digit_digit(res.digits_, digits_[0], v_digit);
-                return res;
-            }
-
-            /*
-             * Multiply the n digits of this number by v.
-             */
-            res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
+            res.num_digits_ = multiply2_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
             return res;
         }
 
@@ -634,19 +609,7 @@ namespace c8 {
         }
 
         expand(this_num_digits + 1);
-
-        /*
-         * Does this number have only one digit?  If yes, then just multiply that digit and v.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = multiply_digit_digit(digits_, digits_[0], v);
-            return *this;
-        }
-
-        /*
-         * Multiply the n digits of this number by v.
-         */
-        num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = multiply2_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -677,20 +640,7 @@ namespace c8 {
          * Does v have only one digit?  If yes, then we can use faster approaches.
          */
         if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does this number have only one digit?  If yes, then just multiply that digit and v.
-             */
-            if (this_num_digits == 1) {
-                num_digits_ = multiply_digit_digit(digits_, digits_[0], v_digit);
-                return *this;
-            }
-
-            /*
-             * Multiply the n digits of this number by v.
-             */
-            num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
+            num_digits_ = multiply2_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
             return *this;
         }
 
@@ -734,16 +684,7 @@ namespace c8 {
         }
 
         p.first.reserve(this_num_digits);
-
-        /*
-         * Does this number have only one digit?  If yes, then divide that digit by v.
-         */
-        if (this_num_digits == 1) {
-            p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, p.second, digits_[0], v);
-            return p;
-        }
-
-        p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
+        p.first.num_digits_ = divide_modulus2_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
         return p;
     }
 
@@ -780,20 +721,7 @@ namespace c8 {
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
             p.first.reserve(1);
-
-            /*
-             * Does this number have only one digit?  If yes, then divide that digit by v.
-             */
-            if (this_num_digits == 1) {
-                p.first.num_digits_ = divide_modulus_digit_digit(p.first.digits_, p.second.digits_[0], digits_[0], v_digit);
-                if (p.second.digits_[0]) {
-                    p.second.num_digits_ = 1;
-                }
-
-                return p;
-            }
-
-            p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second.digits_[0], digits_, this_num_digits, v_digit);
+            p.first.num_digits_ = divide_modulus2_digit_array_digit(p.first.digits_, p.second.digits_[0], digits_, this_num_digits, v_digit);
             if (p.second.digits_[0]) {
                 p.second.num_digits_ = 1;
             }
@@ -835,16 +763,7 @@ namespace c8 {
 
         natural_digit remainder;
         quotient.reserve(this_num_digits);
-
-        /*
-         * Does this number have only one digit?  If yes, then divide that digit by v.
-         */
-        if (this_num_digits == 1) {
-            quotient.num_digits_ = divide_modulus_digit_digit(quotient.digits_, remainder, digits_[0], v);
-            return quotient;
-        }
-
-        quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
+        quotient.num_digits_ = divide_modulus2_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
         return quotient;
     }
 
@@ -880,16 +799,7 @@ namespace c8 {
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
             natural_digit mod;
-
-            /*
-             * Does this number have only one digit?  If yes, then divide that digit by v.
-             */
-            if (this_num_digits == 1) {
-                quotient.num_digits_ = divide_modulus_digit_digit(quotient.digits_, mod, digits_[0], v_digit);
-                return quotient;
-            }
-
-            quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, mod, digits_, this_num_digits, v_digit);
+            quotient.num_digits_ = divide_modulus2_digit_array_digit(quotient.digits_, mod, digits_, this_num_digits, v_digit);
             return quotient;
         }
 
@@ -937,16 +847,7 @@ namespace c8 {
         }
 
         natural_digit res_digits[this_num_digits];
-
-        /*
-         * Does this number have only one digit?  If yes, then divide that digit by v.
-         */
-        if (this_num_digits == 1) {
-            divide_modulus_digit_digit(res_digits, remainder, digits_[0], v);
-            return remainder;
-        }
-
-        divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
+        divide_modulus2_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
         return remainder;
     }
 
@@ -983,20 +884,7 @@ namespace c8 {
         if (v_num_digits == 1) {
             auto v_digit = v.digits_[0];
             remainder.reserve(1);
-
-            /*
-             * Does this number have only one digit?  If yes, then divide that digit by v.
-             */
-            if (this_num_digits == 1) {
-                divide_modulus_digit_digit(quotient_digits, remainder.digits_[0], digits_[0], v_digit);
-                if (remainder.digits_[0]) {
-                    remainder.num_digits_ = 1;
-                }
-
-                return remainder;
-            }
-
-            divide_modulus_digit_array_digit(quotient_digits, remainder.digits_[0], digits_, this_num_digits, v_digit);
+            divide_modulus2_digit_array_digit(quotient_digits, remainder.digits_[0], digits_, this_num_digits, v_digit);
             if (remainder.digits_[0]) {
                 remainder.num_digits_ = 1;
             }
