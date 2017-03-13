@@ -769,8 +769,6 @@ namespace c8 {
                                             natural_digit *remainder, std::size_t &remainder_num_digits,
                                             const natural_digit *src1, std::size_t src1_num_digits,
                                             const natural_digit *src2, std::size_t src2_num_digits) -> void {
-        zero_digit_array(quotient, quotient_num_digits);
-
         /*
          * Normalize the divisor and dividend.  We want our divisor to be aligned such
          * that it's most significant digit has its top bit set.  This may seem a little odd,
@@ -780,29 +778,33 @@ namespace c8 {
         auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
         unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
 
-        remainder_num_digits = left_shift_digit_array(remainder, src1, src1_num_digits, 0, normalize_shift);
+        natural_digit dividend[src1_num_digits];
+        auto dividend_num_digits = left_shift_digit_array(dividend, src1, src1_num_digits, 0, normalize_shift);
 
         natural_digit divisor[src2_num_digits];
         auto divisor_num_digits = left_shift_digit_array(divisor, src2, src2_num_digits, 0, normalize_shift);
 
         natural_digit t1[src1_num_digits + 1];
 
+        quotient_num_digits = src1_num_digits - src2_num_digits + 1;
+        zero_digit_array(quotient, quotient_num_digits);
+
         /*
          * Now we run a long divide algorithm.
          */
         auto upper_div_digit = divisor[divisor_num_digits - 1];
         while (true) {
-            std::size_t i = remainder_num_digits - 1;
+            std::size_t i = dividend_num_digits - 1;
             std::size_t next_res_digit = i - divisor_num_digits;
 
             /*
              * We know that our divisor has been shifted so that the most significant digit has
              * its top bit set.  This means that the quotient for our next digit can only be 0 or 1.
-             * If we compare the most significant digit of our remainder with that of the divisor
+             * If we compare the most significant digit of our dividend with that of the divisor
              * we can see if it's possibly 1.
              */
             std::size_t t1_num_digits;
-            auto d_hi = remainder[i];
+            auto d_hi = dividend[i];
             if (d_hi >= upper_div_digit) {
                 /*
                  * Our next quotient digit is probably a 1, but we have to be sure.  It's possible
@@ -810,7 +812,7 @@ namespace c8 {
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
                 t1_num_digits = left_shift_digit_array(t1, divisor, divisor_num_digits, (next_res_digit + 1), 0);
-                if (compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) != comparison::gt) {
+                if (compare_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits) != comparison::gt) {
                     /*
                      * Our result was 1.
                      */
@@ -828,7 +830,7 @@ namespace c8 {
                 /*
                  * Estimate the next digit of the result.
                  */
-                natural_double_digit d_lo_d = static_cast<natural_double_digit>(remainder[i - 1]);
+                natural_double_digit d_lo_d = static_cast<natural_double_digit>(dividend[i - 1]);
                 natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
                 natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
                 auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
@@ -839,7 +841,7 @@ namespace c8 {
                  * to evaluate it on the basis of the full divisor, not just the shifted most
                  * significant digit.  This may mean we reduce our estimate slightly.
                  */
-                if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, remainder, remainder_num_digits) == comparison::gt)) {
+                if (C8_UNLIKELY(compare_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits) == comparison::gt)) {
                     q--;
                     t1_num_digits = multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits, q, next_res_digit);
                 }
@@ -847,8 +849,8 @@ namespace c8 {
                 quotient[next_res_digit] = q;
             }
 
-            remainder_num_digits = subtract_digit_arrays(remainder, remainder, remainder_num_digits, t1, t1_num_digits);
-            if (C8_UNLIKELY(compare_digit_arrays(remainder, remainder_num_digits, divisor, divisor_num_digits) == comparison::lt)) {
+            dividend_num_digits = subtract_digit_arrays(dividend, dividend, dividend_num_digits, t1, t1_num_digits);
+            if (C8_UNLIKELY(compare_digit_arrays(dividend, dividend_num_digits, divisor, divisor_num_digits) == comparison::lt)) {
                 break;
             }
         }
@@ -860,9 +862,36 @@ namespace c8 {
             quotient_num_digits--;
         }
 
-        if (remainder_num_digits) {
-            remainder_num_digits = right_shift_digit_array(remainder, remainder, remainder_num_digits, 0, normalize_shift);
+        remainder_num_digits = 0;
+        if (dividend_num_digits) {
+            remainder_num_digits = right_shift_digit_array(remainder, dividend, dividend_num_digits, 0, normalize_shift);
         }
+    }
+
+    /*
+     * Divide two digit arrays.
+     *
+     * This function requires quite a lot of temporary digit arrays!
+     */
+    inline auto divide_modulus2_digit_arrays(natural_digit *quotient, std::size_t &quotient_num_digits,
+                                             natural_digit *remainder, std::size_t &remainder_num_digits,
+                                             const natural_digit *src1, std::size_t src1_num_digits,
+                                             const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        /*
+         * Does, our divisor src2, only have one digit?  If yes, then use the fast version
+         * of divide_modulus.
+         */
+        if (src2_num_digits == 1) {
+            quotient_num_digits = divide_modulus2_digit_array_digit(quotient, remainder[0], src1, src1_num_digits, src2[0]);
+            remainder_num_digits = 0;
+            if (remainder[0]) {
+                remainder_num_digits = 1;
+            }
+
+            return;
+        }
+
+        divide_modulus_digit_arrays(quotient, quotient_num_digits, remainder, remainder_num_digits, src1, src1_num_digits, src2, src2_num_digits);
     }
 }
 
