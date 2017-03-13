@@ -169,6 +169,25 @@ namespace c8 {
     }
 
     /*
+     * Add a single digit to a digit array.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto add2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+        /*
+         * Does src have only one digit?  If yes, then just add that digit and v.
+         */
+        if (src_num_digits == 1) {
+            return add_digit_digit(res, src[0], v);
+        }
+
+        /*
+         * Add v to the n digits of src.
+         */
+        return add_digit_array_digit(res, src, src_num_digits, v);
+    }
+
+    /*
      * Add two digit arrays.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
@@ -220,6 +239,32 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Add two digit arrays.
+     *
+     * Note: It is OK for res and either src1, or src2, to be the same pointer.
+     */
+    inline auto add2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+        /*
+         * Does src2 have only one digit?  If yes then add that single digit to src1
+         */
+        if (src2_num_digits == 1) {
+            return add2_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+        }
+
+        /*
+         * Does src1 have only one digit?  If yes then add that single digit to src2.
+         */
+        if (src1_num_digits == 1) {
+            return add_digit_array_digit(res, src2, src2_num_digits, src1[0]);
+        }
+
+        /*
+         * Worst case scenario:  We're adding two arrays of digits.
+         */
+        return add_digit_arrays(res, src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -279,6 +324,29 @@ namespace c8 {
     }
 
     /*
+     * Subtract a single digit from a digit array.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto subtract2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+        /*
+         * Does src have only one digit?  If yes, then subtract v from just that digit.
+         */
+        if (src_num_digits == 1) {
+            if (src[0] < v) {
+                throw not_a_number();
+            }
+
+            return subtract_digit_digit(res, src[0], v);
+        }
+
+        /*
+         * Subtract v from the n digits of this number.
+         */
+        return subtract_digit_array_digit(res, src, src_num_digits, v);
+    }
+
+    /*
      * Subtract one digit array from another.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
@@ -318,6 +386,29 @@ namespace c8 {
         }
 
         return res_num_digits + 1;
+    }
+
+    /*
+     * Subtract one digit array from another.
+     *
+     * Note: It is OK for res and either src1, or src2, to be the same pointer.
+     */
+    inline auto subtract2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+        /*
+         * Does src2 have only one digit?  If yes, then we can use faster approaches.
+         */
+        if (src2_num_digits == 1) {
+            return subtract2_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+        }
+
+        /*
+         * We should not have a negative result!
+         */
+        if (compare_digit_arrays(src1, src1_num_digits, src2, src2_num_digits) == comparison::lt) {
+            throw not_a_number();
+        }
+
+        return subtract_digit_arrays(res, src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*

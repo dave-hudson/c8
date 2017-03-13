@@ -240,18 +240,7 @@ namespace c8 {
             return res;
         }
 
-        /*
-         * Does this number have only one digit?  If yes, then just add that digit and v.
-         */
-        if (this_num_digits == 1) {
-            res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v);
-            return res;
-        }
-
-        /*
-         * Add v to the n digits of this number.
-         */
-        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = add2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -281,43 +270,7 @@ namespace c8 {
 
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         res.reserve(max_num_digits + 1);
-
-        /*
-         * Does v have only one digit?
-         */
-        if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does this number have only one digit?  If yes, just add the two digits.
-             */
-            if (this_num_digits == 1) {
-                res.num_digits_ = add_digit_digit(res.digits_, digits_[0], v_digit);
-                return res;
-            }
-
-            /*
-             * Add v's single digit to the n digits of this number.
-             */
-            res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
-            return res;
-        }
-
-        /*
-         * Does this number have only one digit?  If yes then add that digit to the n digits of v.
-         */
-        if (this_num_digits == 1) {
-            /*
-             * Add this number's single digit to the n digits of v.
-             */
-            res.num_digits_ = add_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
-            return res;
-        }
-
-        /*
-         * Worst case scenario:  We're adding two arrays of digits.
-         */
-        res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = add2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -344,18 +297,7 @@ namespace c8 {
             return *this;
         }
 
-        /*
-         * Does this number have only one digit?  If yes, then just add that digit and v.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = add_digit_digit(digits_, digits_[0], v);
-            return *this;
-        }
-
-        /*
-         * Add v to the n digits of this number.
-         */
-        num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = add2_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -382,40 +324,7 @@ namespace c8 {
 
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         expand(max_num_digits + 1);
-
-        /*
-         * Does v have only one digit?
-         */
-        if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does v only have only one digit?  If yes, just add the two digits.
-             */
-            if (this_num_digits == 1) {
-                num_digits_ = add_digit_digit(digits_, digits_[0], v_digit);
-                return *this;
-            }
-
-            /*
-             * Add v's single digit to the n digits of this number.
-             */
-            num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
-            return *this;
-        }
-
-        /*
-         * Does this number have only one digit?  If yes then add that digit to the n digits of v.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = add_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
-            return *this;
-        }
-
-        /*
-         * Worst case scenario:  We're adding two arrays of digits.
-         */
-        num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = add2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -442,23 +351,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits);
-
-        /*
-         * Does this number have only one digit?  If yes, then subtract v from just that digit.
-         */
-        if (this_num_digits == 1) {
-            if (digits_[0] < v) {
-                throw not_a_number();
-            }
-
-            res.num_digits_ = subtract_digit_digit(res.digits_, digits_[0], v);
-            return res;
-        }
-
-        /*
-         * Subtract v from the n digits of this number.
-         */
-        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = subtract2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -486,40 +379,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits);
-
-        /*
-         * Does v have only one digit?  If yes, then we can use faster approaches.
-         */
-        if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does this number have only one digit?  If yes, then subtract v from just that digit.
-             */
-            if (this_num_digits == 1) {
-                if (digits_[0] < v_digit) {
-                    throw not_a_number();
-                }
-
-                res.num_digits_ = subtract_digit_digit(res.digits_, digits_[0], v_digit);
-                return res;
-            }
-
-            /*
-             * Subtract v from the n digits of this number.
-             */
-            res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v_digit);
-            return res;
-        }
-
-        /*
-         * We should not have a negative result!
-         */
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
-            throw not_a_number();
-        }
-
-        res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = subtract2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -542,22 +402,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        /*
-         * Does this number have only one digit?  If yes, then subtract v from just that digit.
-         */
-        if (this_num_digits == 1) {
-            if (digits_[0] < v) {
-                throw not_a_number();
-            }
-
-            num_digits_ = subtract_digit_digit(digits_, digits_[0], v);
-            return *this;
-        }
-
-        /*
-         * Subtract v from the n digits of this number.
-         */
-        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = subtract2_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -581,39 +426,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        /*
-         * Does v have only one digit?  If yes, then we can use faster approaches.
-         */
-        if (v_num_digits == 1) {
-            auto v_digit = v.digits_[0];
-
-            /*
-             * Does this number have only one digit?  If yes, then subtract v from just that digit.
-             */
-            if (this_num_digits == 1) {
-                if (digits_[0] < v_digit) {
-                    throw not_a_number();
-                }
-
-                num_digits_ = subtract_digit_digit(digits_, digits_[0], v_digit);
-                return *this;
-            }
-
-            /*
-             * Subtract v from the n digits of this number.
-             */
-            num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v_digit);
-            return *this;
-        }
-
-        /*
-         * We should not have a negative result!
-         */
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
-            throw not_a_number();
-        }
-
-        num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = subtract2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
