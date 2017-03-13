@@ -958,8 +958,18 @@ namespace c8 {
             larger = *this;
         }
 
+        natural_digit quotient_digits[larger.num_digits_ - smaller.num_digits_ + 1];
+
         while (true) {
-            natural mod = larger % smaller;
+            /*
+             * Essentially mod = larger % smaller, larger = smaller, smaller = mod.
+             */
+            natural mod;
+            mod.reserve(smaller.num_digits_);
+
+            std::size_t quotient_num_digits;
+            divide_modulus2_digit_arrays(quotient_digits, quotient_num_digits, mod.digits_, mod.num_digits_,
+                                         larger.digits_, larger.num_digits_, smaller.digits_, smaller.num_digits_);
             if (!mod.num_digits_) {
                 break;
             }
