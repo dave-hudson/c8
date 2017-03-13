@@ -448,19 +448,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         res.reserve(this_num_digits + trailing_digits + 1);
-
-        /*
-         * Does this number have only one digit?  If yes then use a faster approach.
-         */
-        if (this_num_digits == 1) {
-            res.num_digits_ = left_shift_digit(res.digits_, digits_[0], trailing_digits, digit_shift);
-            return res;
-        }
-
-        /*
-         * Worst case:  Shift our digit array.
-         */
-        res.num_digits_ = left_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.num_digits_ = left_shift2_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -480,19 +468,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         expand(this_num_digits + trailing_digits + 1);
-
-        /*
-         * Does this number have only one digit?  If yes then use a faster approach.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = left_shift_digit(digits_, digits_[0], trailing_digits, digit_shift);
-            return *this;
-        }
-
-        /*
-         * Worst case:  Shift our digit array.
-         */
-        num_digits_ = left_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        num_digits_ = left_shift2_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 
@@ -514,16 +490,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits - trailing_digits);
-
-        /*
-         * Does this number have only one digit?  If yes, then use a faster approach.
-         */
-        if (this_num_digits == 1) {
-            res.num_digits_ = right_shift_digit(res.digits_, digits_[0], digit_shift);
-            return res;
-        }
-
-        res.num_digits_ = right_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.num_digits_ = right_shift2_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -543,15 +510,7 @@ namespace c8 {
             return *this;
         }
 
-        /*
-         * Does this number have only one digit?  If yes, then use a faster approach.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = right_shift_digit(digits_, digits_[0], digit_shift);
-            return *this;
-        }
-
-        num_digits_ = right_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        num_digits_ = right_shift2_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 

@@ -480,6 +480,25 @@ namespace c8 {
     }
 
     /*
+     * Left shift a digit array.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto left_shift2_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+        /*
+         * Does src have only one digit?  If yes then use a faster approach.
+         */
+        if (src_num_digits == 1) {
+            return left_shift_digit(res, src[0], shift_digits, shift_bits);
+        }
+
+        /*
+         * Worst case:  Shift our digit array.
+         */
+        return left_shift_digit_array(res, src, src_num_digits, shift_digits, shift_bits);
+    }
+
+    /*
      * Right shift a digit.
      */
     inline auto right_shift_digit(natural_digit *res, natural_digit v, std::size_t shift_bits) -> std::size_t {
@@ -524,6 +543,25 @@ namespace c8 {
         }
 
         return res_num_digits;
+    }
+
+    /*
+     * Right shift a digit array.
+     *
+     * Note: It is OK for res and src to be the same pointer.
+     */
+    inline auto right_shift2_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+        /*
+         * Does src have only one digit?  If yes, then use a faster approach.
+         */
+        if (src_num_digits == 1) {
+            return right_shift_digit(res, src[0], shift_bits);
+        }
+
+        /*
+         * Worst case:  Shift our digit array.
+         */
+        return right_shift_digit_array(res, src, src_num_digits, shift_digits, shift_bits);
     }
 
     /*
