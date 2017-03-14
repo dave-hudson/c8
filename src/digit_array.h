@@ -672,6 +672,37 @@ namespace c8 {
     }
 
     /*
+     * Multiply two digit arrays.
+     */
+    inline auto multiply2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+        /*
+         * Does src2 have only one digit?  If yes, then we can use faster approaches.
+         */
+        if (src2_num_digits == 1) {
+            return multiply2_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+        }
+
+        /*
+         * Does src1 have only one digit?  If yes then multiply that digit and the n digits of src2.
+         */
+        if (src1_num_digits == 1) {
+            return multiply_digit_array_digit(res, src2, src2_num_digits, src1[0]);
+        }
+
+        /*
+         * Worst case scenario:  We're multiplying two arrays of digits.
+         */
+        auto src1_1 = src1;
+        natural_digit src1_copy[src1_num_digits];
+        if (res == src1) {
+            copy_digit_array(src1_copy, src1, src1_num_digits);
+            src1_1 = src1_copy;
+        }
+
+        return multiply_digit_arrays(res, src1_1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
      * Multiply a digit array by a single digit and left shift by an integer number of digits.
      *
      * Note: It is OK for res and src to be the same pointer.

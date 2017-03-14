@@ -564,27 +564,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         res.reserve(res_num_digits);
-
-        /*
-         * Does v have only one digit?  If yes, then we can use faster approaches.
-         */
-        if (v_num_digits == 1) {
-            res.num_digits_ = multiply2_digit_array_digit(res.digits_, digits_, this_num_digits, v.digits_[0]);
-            return res;
-        }
-
-        /*
-         * Does this number have only one digit?  If yes then multiply that digit and the n digits of v.
-         */
-        if (this_num_digits == 1) {
-            res.num_digits_ = multiply_digit_array_digit(res.digits_, v.digits_, v_num_digits, digits_[0]);
-            return res;
-        }
-
-        /*
-         * Worst case scenario:  We're multiplying two arrays of digits.
-         */
-        res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = multiply2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -635,29 +615,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         expand(res_num_digits);
-
-        /*
-         * Does v have only one digit?  If yes, then we can use faster approaches.
-         */
-        if (v_num_digits == 1) {
-            num_digits_ = multiply2_digit_array_digit(digits_, digits_, this_num_digits, v.digits_[0]);
-            return *this;
-        }
-
-        /*
-         * Does this number have only one digit?  If yes then multiply that digit and the n digits of v.
-         */
-        if (this_num_digits == 1) {
-            num_digits_ = multiply_digit_array_digit(digits_, v.digits_, v_num_digits, digits_[0]);
-            return *this;
-        }
-
-        /*
-         * Worst case scenario:  We're multiplying two arrays of digits.
-         */
-        natural_digit this_digits[this_num_digits];
-        copy_digit_array(this_digits, digits_, this_num_digits);
-        num_digits_ = multiply_digit_arrays(digits_, this_digits, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = multiply2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
