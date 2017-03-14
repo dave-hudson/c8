@@ -3,7 +3,7 @@
  */
 #include <cctype>
 
-#include "natural.h"
+#include "c8.h"
 #include "digit_array.h"
 
 namespace c8 {

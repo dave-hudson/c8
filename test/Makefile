@@ -8,9 +8,7 @@ BASE_PATH := ..
 #
 SUBDIRS := \
 	c8_check \
-	natural_dep \
-	integer_dep \
-	rational_dep \
+	c8_dep \
 	natural_perf \
 	rational_perf
 

@@ -3,7 +3,7 @@
  */
 #include <ctime>
 
-#include <natural.h>
+#include <c8.h>
 
 /*
  * Multiply test.

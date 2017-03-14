@@ -1,7 +1,7 @@
 /*
  * rational_check.cpp
  */
-#include <rational.h>
+#include <c8.h>
 
 #include "result.h"
 

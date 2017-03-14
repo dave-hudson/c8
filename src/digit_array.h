@@ -4,7 +4,7 @@
 #ifndef __C8_DIGIT_ARRAY_H
 #define __C8_DIGIT_ARRAY_H
 
-#include "natural.h"
+#include "c8.h"
 
 namespace c8 {
     /*

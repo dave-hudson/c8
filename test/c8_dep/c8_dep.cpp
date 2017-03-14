@@ -1,7 +1,7 @@
 /*
- * integer_dep.c
+ * c8_dep.c
  */
-#include <integer.h>
+#include <c8.h>
 
 /*
  * Entry point.

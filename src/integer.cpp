@@ -1,7 +1,7 @@
 /*
  * integer.cpp
  */
-#include "integer.h"
+#include "c8.h"
 
 namespace c8 {
     /*

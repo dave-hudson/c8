@@ -1,7 +1,7 @@
 /*
  * rational.cpp
  */
-#include "rational.h"
+#include "c8.h"
 
 namespace c8 {
     /*

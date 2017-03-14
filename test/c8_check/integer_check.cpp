@@ -1,7 +1,7 @@
 /*
  * integer_check.cpp
  */
-#include <integer.h>
+#include <c8.h>
 
 #include "result.h"
 

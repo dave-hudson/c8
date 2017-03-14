@@ -6,12 +6,12 @@ BASE_PATH := ../..
 #
 # Define the target files.
 #
-TARGET_BIN := natural_dep
+TARGET_BIN := c8_dep
 
 #
 # Define the source files.
 #
-SRCS := natural_dep.cpp
+SRCS := c8_dep.cpp
 
 #
 # Libraries.

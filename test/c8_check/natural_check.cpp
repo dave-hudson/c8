@@ -1,7 +1,7 @@
 /*
  * natural_check.cpp
  */
-#include <natural.h>
+#include <c8.h>
 
 #include "result.h"
 #include "natural_check.h"
