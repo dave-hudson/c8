@@ -972,7 +972,8 @@ namespace c8 {
             return;
         }
 
-        divide_modulus_digit_arrays(quotient, quotient_num_digits, remainder, remainder_num_digits, src1, src1_num_digits, src2, src2_num_digits);
+        divide_modulus_digit_arrays(quotient, quotient_num_digits, remainder, remainder_num_digits,
+                                    src1, src1_num_digits, src2, src2_num_digits);
     }
 }
 
