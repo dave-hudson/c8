@@ -27,7 +27,8 @@ namespace c8 {
          */
         natural_digit d = p[p_num_digits - 1];
         auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
-        return static_cast<unsigned int>((p_num_digits + c) * natural_digit_bits) - static_cast<unsigned int>(__builtin_clz(d));
+        auto clz = static_cast<unsigned int>(__builtin_clz(d));
+        return static_cast<unsigned int>((p_num_digits + c) * natural_digit_bits) - clz;
     }
 
     /*
@@ -84,7 +85,8 @@ namespace c8 {
     /*
      * Compare two digit arrays and report their relative numerical size.
      */
-    inline auto compare_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) noexcept -> comparison {
+    inline auto compare_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                     const natural_digit *src2, std::size_t src2_num_digits) noexcept -> comparison {
         /*
          * If our sizes differ then this is really easy!
          */
@@ -137,7 +139,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto add_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto add_digit_array_digit(natural_digit *res,
+                                      const natural_digit *src, std::size_t src_num_digits,
+                                      natural_digit v) -> std::size_t {
         /*
          * Is this number zero?  If yes then just construct the result.
          */
@@ -179,7 +183,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto add2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto add2_digit_array_digit(natural_digit *res,
+                                       const natural_digit *src, std::size_t src_num_digits,
+                                       natural_digit v) -> std::size_t {
         /*
          * Does src have only one digit?  If yes, then just add that digit and v.
          */
@@ -198,7 +204,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto add_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto add_digit_arrays(natural_digit *res,
+                                 const natural_digit *src1, std::size_t src1_num_digits,
+                                 const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
@@ -255,7 +263,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto add2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto add2_digit_arrays(natural_digit *res,
+                                  const natural_digit *src1, std::size_t src1_num_digits,
+                                  const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Does src2 have only one digit?  If yes then add that single digit to src1
          */
@@ -294,7 +304,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto subtract_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto subtract_digit_array_digit(natural_digit *res,
+                                           const natural_digit *src, std::size_t src_num_digits,
+                                           natural_digit v) -> std::size_t {
         /*
          * Is this number zero?  If yes then just construct the result.  We know
          * that we cannot have a negative result so we don't need to worry about
@@ -337,7 +349,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto subtract2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto subtract2_digit_array_digit(natural_digit *res,
+                                            const natural_digit *src, std::size_t src_num_digits,
+                                            natural_digit v) -> std::size_t {
         /*
          * Does src have only one digit?  If yes, then subtract v from just that digit.
          */
@@ -360,7 +374,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto subtract_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto subtract_digit_arrays(natural_digit *res,
+                                      const natural_digit *src1, std::size_t src1_num_digits,
+                                      const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
          */
@@ -402,7 +418,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto subtract2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto subtract2_digit_arrays(natural_digit *res,
+                                       const natural_digit *src1, std::size_t src1_num_digits,
+                                       const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Does src2 have only one digit?  If yes, then we can use faster approaches.
          */
@@ -423,7 +441,8 @@ namespace c8 {
     /*
      * Left shift a digit.
      */
-    inline auto left_shift_digit(natural_digit *res, natural_digit v, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+    inline auto left_shift_digit(natural_digit *res,natural_digit v,
+                                 std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
         std::size_t res_num_digits = 1 + shift_digits;
 
         /*
@@ -455,7 +474,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto left_shift_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+    inline auto left_shift_digit_array(natural_digit *res,
+                                       const natural_digit *src, std::size_t src_num_digits,
+                                       std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
         std::size_t res_num_digits = src_num_digits + shift_digits;
 
         /*
@@ -493,7 +514,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto left_shift2_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+    inline auto left_shift2_digit_array(natural_digit *res,
+                                        const natural_digit *src, std::size_t src_num_digits,
+                                        std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
         /*
          * Does src have only one digit?  If yes then use a faster approach.
          */
@@ -525,7 +548,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto right_shift_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+    inline auto right_shift_digit_array(natural_digit *res,
+                                        const natural_digit *src, std::size_t src_num_digits,
+                                        std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
         std::size_t res_num_digits = src_num_digits - (shift_digits + 1);
 
         /*
@@ -559,7 +584,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto right_shift2_digit_array(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+    inline auto right_shift2_digit_array(natural_digit *res,
+                                         const natural_digit *src, std::size_t src_num_digits,
+                                         std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
         /*
          * Does src have only one digit?  If yes, then use a faster approach.
          */
@@ -595,7 +622,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto multiply_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto multiply_digit_array_digit(natural_digit *res,
+                                           const natural_digit *src, std::size_t src_num_digits,
+                                           natural_digit v) -> std::size_t {
         std::size_t res_num_digits = src_num_digits;
 
         /*
@@ -621,7 +650,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto multiply2_digit_array_digit(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto multiply2_digit_array_digit(natural_digit *res,
+                                            const natural_digit *src, std::size_t src_num_digits,
+                                            natural_digit v) -> std::size_t {
         /*
          * Does this number have only one digit?  If yes, then just multiply that digit and v.
          */
@@ -638,7 +669,9 @@ namespace c8 {
     /*
      * Multiply two digit arrays.
      */
-    inline auto multiply_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto multiply_digit_arrays(natural_digit *res,
+                                      const natural_digit *src1, std::size_t src1_num_digits,
+                                      const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Comba multiply.
          *
@@ -683,7 +716,9 @@ namespace c8 {
     /*
      * Multiply two digit arrays.
      */
-    inline auto multiply2_digit_arrays(natural_digit *res, const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+    inline auto multiply2_digit_arrays(natural_digit *res,
+                                       const natural_digit *src1, std::size_t src1_num_digits,
+                                       const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         /*
          * Does src2 have only one digit?  If yes, then we can use faster approaches.
          */
@@ -716,7 +751,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto multiply_digit_array_digit_and_left_shift(natural_digit *res, const natural_digit *src, std::size_t src_num_digits, natural_digit v, std::size_t shift_digits) -> std::size_t {
+    inline auto multiply_digit_array_digit_and_left_shift(natural_digit *res,
+                                                          const natural_digit *src, std::size_t src_num_digits,
+                                                          natural_digit v, std::size_t shift_digits) -> std::size_t {
         zero_digit_array(res, shift_digits);
         std::size_t res_num_digits = src_num_digits + shift_digits;
 
@@ -741,7 +778,8 @@ namespace c8 {
     /*
      * Divide/modulus a single digit by another single digit.
      */
-    inline auto divide_modulus_digit_digit(natural_digit *res, natural_digit &mod, natural_digit v1, natural_digit v2) -> std::size_t {
+    inline auto divide_modulus_digit_digit(natural_digit *res, natural_digit &mod,
+                                           natural_digit v1, natural_digit v2) -> std::size_t {
         natural_digit d = v1 / v2;
         mod = v1 % v2;
         if (!d) {
@@ -757,7 +795,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto divide_modulus_digit_array_digit(natural_digit *res, natural_digit &mod, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto divide_modulus_digit_array_digit(natural_digit *res, natural_digit &mod,
+                                                 const natural_digit *src, std::size_t src_num_digits,
+                                                 natural_digit v) -> std::size_t {
         /*
          * Now we run a long divide algorithm.
          */
@@ -789,7 +829,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto divide_modulus2_digit_array_digit(natural_digit *res, natural_digit &mod, const natural_digit *src, std::size_t src_num_digits, natural_digit v) -> std::size_t {
+    inline auto divide_modulus2_digit_array_digit(natural_digit *res, natural_digit &mod,
+                                                  const natural_digit *src, std::size_t src_num_digits,
+                                                  natural_digit v) -> std::size_t {
         /*
          * Does this number have only one digit?  If yes, then divide that digit by v.
          */
