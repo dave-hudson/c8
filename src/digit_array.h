@@ -81,6 +81,9 @@ namespace c8 {
         }
     }
 
+    /*
+     * Compare two digit arrays and report their relative numerical size.
+     */
     inline auto compare_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits, const natural_digit *src2, std::size_t src2_num_digits) noexcept -> comparison {
         /*
          * If our sizes differ then this is really easy!
@@ -160,6 +163,9 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
+        /*
+         * We may have a final carry digit, so handle that if it exists.
+         */
         std::size_t res_num_digits = src_num_digits;
         if (C8_UNLIKELY(acc)) {
             res[res_num_digits++] = static_cast<natural_digit>(acc);
@@ -233,6 +239,9 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
+        /*
+         * We may have a final carry digit, so handle that if it exists.
+         */
         std::size_t res_num_digits = larger_num_digits;
         if (C8_UNLIKELY(acc)) {
             res[res_num_digits++] = static_cast<natural_digit>(acc);
@@ -794,7 +803,8 @@ namespace c8 {
     /*
      * Divide two digit arrays.
      *
-     * This function requires quite a lot of temporary digit arrays!
+     * This function requires quite a lot of temporary digit arrays and so can
+     * consume quite large amounts of stack space.
      */
     inline auto divide_modulus_digit_arrays(natural_digit *quotient, std::size_t &quotient_num_digits,
                                             natural_digit *remainder, std::size_t &remainder_num_digits,
@@ -901,8 +911,6 @@ namespace c8 {
 
     /*
      * Divide two digit arrays.
-     *
-     * This function requires quite a lot of temporary digit arrays!
      */
     inline auto divide_modulus2_digit_arrays(natural_digit *quotient, std::size_t &quotient_num_digits,
                                              natural_digit *remainder, std::size_t &remainder_num_digits,
