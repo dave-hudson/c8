@@ -240,7 +240,7 @@ namespace c8 {
             return res;
         }
 
-        res.num_digits_ = add2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = add_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -270,7 +270,7 @@ namespace c8 {
 
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         res.reserve(max_num_digits + 1);
-        res.num_digits_ = add2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -297,7 +297,7 @@ namespace c8 {
             return *this;
         }
 
-        num_digits_ = add2_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = add_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -324,7 +324,7 @@ namespace c8 {
 
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         expand(max_num_digits + 1);
-        num_digits_ = add2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -351,7 +351,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits);
-        res.num_digits_ = subtract2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = subtract_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -379,7 +379,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits);
-        res.num_digits_ = subtract2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = subtract_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -402,7 +402,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        num_digits_ = subtract2_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = subtract_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -426,7 +426,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        num_digits_ = subtract2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = subtract_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -448,7 +448,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         res.reserve(this_num_digits + trailing_digits + 1);
-        res.num_digits_ = left_shift2_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.num_digits_ = left_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -468,7 +468,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         expand(this_num_digits + trailing_digits + 1);
-        num_digits_ = left_shift2_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        num_digits_ = left_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 
@@ -490,7 +490,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits - trailing_digits);
-        res.num_digits_ = right_shift2_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.num_digits_ = right_shift_digit_array(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -510,7 +510,7 @@ namespace c8 {
             return *this;
         }
 
-        num_digits_ = right_shift2_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        num_digits_ = right_shift_digit_array(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 
@@ -536,7 +536,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits + 1);
-        res.num_digits_ = multiply2_digit_array_digit(res.digits_, digits_, this_num_digits, v);
+        res.num_digits_ = multiply_digit_array_digit(res.digits_, digits_, this_num_digits, v);
         return res;
     }
 
@@ -564,7 +564,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         res.reserve(res_num_digits);
-        res.num_digits_ = multiply2_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        res.num_digits_ = multiply_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -589,7 +589,7 @@ namespace c8 {
         }
 
         expand(this_num_digits + 1);
-        num_digits_ = multiply2_digit_array_digit(digits_, digits_, this_num_digits, v);
+        num_digits_ = multiply_digit_array_digit(digits_, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -615,7 +615,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         expand(res_num_digits);
-        num_digits_ = multiply2_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        num_digits_ = multiply_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -642,7 +642,7 @@ namespace c8 {
         }
 
         p.first.reserve(this_num_digits);
-        p.first.num_digits_ = divide_modulus2_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
+        p.first.num_digits_ = divide_modulus_digit_array_digit(p.first.digits_, p.second, digits_, this_num_digits, v);
         return p;
     }
 
@@ -671,8 +671,8 @@ namespace c8 {
 
         p.first.reserve(this_num_digits - v_num_digits + 1);
         p.second.reserve(v_num_digits);
-        divide_modulus2_digit_arrays(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
-                                     digits_, this_num_digits, v.digits_, v_num_digits);
+        divide_modulus_digit_arrays(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return p;
     }
 
@@ -699,7 +699,7 @@ namespace c8 {
 
         natural_digit remainder;
         quotient.reserve(this_num_digits);
-        quotient.num_digits_ = divide_modulus2_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
+        quotient.num_digits_ = divide_modulus_digit_array_digit(quotient.digits_, remainder, digits_, this_num_digits, v);
         return quotient;
     }
 
@@ -728,8 +728,8 @@ namespace c8 {
         quotient.reserve(this_num_digits - v_num_digits + 1);
         natural_digit remainder_digits[v_num_digits];
         std::size_t remainder_num_digits;
-        divide_modulus2_digit_arrays(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
-                                     digits_, this_num_digits, v.digits_, v_num_digits);
+        divide_modulus_digit_arrays(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return quotient;
     }
 
@@ -753,7 +753,7 @@ namespace c8 {
         }
 
         natural_digit remainder;
-        num_digits_ = divide_modulus2_digit_array_digit(digits_, remainder, digits_, this_num_digits, v);
+        num_digits_ = divide_modulus_digit_array_digit(digits_, remainder, digits_, this_num_digits, v);
         return *this;
     }
 
@@ -779,8 +779,8 @@ namespace c8 {
 
         natural_digit remainder_digits[v_num_digits];
         std::size_t remainder_num_digits;
-        divide_modulus2_digit_arrays(digits_, num_digits_, remainder_digits, remainder_num_digits,
-                                     digits_, this_num_digits, v.digits_, v_num_digits);
+        divide_modulus_digit_arrays(digits_, num_digits_, remainder_digits, remainder_num_digits,
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -802,7 +802,7 @@ namespace c8 {
         }
 
         natural_digit res_digits[this_num_digits];
-        divide_modulus2_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
+        divide_modulus_digit_array_digit(res_digits, remainder, digits_, this_num_digits, v);
         return remainder;
     }
 
@@ -832,8 +832,8 @@ namespace c8 {
         natural_digit quotient_digits[this_num_digits - v_num_digits + 1];
         std::size_t quotient_num_digits;
         remainder.reserve(v_num_digits);
-        divide_modulus2_digit_arrays(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
-                                     digits_, this_num_digits, v.digits_, v_num_digits);
+        divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return remainder;
     }
 
@@ -854,7 +854,7 @@ namespace c8 {
         }
 
         natural_digit res_digits[this_num_digits];
-        divide_modulus2_digit_array_digit(res_digits, digits_[0], digits_, this_num_digits, v);
+        divide_modulus_digit_array_digit(res_digits, digits_[0], digits_, this_num_digits, v);
         num_digits_ = 0;
         if (digits_[0]) {
             num_digits_ = 1;
@@ -884,8 +884,8 @@ namespace c8 {
 
         natural_digit quotient_digits[this_num_digits - v_num_digits + 1];
         std::size_t quotient_num_digits;
-        divide_modulus2_digit_arrays(quotient_digits, quotient_num_digits, digits_, num_digits_,
-                                     digits_, this_num_digits, v.digits_, v_num_digits);
+        divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, digits_, num_digits_,
+                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -926,8 +926,8 @@ namespace c8 {
             mod.reserve(smaller.num_digits_);
 
             std::size_t quotient_num_digits;
-            divide_modulus2_digit_arrays(quotient_digits, quotient_num_digits, mod.digits_, mod.num_digits_,
-                                         larger.digits_, larger.num_digits_, smaller.digits_, smaller.num_digits_);
+            divide_modulus_digit_arrays(quotient_digits, quotient_num_digits, mod.digits_, mod.num_digits_,
+                                        larger.digits_, larger.num_digits_, smaller.digits_, smaller.num_digits_);
             if (!mod.num_digits_) {
                 break;
             }
