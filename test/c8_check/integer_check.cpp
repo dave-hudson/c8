@@ -214,8 +214,8 @@ auto test_integer_construct_11() -> result {
 /*
  * Add two positive values.
  */
-auto test_integer_add_0() -> result {
-    result r("int add 0");
+auto test_integer_add_0a() -> result {
+    result r("int add 0a");
     c8::integer a0("31");
     c8::integer a1("42");
 
@@ -229,10 +229,27 @@ auto test_integer_add_0() -> result {
 }
 
 /*
+ * Add two positive values.
+ */
+auto test_integer_add_0b() -> result {
+    result r("int add 0b");
+    c8::integer a0("31");
+    c8::integer a1("42");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("73");
+    return r;
+}
+
+/*
  * Add a positive and a negative value.
  */
-auto test_integer_add_1() -> result {
-    result r("int add 1");
+auto test_integer_add_1a() -> result {
+    result r("int add 1a");
     c8::integer a0("42");
     c8::integer a1("-21");
 
@@ -246,10 +263,27 @@ auto test_integer_add_1() -> result {
 }
 
 /*
+ * Add a positive and a negative value.
+ */
+auto test_integer_add_1b() -> result {
+    result r("int add 1b");
+    c8::integer a0("42");
+    c8::integer a1("-21");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("21");
+    return r;
+}
+
+/*
  * Add a positive and a negative value that gives a negative result
  */
-auto test_integer_add_2() -> result {
-    result r("int add 2");
+auto test_integer_add_2a() -> result {
+    result r("int add 2a");
     c8::integer a0("12345678");
     c8::integer a1("-34738957485741895748957485743809574812345678");
 
@@ -263,10 +297,27 @@ auto test_integer_add_2() -> result {
 }
 
 /*
+ * Add a positive and a negative value that gives a negative result
+ */
+auto test_integer_add_2b() -> result {
+    result r("int add 2b");
+    c8::integer a0("12345678");
+    c8::integer a1("-34738957485741895748957485743809574812345678");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("-34738957485741895748957485743809574800000000");
+    return r;
+}
+
+/*
  * Add two very large negative values.
  */
-auto test_integer_add_3() -> result {
-    result r("int add 3");
+auto test_integer_add_3a() -> result {
+    result r("int add 3a");
     c8::integer a0("-10000000000000000000000000000000000000000000000000000000000000000008789");
     c8::integer a1("-88888880000000000000000000000000000000000000000000000000000000999992000");
 
@@ -280,10 +331,27 @@ auto test_integer_add_3() -> result {
 }
 
 /*
+ * Add two very large negative values.
+ */
+auto test_integer_add_3b() -> result {
+    result r("int add 3b");
+    c8::integer a0("-10000000000000000000000000000000000000000000000000000000000000000008789");
+    c8::integer a1("-88888880000000000000000000000000000000000000000000000000000000999992000");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("-98888880000000000000000000000000000000000000000000000000000001000000789");
+    return r;
+}
+
+/*
  * Subtract a 1 digit value from another 1 digit value.
  */
-auto test_integer_subtract_0() -> result {
-    result r("int sub 0");
+auto test_integer_subtract_0a() -> result {
+    result r("int sub 0a");
     c8::integer s0(52);
     c8::integer s1(2);
 
@@ -297,10 +365,27 @@ auto test_integer_subtract_0() -> result {
 }
 
 /*
+ * Subtract a 1 digit value from another 1 digit value.
+ */
+auto test_integer_subtract_0b() -> result {
+    result r("int sub 0b");
+    c8::integer s0(52);
+    c8::integer s1(2);
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("50");
+    return r;
+}
+
+/*
  * Subtract a large negative value from another large negative value.
  */
-auto test_integer_subtract_1() -> result {
-    result r("int sub 1");
+auto test_integer_subtract_1a() -> result {
+    result r("int sub 1a");
     c8::integer s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
     c8::integer s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
 
@@ -314,10 +399,27 @@ auto test_integer_subtract_1() -> result {
 }
 
 /*
+ * Subtract a large negative value from another large negative value.
+ */
+auto test_integer_subtract_1b() -> result {
+    result r("int sub 1b");
+    c8::integer s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897");
+    c8::integer s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("-5872488729698595999749602411500766185722239445613509099777952305512191704320129156897500143");
+    return r;
+}
+
+/*
  * Subtract a large negative value from a large value.
  */
-auto test_integer_subtract_2() -> result {
-    result r("int sub 2");
+auto test_integer_subtract_2a() -> result {
+    result r("int sub 2a");
     c8::integer s0("10000000000000000000000000000000000000000000000000000000000000000000000");
     c8::integer s1("-10000000000000000000000000000000000000000000000000000000000000000000000");
 
@@ -331,10 +433,27 @@ auto test_integer_subtract_2() -> result {
 }
 
 /*
+ * Subtract a large negative value from a large value.
+ */
+auto test_integer_subtract_2b() -> result {
+    result r("int sub 2b");
+    c8::integer s0("10000000000000000000000000000000000000000000000000000000000000000000000");
+    c8::integer s1("-10000000000000000000000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("20000000000000000000000000000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
  * Subtract a large value from a smaller one.
  */
-auto test_integer_subtract_3() -> result {
-    result r("int sub 3");
+auto test_integer_subtract_3a() -> result {
+    result r("int sub 3a");
     c8::integer s0(2);
     c8::integer s1(52);
 
@@ -343,6 +462,23 @@ auto test_integer_subtract_3() -> result {
     r.stop_clock();
 
     r.get_stream() << s2;
+    r.check_pass("-50");
+    return r;
+}
+
+/*
+ * Subtract a large value from a smaller one.
+ */
+auto test_integer_subtract_3b() -> result {
+    result r("int sub 3b");
+    c8::integer s0(2);
+    c8::integer s1(52);
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
     r.check_pass("-50");
     return r;
 }
@@ -758,8 +894,8 @@ auto test_integer_compare_3f() -> result {
 /*
  * Test left shifting.
  */
-auto test_integer_lshift_0() -> result {
-    result r("int lsh 0");
+auto test_integer_lshift_0a() -> result {
+    result r("int lsh 0a");
     c8::integer l0(0x349f);
 
     r.start_clock();
@@ -774,8 +910,24 @@ auto test_integer_lshift_0() -> result {
 /*
  * Test left shifting.
  */
-auto test_integer_lshift_1() -> result {
-    result r("int lsh 1");
+auto test_integer_lshift_0b() -> result {
+    result r("int lsh 0b");
+    c8::integer l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 0;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("349f");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_integer_lshift_1a() -> result {
+    result r("int lsh 1a");
     c8::integer l0(0x349f);
 
     r.start_clock();
@@ -790,8 +942,24 @@ auto test_integer_lshift_1() -> result {
 /*
  * Test left shifting.
  */
-auto test_integer_lshift_2() -> result {
-    result r("int lsh 2");
+auto test_integer_lshift_1b() -> result {
+    result r("int lsh 1b");
+    c8::integer l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("693e");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_integer_lshift_2a() -> result {
+    result r("int lsh 2a");
     c8::integer l0(0x349f);
 
     r.start_clock();
@@ -806,8 +974,24 @@ auto test_integer_lshift_2() -> result {
 /*
  * Test left shifting.
  */
-auto test_integer_lshift_3() -> result {
-    result r("int lsh 3");
+auto test_integer_lshift_2b() -> result {
+    result r("int lsh 2b");
+    c8::integer l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 18;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("d27c0000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_integer_lshift_3a() -> result {
+    result r("int lsh 3a");
     c8::integer l0(0x349f);
 
     r.start_clock();
@@ -822,8 +1006,24 @@ auto test_integer_lshift_3() -> result {
 /*
  * Test left shifting.
  */
-auto test_integer_lshift_4() -> result {
-    result r("int lsh 4");
+auto test_integer_lshift_3b() -> result {
+    result r("int lsh 3b");
+    c8::integer l0(0x349f);
+
+    r.start_clock();
+    l0 <<= 187;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("1a4f80000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test left shifting.
+ */
+auto test_integer_lshift_4a() -> result {
+    result r("int lsh 4a");
     c8::integer l0("-0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
 
     r.start_clock();
@@ -836,10 +1036,26 @@ auto test_integer_lshift_4() -> result {
 }
 
 /*
+ * Test left shifting.
+ */
+auto test_integer_lshift_4b() -> result {
+    result r("int lsh 4b");
+    c8::integer l0("-0x349f298375323985afbce9837928798789dffeffee987678687678676756562");
+
+    r.start_clock();
+    l0 <<= 69;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << l0;
+    r.check_pass("-693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+    return r;
+}
+
+/*
  * Test right shifting.
  */
-auto test_integer_rshift_0() -> result {
-    result r("int rsh 0");
+auto test_integer_rshift_0a() -> result {
+    result r("int rsh 0a");
     c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -854,8 +1070,24 @@ auto test_integer_rshift_0() -> result {
 /*
  * Test right shifting.
  */
-auto test_integer_rshift_1() -> result {
-    result r("int rsh 1");
+auto test_integer_rshift_0b() -> result {
+    result r("int rsh 0b");
+    c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 0;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("23490000000000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_integer_rshift_1a() -> result {
+    result r("int rsh 1a");
     c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -870,8 +1102,24 @@ auto test_integer_rshift_1() -> result {
 /*
  * Test right shifting.
  */
-auto test_integer_rshift_2() -> result {
-    result r("int rsh 2");
+auto test_integer_rshift_1b() -> result {
+    result r("int rsh 1b");
+    c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("11a48000000000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_integer_rshift_2a() -> result {
+    result r("int rsh 2a");
     c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -886,8 +1134,24 @@ auto test_integer_rshift_2() -> result {
 /*
  * Test right shifting.
  */
-auto test_integer_rshift_3() -> result {
-    result r("int rsh 3");
+auto test_integer_rshift_2b() -> result {
+    result r("int rsh 2b");
+    c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 19;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("469200000000000000000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_integer_rshift_3a() -> result {
+    result r("int rsh 3a");
     c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
 
     r.start_clock();
@@ -902,8 +1166,24 @@ auto test_integer_rshift_3() -> result {
 /*
  * Test right shifting.
  */
-auto test_integer_rshift_4() -> result {
-    result r("int rsh 4");
+auto test_integer_rshift_3b() -> result {
+    result r("int rsh 3b");
+    c8::integer r0("0x23490000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    r0 >>= 197;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("11a4800");
+    return r;
+}
+
+/*
+ * Test right shifting.
+ */
+auto test_integer_rshift_4a() -> result {
+    result r("int rsh 4a");
     c8::integer r0("-0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
 
     r.start_clock();
@@ -916,10 +1196,26 @@ auto test_integer_rshift_4() -> result {
 }
 
 /*
+ * Test right shifting.
+ */
+auto test_integer_rshift_4b() -> result {
+    result r("int rsh 4b");
+    c8::integer r0("-0x693e5306ea64730b5f79d306f250f30f13bffdffdd30ecf0d0ecf0ceceacac400000000000000000");
+
+    r.start_clock();
+    r0 >>= 123;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << r0;
+    r.check_pass("-d27ca60dd4c8e616bef3a60de4a1e61e277ffbffba61d9e1a");
+    return r;
+}
+
+/*
  * Test multiplication.
  */
-auto test_integer_multiply_0() -> result {
-    result r("int mul 0");
+auto test_integer_multiply_0a() -> result {
+    result r("int mul 0a");
     c8::integer mu0(3);
     c8::integer mu1(22);
 
@@ -935,8 +1231,25 @@ auto test_integer_multiply_0() -> result {
 /*
  * Test multiplication.
  */
-auto test_integer_multiply_1() -> result {
-    result r("int mul 1");
+auto test_integer_multiply_0b() -> result {
+    result r("int mul 0b");
+    c8::integer mu0(3);
+    c8::integer mu1(22);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("66");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_integer_multiply_1a() -> result {
+    result r("int mul 1a");
     c8::integer mu0(1000000000000000000LL);
     c8::integer mu1("-9999999999999999999");
 
@@ -952,8 +1265,25 @@ auto test_integer_multiply_1() -> result {
 /*
  * Test multiplication.
  */
-auto test_integer_multiply_2() -> result {
-    result r("int mul 2");
+auto test_integer_multiply_1b() -> result {
+    result r("int mul 1b");
+    c8::integer mu0(1000000000000000000LL);
+    c8::integer mu1("-9999999999999999999");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("-9999999999999999999000000000000000000");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_integer_multiply_2a() -> result {
+    result r("int mul 2a");
     c8::integer mu0(-0x2000000000000000LL);
     c8::integer mu1(0x4000000000000000LL);
 
@@ -969,8 +1299,25 @@ auto test_integer_multiply_2() -> result {
 /*
  * Test multiplication.
  */
-auto test_integer_multiply_3() -> result {
-    result r("int mul 3");
+auto test_integer_multiply_2b() -> result {
+    result r("int mul 2b");
+    c8::integer mu0(-0x2000000000000000LL);
+    c8::integer mu1(0x4000000000000000LL);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
+    r.check_pass("-8000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_integer_multiply_3a() -> result {
+    result r("int mul 3a");
     c8::integer mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890");
     c8::integer mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
@@ -984,10 +1331,27 @@ auto test_integer_multiply_3() -> result {
 }
 
 /*
+ * Test multiplication.
+ */
+auto test_integer_multiply_3b() -> result {
+    result r("int mul 3b");
+    c8::integer mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    c8::integer mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("15241578753238836750495351562566681945008382873376009755225118122311263526910001371743100137174310012193273126047859425087639153757049236500533455762536198787501905199875019052100");
+    return r;
+}
+
+/*
  * Test division.
  */
-auto test_integer_divide_0() -> result {
-    result r("int div 0");
+auto test_integer_divide_0a() -> result {
+    result r("int div 0a");
     c8::integer d0(1000000000000000000LL);
     c8::integer d1(99999999999999999LL);
 
@@ -1004,8 +1368,27 @@ auto test_integer_divide_0() -> result {
 /*
  * Test division.
  */
-auto test_integer_divide_1() -> result {
-    result r("int div 1");
+auto test_integer_divide_0b() -> result {
+    result r("int div 0b");
+    c8::integer d0(1000000000000000000LL);
+    auto mo0 = d0;
+    c8::integer d1(99999999999999999LL);
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("10,10");
+    return r;
+}
+
+/*
+ * Test division.
+ */
+auto test_integer_divide_1a() -> result {
+    result r("int div 1a");
     c8::integer d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
     c8::integer d1(-99999999999999999LL);
 
@@ -1022,8 +1405,27 @@ auto test_integer_divide_1() -> result {
 /*
  * Test division.
  */
-auto test_integer_divide_2() -> result {
-    result r("int div 2");
+auto test_integer_divide_1b() -> result {
+    result r("int div 1b");
+    c8::integer d0("7829238792751875818917817519758789749174743847389742871867617465710657162");
+    auto mo0 = d0;
+    c8::integer d1(-99999999999999999LL);
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
+    r.check_pass("-78292387927518758972102054472775487212767983201652300846,35600667362958008");
+    return r;
+}
+
+/*
+ * Test division.
+ */
+auto test_integer_divide_2a() -> result {
+    result r("int div 2a");
     c8::integer d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000");
     c8::integer d1("0x10000000000000001000000000000000100000000");
 
@@ -1040,8 +1442,27 @@ auto test_integer_divide_2() -> result {
 /*
  * Test division.
  */
-auto test_integer_divide_3() -> result {
-    result r("int div 3");
+auto test_integer_divide_2b() -> result {
+    result r("int div 2b");
+    c8::integer d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000");
+    auto mo0 = d0;
+    c8::integer d1("0x10000000000000001000000000000000100000000");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("-ffffffffffffffff000000000000000,100000000000000000000000");
+    return r;
+}
+
+/*
+ * Test division.
+ */
+auto test_integer_divide_3a() -> result {
+    result r("int div 3a");
     c8::integer d0(2000);
     c8::integer d1(0);
 
@@ -1073,8 +1494,42 @@ auto test_integer_divide_3() -> result {
 /*
  * Test division.
  */
-auto test_integer_divide_4() -> result {
-    result r("int div 4");
+auto test_integer_divide_3b() -> result {
+    result r("int div 3b");
+    c8::integer d0(2000);
+    auto mo0 = d0;
+    c8::integer d1(0);
+
+    /*
+     * Divide by zero.  This will throw an exception!
+     */
+    r.start_clock();
+    try {
+        d0 /= d1;
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::divide_by_zero &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+/*
+ * Test division.
+ */
+auto test_integer_divide_4a() -> result {
+    result r("int div 4a");
     c8::integer d0(-1000000000000000000LL);
     c8::integer d1(-99999999999999999LL);
 
@@ -1084,6 +1539,25 @@ auto test_integer_divide_4() -> result {
     r.stop_clock();
 
     r.get_stream() << d2 << ',' << mo2;
+    r.check_pass("10,10");
+    return r;
+}
+
+/*
+ * Test division.
+ */
+auto test_integer_divide_4b() -> result {
+    result r("int div 4b");
+    c8::integer d0(-1000000000000000000LL);
+    auto mo0 = d0;
+    c8::integer d1(-99999999999999999LL);
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0 << ',' << mo0;
     r.check_pass("10,10");
     return r;
 }
