@@ -1,5 +1,7 @@
 /*
  * digit_array.h
+ *
+ * Implements generic digit array logic.
  */
 #ifndef __C8_DIGIT_ARRAY_H
 #define __C8_DIGIT_ARRAY_H
