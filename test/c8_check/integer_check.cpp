@@ -1435,7 +1435,7 @@ auto test_integer_divide_2a() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d2 << ',' << mo2;
-    r.check_pass("-ffffffffffffffff000000000000000,100000000000000000000000");
+    r.check_pass("-ffffffffffffffff000000000000000,-100000000000000000000000");
     return r;
 }
 
@@ -1454,7 +1454,7 @@ auto test_integer_divide_2b() -> result {
     r.stop_clock();
 
     r.get_stream() << std::hex << d0 << ',' << mo0;
-    r.check_pass("-ffffffffffffffff000000000000000,100000000000000000000000");
+    r.check_pass("-ffffffffffffffff000000000000000,-100000000000000000000000");
     return r;
 }
 
@@ -1539,7 +1539,7 @@ auto test_integer_divide_4a() -> result {
     r.stop_clock();
 
     r.get_stream() << d2 << ',' << mo2;
-    r.check_pass("10,10");
+    r.check_pass("10,-10");
     return r;
 }
 
@@ -1558,7 +1558,7 @@ auto test_integer_divide_4b() -> result {
     r.stop_clock();
 
     r.get_stream() << d0 << ',' << mo0;
-    r.check_pass("10,10");
+    r.check_pass("10,-10");
     return r;
 }
 

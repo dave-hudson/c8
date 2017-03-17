@@ -284,7 +284,6 @@ namespace c8 {
          * Divide this integer by another one, returning the remainder.
          */
         auto operator %=(const integer &v) -> integer & {
-            negative_ = false;
             magnitude_ %= v.magnitude_;
             return *this;
         }

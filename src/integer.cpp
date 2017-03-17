@@ -204,6 +204,7 @@ namespace c8 {
         std::pair<integer, integer> res;
         res.first.negative_ = negative_ ^ v.negative_;
         res.first.magnitude_ = std::move(dm.first);
+        res.second.negative_ = negative_;
         res.second.magnitude_ = std::move(dm.second);
 
         return res;
@@ -224,6 +225,7 @@ namespace c8 {
      */
     auto integer::operator %(const integer &v) const -> integer {
         integer res;
+        res.negative_ = negative_;
         res.magnitude_ = magnitude_ % v.magnitude_;
         return res;
     }
