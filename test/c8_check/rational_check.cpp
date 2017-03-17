@@ -199,8 +199,8 @@ auto test_rational_construct_10() -> result {
 /*
  * Add two positive values.
  */
-auto test_rational_add_0() -> result {
-    result r("rat add 0");
+auto test_rational_add_0a() -> result {
+    result r("rat add 0a");
     c8::rational a0("31/3");
     c8::rational a1("42/3");
 
@@ -214,10 +214,27 @@ auto test_rational_add_0() -> result {
 }
 
 /*
+ * Add two positive values.
+ */
+auto test_rational_add_0b() -> result {
+    result r("rat add 0b");
+    c8::rational a0("31/3");
+    c8::rational a1("42/3");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("73/3");
+    return r;
+}
+
+/*
  * Add a positive and a negative value.
  */
-auto test_rational_add_1() -> result {
-    result r("rat add 1");
+auto test_rational_add_1a() -> result {
+    result r("rat add 1a");
     c8::rational a0("42/13");
     c8::rational a1("-1/2");
 
@@ -231,10 +248,27 @@ auto test_rational_add_1() -> result {
 }
 
 /*
+ * Add a positive and a negative value.
+ */
+auto test_rational_add_1b() -> result {
+    result r("rat add 1b");
+    c8::rational a0("42/13");
+    c8::rational a1("-1/2");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("71/26");
+    return r;
+}
+
+/*
  * Add a positive and a negative value that gives a negative result
  */
-auto test_rational_add_2() -> result {
-    result r("rat add 2");
+auto test_rational_add_2a() -> result {
+    result r("rat add 2a");
     c8::rational a0("12345678/287923");
     c8::rational a1("-34738957485741895748957485743809574812345678/287923");
 
@@ -248,10 +282,27 @@ auto test_rational_add_2() -> result {
 }
 
 /*
+ * Add a positive and a negative value that gives a negative result
+ */
+auto test_rational_add_2b() -> result {
+    result r("rat add 2b");
+    c8::rational a0("12345678/287923");
+    c8::rational a1("-34738957485741895748957485743809574812345678/287923");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("-34738957485741895748957485743809574800000000/287923");
+    return r;
+}
+
+/*
  * Add two very large negative values.
  */
-auto test_rational_add_3() -> result {
-    result r("rat add 3");
+auto test_rational_add_3a() -> result {
+    result r("rat add 3a");
     c8::rational a0("-10000000000000000000000000000000000000000000000000000000000000000008789/3");
     c8::rational a1("-88888880000000000000000000000000000000000000000000000000000000999992000/31");
 
@@ -265,10 +316,27 @@ auto test_rational_add_3() -> result {
 }
 
 /*
+ * Add two very large negative values.
+ */
+auto test_rational_add_3b() -> result {
+    result r("rat add 3b");
+    c8::rational a0("-10000000000000000000000000000000000000000000000000000000000000000008789/3");
+    c8::rational a1("-88888880000000000000000000000000000000000000000000000000000000999992000/31");
+
+    r.start_clock();
+    a0 += a1;
+    r.stop_clock();
+
+    r.get_stream() << a0;
+    r.check_pass("-192222213333333333333333333333333333333333333333333333333333334333416153/31");
+    return r;
+}
+
+/*
  * Subtract a 1 digit value from another 1 digit value.
  */
-auto test_rational_subtract_0() -> result {
-    result r("rat sub 0");
+auto test_rational_subtract_0a() -> result {
+    result r("rat sub 0a");
     c8::rational s0(52, 3);
     c8::rational s1(2, 4);
 
@@ -282,10 +350,27 @@ auto test_rational_subtract_0() -> result {
 }
 
 /*
+ * Subtract a 1 digit value from another 1 digit value.
+ */
+auto test_rational_subtract_0b() -> result {
+    result r("rat sub 0b");
+    c8::rational s0(52, 3);
+    c8::rational s1(2, 4);
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("101/6");
+    return r;
+}
+
+/*
  * Subtract a large negative value from another large negative value.
  */
-auto test_rational_subtract_1() -> result {
-    result r("rat sub 1");
+auto test_rational_subtract_1a() -> result {
+    result r("rat sub 1a");
     c8::rational s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897/3");
     c8::rational s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754/3");
 
@@ -299,10 +384,27 @@ auto test_rational_subtract_1() -> result {
 }
 
 /*
+ * Subtract a large negative value from another large negative value.
+ */
+auto test_rational_subtract_1b() -> result {
+    result r("rat sub 1b");
+    c8::rational s0("-5872489572457574027439274027348275342809754320711018574807407090990940275827586671651690897/3");
+    c8::rational s1("-842758978027689671615847509157087514875097509475029454785478748571507457514754190754/3");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("-5872488729698595999749602411500766185722239445613509099777952305512191704320129156897500143/3");
+    return r;
+}
+
+/*
  * Subtract a large negative value from a large value.
  */
-auto test_rational_subtract_2() -> result {
-    result r("rat sub 2");
+auto test_rational_subtract_2a() -> result {
+    result r("rat sub 2a");
     c8::rational s0("10000000000000000000000000000000000000000000000000000000000000000000000/707");
     c8::rational s1("-10000000000000000000000000000000000000000000000000000000000000000000000/7");
 
@@ -316,10 +418,27 @@ auto test_rational_subtract_2() -> result {
 }
 
 /*
+ * Subtract a large negative value from a large value.
+ */
+auto test_rational_subtract_2b() -> result {
+    result r("rat sub 2b");
+    c8::rational s0("10000000000000000000000000000000000000000000000000000000000000000000000/707");
+    c8::rational s1("-10000000000000000000000000000000000000000000000000000000000000000000000/7");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
+    r.check_pass("1020000000000000000000000000000000000000000000000000000000000000000000000/707");
+    return r;
+}
+
+/*
  * Subtract a large value from a smaller one.
  */
-auto test_rational_subtract_3() -> result {
-    result r("rat sub 3");
+auto test_rational_subtract_3a() -> result {
+    result r("rat sub 3a");
     c8::rational s0(2, 31459);
     c8::rational s1(52, 31459);
 
@@ -328,6 +447,23 @@ auto test_rational_subtract_3() -> result {
     r.stop_clock();
 
     r.get_stream() << s2;
+    r.check_pass("-50/31459");
+    return r;
+}
+
+/*
+ * Subtract a large value from a smaller one.
+ */
+auto test_rational_subtract_3b() -> result {
+    result r("rat sub 3b");
+    c8::rational s0(2, 31459);
+    c8::rational s1(52, 31459);
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << s0;
     r.check_pass("-50/31459");
     return r;
 }
@@ -743,8 +879,8 @@ auto test_rational_compare_3f() -> result {
 /*
  * Test multiplication.
  */
-auto test_rational_multiply_0() -> result {
-    result r("rat mul 0");
+auto test_rational_multiply_0a() -> result {
+    result r("rat mul 0a");
     c8::rational mu0(1, 50);
     c8::rational mu1(1, 25);
 
@@ -760,8 +896,25 @@ auto test_rational_multiply_0() -> result {
 /*
  * Test multiplication.
  */
-auto test_rational_multiply_1() -> result {
-    result r("rat mul 1");
+auto test_rational_multiply_0b() -> result {
+    result r("rat mul 0b");
+    c8::rational mu0(1, 50);
+    c8::rational mu1(1, 25);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("1/1250");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_rational_multiply_1a() -> result {
+    result r("rat mul 1a");
     c8::rational mu0(1000000000000000000LL, 7);
     c8::rational mu1("-9999999999999999999/999");
 
@@ -777,8 +930,25 @@ auto test_rational_multiply_1() -> result {
 /*
  * Test multiplication.
  */
-auto test_rational_multiply_2() -> result {
-    result r("rat mul 2");
+auto test_rational_multiply_1b() -> result {
+    result r("rat mul 1b");
+    c8::rational mu0(1000000000000000000LL, 7);
+    c8::rational mu1("-9999999999999999999/999");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("-1111111111111111111000000000000000000/777");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_rational_multiply_2a() -> result {
+    result r("rat mul 2a");
     c8::rational mu0(-0x3000000000000000LL, 1);
     c8::rational mu1(0x4000000000000000LL, 3);
 
@@ -794,8 +964,25 @@ auto test_rational_multiply_2() -> result {
 /*
  * Test multiplication.
  */
-auto test_rational_multiply_3() -> result {
-    result r("rat mul 3");
+auto test_rational_multiply_2b() -> result {
+    result r("rat mul 2b");
+    c8::rational mu0(-0x3000000000000000LL, 1);
+    c8::rational mu1(0x4000000000000000LL, 3);
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << mu0;
+    r.check_pass("-4000000000000000000000000000000/1");
+    return r;
+}
+
+/*
+ * Test multiplication.
+ */
+auto test_rational_multiply_3a() -> result {
+    result r("rat mul 3a");
     c8::rational mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
     c8::rational mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
 
@@ -809,10 +996,27 @@ auto test_rational_multiply_3() -> result {
 }
 
 /*
+ * Test multiplication.
+ */
+auto test_rational_multiply_3b() -> result {
+    result r("rat mul 3b");
+    c8::rational mu0("-12345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
+    c8::rational mu1("-1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890/13");
+
+    r.start_clock();
+    mu0 *= mu1;
+    r.stop_clock();
+
+    r.get_stream() << mu0;
+    r.check_pass("15241578753238836750495351562566681945008382873376009755225118122311263526910001371743100137174310012193273126047859425087639153757049236500533455762536198787501905199875019052100/169");
+    return r;
+}
+
+/*
  * Test division.
  */
-auto test_rational_divide_0() -> result {
-    result r("rat div 0");
+auto test_rational_divide_0a() -> result {
+    result r("rat div 0a");
     c8::rational d0(1000000000000000000LL,7);
     c8::rational d1(99999999999999999LL,7);
 
@@ -825,8 +1029,25 @@ auto test_rational_divide_0() -> result {
     return r;
 }
 
-auto test_rational_divide_1() -> result {
-    result r("rat div 1");
+/*
+ * Test division.
+ */
+auto test_rational_divide_0b() -> result {
+    result r("rat div 0b");
+    c8::rational d0(1000000000000000000LL,7);
+    c8::rational d1(99999999999999999LL,7);
+
+    r.start_clock();
+    d0 /= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0;
+    r.check_pass("1000000000000000000/99999999999999999");
+    return r;
+}
+
+auto test_rational_divide_1a() -> result {
+    result r("rat div 1a");
     c8::rational d0("7829238792751875818917817519758789749174743847389742871867617465710657162/39");
     c8::rational d1(-99999999999999999LL, 39);
 
@@ -839,8 +1060,22 @@ auto test_rational_divide_1() -> result {
     return r;
 }
 
-auto test_rational_divide_2() -> result {
-    result r("rat div 2");
+auto test_rational_divide_1b() -> result {
+    result r("rat div 1b");
+    c8::rational d0("7829238792751875818917817519758789749174743847389742871867617465710657162/39");
+    c8::rational d1(-99999999999999999LL, 39);
+
+    r.start_clock();
+    d0 /= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0;
+    r.check_pass("-7829238792751875818917817519758789749174743847389742871867617465710657162/99999999999999999");
+    return r;
+}
+
+auto test_rational_divide_2a() -> result {
+    result r("rat div 2a");
     c8::rational d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000/2323978529");
     c8::rational d1("0x10000000000000001000000000000000100000000/0x17");
 
@@ -853,8 +1088,22 @@ auto test_rational_divide_2() -> result {
     return r;
 }
 
-auto test_rational_divide_3() -> result {
-    result r("rat div 3");
+auto test_rational_divide_2b() -> result {
+    result r("rat div 2b");
+    c8::rational d0("-0x100000000000000000000000000000000000000000000000000000000000000000000000/2323978529");
+    c8::rational d1("0x10000000000000001000000000000000100000000/0x17");
+
+    r.start_clock();
+    d0 /= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0;
+    r.check_pass("-17000000000000000000000000000000000000000000000000000000000000000/8a851921000000008a851921000000008a851921");
+    return r;
+}
+
+auto test_rational_divide_3a() -> result {
+    result r("rat div 3a");
 
     /*
      * Divide by zero.  This will throw an exception!
@@ -883,8 +1132,38 @@ auto test_rational_divide_3() -> result {
     return r;
 }
 
-auto test_rational_divide_4() -> result {
-    result r("rat div 4");
+auto test_rational_divide_3b() -> result {
+    result r("rat div 3b");
+
+    /*
+     * Divide by zero.  This will throw an exception!
+     */
+    c8::rational d0(2000,7);
+    c8::rational d1(0,1);
+    r.start_clock();
+    try {
+        d0 /= d1;
+        r.stop_clock();
+
+        r.get_stream() << "failed to throw exception";
+        r.set_pass(false);
+    } catch (const c8::divide_by_zero &e) {
+        r.stop_clock();
+
+        r.get_stream() << "exception thrown: " + std::string(e.what());
+        r.set_pass(true);
+    } catch (...) {
+        r.stop_clock();
+
+        r.get_stream() << "unexpected exception thrown";
+        r.set_pass(false);
+    }
+
+    return r;
+}
+
+auto test_rational_divide_4a() -> result {
+    result r("rat div 4a");
     c8::rational d0(-1000000000000000000LL,23923758279);
     c8::rational d1(-99999999999999999LL,28279753);
 
@@ -893,6 +1172,20 @@ auto test_rational_divide_4() -> result {
     r.stop_clock();
 
     r.get_stream() << d2;
+    r.check_pass("28279753000000000000000000/2392375827899999976076241721");
+    return r;
+}
+
+auto test_rational_divide_4b() -> result {
+    result r("rat div 4b");
+    c8::rational d0(-1000000000000000000LL,23923758279);
+    c8::rational d1(-99999999999999999LL,28279753);
+
+    r.start_clock();
+    d0 /= d1;
+    r.stop_clock();
+
+    r.get_stream() << d0;
     r.check_pass("28279753000000000000000000/2392375827899999976076241721");
     return r;
 }
