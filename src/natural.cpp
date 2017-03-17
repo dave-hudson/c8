@@ -201,6 +201,65 @@ namespace c8 {
     }
 
     /*
+     * Copy constructor.
+     */
+    natural::natural(const natural &v) {
+        copy_digits(v);
+    }
+
+    /*
+     * Move constructor.
+     */
+    natural::natural(natural &&v) noexcept {
+        steal_digits(v);
+    }
+
+    /*
+     * Destructor.
+     */
+    natural::~natural() {
+        delete_digits();
+    }
+
+    /*
+     * Copy assignment operator.
+     */
+    auto natural::operator =(const natural &v) -> natural & {
+        /*
+         * Are we assigning to ourself?  If we are then we don't need to do anything.
+         */
+        if (C8_UNLIKELY(this == &v)) {
+            return *this;
+        }
+
+        /*
+         * Delete the old contents of this natural number and copy the original's digits.
+         */
+        delete_digits();
+        copy_digits(v);
+        return *this;
+    }
+
+    /*
+     * Move assignment operator.
+     */
+    auto natural::operator =(natural &&v) noexcept -> natural & {
+        /*
+         * Are we assigning to ourself?  If we are then we don't have to do anything.
+         */
+        if (C8_UNLIKELY(this == &v)) {
+            return *this;
+        }
+
+        /*
+         * Delete the old contents of this natural number and steal the original's digits.
+         */
+        delete_digits();
+        steal_digits(v);
+        return *this;
+    }
+
+    /*
      * Return the number of bits required to represent this natural number.
      */
     auto natural::count_bits() const noexcept -> unsigned int {

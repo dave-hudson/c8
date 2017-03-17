@@ -61,6 +61,37 @@ namespace c8 {
     }
 
     /*
+     * Add another integer to this one.
+     */
+    auto integer::operator +=(const integer &v) -> integer & {
+        /*
+         * If our two numbers have the same sign then we just add and retain the
+         * sign for this number.
+         */
+        if (negative_ == v.negative_) {
+            magnitude_ += v.magnitude_;
+            return *this;
+        }
+
+        /*
+         * If we are adding a larger magnitude value then subtract the smaller
+         * from the larger, and retain the sign of the larger.
+         */
+        if (magnitude_ < v.magnitude_) {
+            negative_ = v.negative_;
+            magnitude_ = v.magnitude_ - magnitude_;
+            return *this;
+        }
+
+        /*
+         * We're adding a smaller magnitude value, so subtract the smaller
+         * from the larger, and, again, retain the sign of the larger.
+         */
+        magnitude_ -= v.magnitude_;
+        return *this;
+    }
+
+    /*
      * Subtract another integer from this one.
      *
      * Note that there is a subtle difference between the integer subtract operation
@@ -97,6 +128,41 @@ namespace c8 {
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ - v.magnitude_;
         return res;
+    }
+
+    /*
+     * Subtract another integer from this one.
+     *
+     * Note that there is a subtle difference between the integer subtract operation
+     * and the natural number version:  We don't have to worry about throwing
+     * exceptions for negative results.
+     */
+    auto integer::operator -=(const integer &v) -> integer & {
+        /*
+         * If we're subtracting a negative number from a positive, or a positive from
+         * a negative, then we add the magnitudes of both and retain the sign of this one.
+         */
+        if (negative_ != v.negative_) {
+            magnitude_ += v.magnitude_;
+            return *this;
+        }
+
+        /*
+         * If we're subtracting a number that has a larger magnitude than this one, then
+         * subtract the magnitudes and use the inverse of the sign for the larger.
+         */
+        if (magnitude_ < v.magnitude_) {
+            negative_ = !v.negative_;
+            magnitude_ = v.magnitude_ - magnitude_;
+            return *this;
+        }
+
+        /*
+         * We're subtracting a number with a smaller magnitude than this one, so subtract
+         * the magnitudes and use the sign of this one.
+         */
+        magnitude_ -= v.magnitude_;
+        return *this;
     }
 
     /*

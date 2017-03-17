@@ -106,66 +106,11 @@ namespace c8 {
 
         natural(unsigned long long v);
         natural(const std::string &v);
-
-        /*
-         * Copy constructor.
-         */
-        natural(const natural &v) {
-            copy_digits(v);
-        }
-
-        /*
-         * Move constructor.
-         */
-        natural(natural &&v) noexcept {
-            steal_digits(v);
-        }
-
-        /*
-         * Destructor.
-         */
-        ~natural() {
-            delete_digits();
-        }
-
-        /*
-         * Copy assignment operator.
-         */
-        auto operator =(const natural &v) -> natural & {
-            /*
-             * Are we assigning to ourself?  If we are then we don't need to do anything.
-             */
-            if (C8_UNLIKELY(this == &v)) {
-                return *this;
-            }
-
-            /*
-             * Delete the old contents of this natural number and copy the original's digits.
-             */
-            delete_digits();
-            copy_digits(v);
-            return *this;
-        }
-
-        /*
-         * Move assignment operator.
-         */
-        auto operator =(natural &&v) noexcept -> natural & {
-            /*
-             * Are we assigning to ourself?  If we are then we don't have to do anything.
-             */
-            if (C8_UNLIKELY(this == &v)) {
-                return *this;
-            }
-
-            /*
-             * Delete the old contents of this natural number and steal the original's digits.
-             */
-            delete_digits();
-            steal_digits(v);
-            return *this;
-        }
-
+        natural(const natural &v);
+        natural(natural &&v) noexcept;
+        ~natural();
+        auto operator =(const natural &v) -> natural &;
+        auto operator =(natural &&v) noexcept -> natural &;
         auto count_bits() const noexcept -> unsigned int;
         auto compare(const natural &v) const noexcept -> comparison;
         auto operator +(natural_digit v) const -> natural;
@@ -288,7 +233,9 @@ namespace c8 {
         auto operator =(integer &&v) -> integer & = default;
 
         auto operator +(const integer &v) const -> integer;
+        auto operator +=(const integer &v) -> integer &;
         auto operator -(const integer &v) const -> integer;
+        auto operator -=(const integer &v) -> integer &;
         auto operator >>(unsigned int count) const -> integer;
         auto operator <<(unsigned int count) const -> integer;
         auto operator *(const integer &v) const -> integer;
@@ -298,6 +245,49 @@ namespace c8 {
         auto compare(const integer &v) const -> comparison;
         auto to_long_long() const -> long long;
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
+
+        /*
+         * Left shift this integer by a number of bits.
+         */
+        auto operator <<=(unsigned int count) -> integer & {
+            magnitude_ <<= count;
+            return *this;
+        }
+
+        /*
+         * Right shift this integer by a number of bits.
+         */
+        auto operator >>=(unsigned int count) -> integer & {
+            magnitude_ >>= count;
+            return *this;
+        }
+
+        /*
+         * Multiply another integer with this one.
+         */
+        auto operator *=(const integer &v) -> integer & {
+            negative_ ^= v.negative_;
+            magnitude_ *= v.magnitude_;
+            return *this;
+        }
+
+        /*
+         * Divide this integer by another one, returning the quotient.
+         */
+        auto operator /=(const integer &v) -> integer & {
+            negative_ ^= v.negative_;
+            magnitude_ /= v.magnitude_;
+            return *this;
+        }
+
+        /*
+         * Divide this integer by another one, returning the remainder.
+         */
+        auto operator %=(const integer &v) -> integer & {
+            negative_ = false;
+            magnitude_ %= v.magnitude_;
+            return *this;
+        }
 
         auto is_negative() const -> bool {
             return negative_;
@@ -319,45 +309,10 @@ namespace c8 {
             return res;
         }
 
-        auto operator +=(const integer &v) -> integer & {
-            *this = *this + v;
-            return *this;
-        }
-
         auto operator -() const -> integer {
             integer res = *this;
             res.negative_ ^= true;
             return res;
-        }
-
-        auto operator -=(const integer &v) -> integer & {
-            *this = *this - v;
-            return *this;
-        }
-
-        auto operator >>=(unsigned int count) -> integer & {
-            *this = *this >> count;
-            return *this;
-        }
-
-        auto operator <<=(unsigned int count) -> integer & {
-            *this = *this << count;
-            return *this;
-        }
-
-        auto operator *=(const integer &v) -> integer & {
-            *this = *this * v;
-            return *this;
-        }
-
-        auto operator /=(const integer &v) -> integer & {
-            *this = *this / v;
-            return *this;
-        }
-
-        auto operator %=(const integer &v) -> integer & {
-            *this = *this % v;
-            return *this;
         }
 
         auto operator ==(const integer &v) const -> bool {
