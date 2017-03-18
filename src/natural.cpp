@@ -1068,7 +1068,7 @@ namespace c8 {
             res.emplace_back(digits[mod]);
 
             rem = std::move(qm.first);
-        } while (!is_zero(rem));
+        } while (!rem.is_zero());
 
         std::size_t res_sz = res.size();
         for (std::size_t i = 0; i < res_sz; i++) {

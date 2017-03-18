@@ -288,6 +288,13 @@ namespace c8 {
             return *this;
         }
 
+        /*
+         * Is this number zero?
+         */
+        auto is_zero() const noexcept -> bool {
+            return magnitude_.is_zero();
+        }
+
         auto is_negative() const -> bool {
             return negative_;
         }
@@ -343,6 +350,10 @@ namespace c8 {
         natural magnitude_;                 // The magnitude of the integer
     };
 
+    inline auto is_zero(const integer &v) -> bool {
+        return v.is_zero();
+    }
+
     inline auto is_negative(integer v) -> bool {
         return v.is_negative();
     }
@@ -386,9 +397,13 @@ namespace c8 {
         auto operator =(rational &&v) -> rational & = default;
 
         auto operator +(const rational &v) const -> rational;
+        auto operator +=(const rational &v) -> rational &;
         auto operator -(const rational &v) const -> rational;
+        auto operator -=(const rational &v) -> rational &;
         auto operator *(const rational &v) const -> rational;
+        auto operator *=(const rational &v) -> rational &;
         auto operator /(const rational &v) const -> rational;
+        auto operator /=(const rational &v) -> rational &;
         auto compare(const rational &v) const -> comparison;
         auto to_double() const -> double;
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
@@ -397,31 +412,11 @@ namespace c8 {
             return std::make_pair(num_, denom_);
         }
 
-        auto operator +=(const rational &v) -> rational & {
-            *this = *this + v;
-            return *this;
-        }
-
         auto operator -() const -> rational {
             rational res;
             res.num_ = -num_;
             res.denom_ = denom_;
             return res;
-        }
-
-        auto operator -=(const rational &v) -> rational & {
-            *this = *this - v;
-            return *this;
-        }
-
-        auto operator *=(const rational &v) -> rational & {
-            *this = *this * v;
-            return *this;
-        }
-
-        auto operator /=(const rational &v) -> rational & {
-            *this = *this / v;
-            return *this;
         }
 
         auto operator ==(const rational &v) const -> bool {
@@ -448,12 +443,23 @@ namespace c8 {
             return compare(v) != comparison::gt;
         }
 
+        /*
+         * Is this number zero?
+         */
+        auto is_zero() const noexcept -> bool {
+            return num_.is_zero();
+        }
+
     private:
         integer num_;                       // Numerator
         integer denom_;                     // Denominator
 
         auto normalize() -> void;
     };
+
+    inline auto is_zero(const rational &v) -> bool {
+        return v.is_zero();
+    }
 
     inline auto to_double(const rational &v) -> double {
         return v.to_double();

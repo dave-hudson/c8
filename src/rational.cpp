@@ -104,8 +104,19 @@ namespace c8 {
         res.denom_ = denom_ * v.denom_;
 
         res.normalize();
-
         return res;
+    }
+
+    /*
+     * Add another rational to this one.
+     */
+    auto rational::operator +=(const rational &v) -> rational & {
+        num_ *= v.denom_;
+        num_ += (denom_ * v.num_);
+        denom_ *= v.denom_;
+
+        normalize();
+        return *this;
     }
 
     /*
@@ -118,8 +129,19 @@ namespace c8 {
         res.denom_ = denom_ * v.denom_;
 
         res.normalize();
-
         return res;
+    }
+
+    /*
+     * Subtract another rational from this one.
+     */
+    auto rational::operator -=(const rational &v) -> rational & {
+        num_ *= v.denom_;
+        num_ -= (denom_ * v.num_);
+        denom_ *= v.denom_;
+
+        normalize();
+        return *this;
     }
 
     /*
@@ -132,8 +154,18 @@ namespace c8 {
         res.denom_ = denom_ * v.denom_;
 
         res.normalize();
-
         return res;
+    }
+
+    /*
+     * Multiply another rational with this one.
+     */
+    auto rational::operator *=(const rational &v) -> rational & {
+        num_ *= v.num_;
+        denom_ *= v.denom_;
+
+        normalize();
+        return *this;
     }
 
     /*
@@ -145,7 +177,7 @@ namespace c8 {
         /*
          * Are we attempting to divide by zero?  If we are then throw an exception.
          */
-        if (is_zero(abs(v.num_))) {
+        if (v.is_zero()) {
             throw c8::divide_by_zero();
         }
 
@@ -153,8 +185,25 @@ namespace c8 {
         res.denom_ = denom_ * v.num_;
 
         res.normalize();
-
         return res;
+    }
+
+    /*
+     * Divide this rational by another one.
+     */
+    auto rational::operator /=(const rational &v) -> rational & {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (v.is_zero()) {
+            throw c8::divide_by_zero();
+        }
+
+        num_ *= v.denom_;
+        denom_ *= v.num_;
+
+        normalize();
+        return *this;
     }
 
     /*
@@ -191,8 +240,8 @@ namespace c8 {
         /*
          * Is our value zero?  If it is then handle this as a special case.
          */
-        natural n = abs(num_);
-        if (is_zero(n)) {
+        natural n = num_.abs();
+        if (n.is_zero()) {
             return 0.0;
         }
 
@@ -202,7 +251,7 @@ namespace c8 {
          * want our division operation to be too expensive either, so one of the
          * other things we can do is scale our denominator down.
          */
-        natural d = abs(denom_);
+        natural d = denom_.abs();
         int eshift = 0;
         unsigned int dbits = d.count_bits();
         if (dbits > 52) {
