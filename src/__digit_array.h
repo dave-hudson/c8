@@ -83,19 +83,73 @@ namespace c8 {
     }
 
     /*
-     * Compare two digit arrays and report their relative numerical size.
+     * Compare if digit array src1 is equal to digit array src2.
      */
-    inline auto __compare_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
-                                       const natural_digit *src2, std::size_t src2_num_digits) noexcept -> comparison {
+    inline auto __compare_eq_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (src1_num_digits != src2_num_digits) {
+            return false;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = src1_num_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a != b) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /*
+     * Compare if digit array src1 is equal to digit array src2.
+     */
+    inline auto __compare_ne_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (src1_num_digits != src2_num_digits) {
+            return true;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = src1_num_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a != b) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * Compare if digit array src1 is greater than digit array src2.
+     */
+    inline auto __compare_gt_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         /*
          * If our sizes differ then this is really easy!
          */
         if (src1_num_digits > src2_num_digits) {
-            return comparison::gt;
+            return true;
         }
 
         if (src1_num_digits < src2_num_digits) {
-            return comparison::lt;
+            return false;
         }
 
         /*
@@ -106,15 +160,120 @@ namespace c8 {
             auto a = src1[i];
             auto b = src2[i];
             if (a > b) {
-                return comparison::gt;
+                return true;
             }
 
             if (a < b) {
-                return comparison::lt;
+                return false;
             }
         }
 
-        return comparison::eq;
+        return false;
+    }
+
+    /*
+     * Compare if digit array src1 is greater than or equal to digit array src2.
+     */
+    inline auto __compare_ge_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (src1_num_digits > src2_num_digits) {
+            return true;
+        }
+
+        if (src1_num_digits < src2_num_digits) {
+            return false;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = src1_num_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a > b) {
+                return true;
+            }
+
+            if (a < b) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /*
+     * Compare if digit array src1 is less than digit array src2.
+     */
+    inline auto __compare_lt_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (src1_num_digits > src2_num_digits) {
+            return false;
+        }
+
+        if (src1_num_digits < src2_num_digits) {
+            return true;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = src1_num_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a > b) {
+                return false;
+            }
+
+            if (a < b) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /*
+     * Compare if digit array src1 is less than or equal to digit array src2.
+     */
+    inline auto __compare_le_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                          const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        /*
+         * If our sizes differ then this is really easy!
+         */
+        if (src1_num_digits > src2_num_digits) {
+            return false;
+        }
+
+        if (src1_num_digits < src2_num_digits) {
+            return true;
+        }
+
+        /*
+         * Our sizes are the same so do digit-by-digit comparisons.
+         */
+        std::size_t i = src1_num_digits;
+        while (i--) {
+            auto a = src1[i];
+            auto b = src2[i];
+            if (a > b) {
+                return false;
+            }
+
+            if (a < b) {
+                return true;
+            }
+        }
+
+        return true;
     }
 
     /*
@@ -682,7 +841,7 @@ namespace c8 {
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
                 t1_num_digits = __left_shift_digit_array(t1, divisor, divisor_num_digits, (next_res_digit + 1), 0);
-                if (__compare_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits) != comparison::gt) {
+                if (__compare_le_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits)) {
                     /*
                      * Our result was 1.
                      */
@@ -713,7 +872,7 @@ namespace c8 {
                  * to evaluate it on the basis of the full divisor, not just the shifted most
                  * significant digit.  This may mean we reduce our estimate slightly.
                  */
-                if (C8_UNLIKELY(__compare_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits) == comparison::gt)) {
+                if (C8_UNLIKELY(__compare_gt_digit_arrays(t1, t1_num_digits, dividend, dividend_num_digits))) {
                     q--;
                     t1_num_digits = __multiply_digit_array_digit_and_left_shift(t1, divisor, divisor_num_digits,
                                                                                 q, next_res_digit);
@@ -723,7 +882,7 @@ namespace c8 {
             }
 
             dividend_num_digits = __subtract_digit_arrays(dividend, dividend, dividend_num_digits, t1, t1_num_digits);
-            if (C8_UNLIKELY(__compare_digit_arrays(dividend, dividend_num_digits, divisor, divisor_num_digits) == comparison::lt)) {
+            if (C8_UNLIKELY(__compare_le_digit_arrays(dividend, dividend_num_digits, divisor, divisor_num_digits))) {
                 break;
             }
         }

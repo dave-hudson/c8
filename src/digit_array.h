@@ -39,11 +39,51 @@ namespace c8 {
     }
 
     /*
-     * Compare two digit arrays and report their relative numerical size.
+     * Compare if digit array src1 is equal to digit array src2.
      */
-    inline auto compare_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
-                                     const natural_digit *src2, std::size_t src2_num_digits) noexcept -> comparison {
-        return __compare_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    inline auto compare_eq_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_eq_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
+     * Compare if digit array src1 is not equal to digit array src2.
+     */
+    inline auto compare_ne_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_ne_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
+     * Compare if digit array src1 is greater than digit array src2.
+     */
+    inline auto compare_gt_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_gt_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
+     * Compare if digit array src1 is greater than, or equal to, digit array src2.
+     */
+    inline auto compare_ge_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_ge_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
+     * Compare if digit array src1 is less than digit array src2.
+     */
+    inline auto compare_lt_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_lt_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
+    }
+
+    /*
+     * Compare if digit array src1 is less than, or equal to, digit array src2.
+     */
+    inline auto compare_le_digit_arrays(const natural_digit *src1, std::size_t src1_num_digits,
+                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
+        return __compare_le_digit_arrays(src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -138,7 +178,7 @@ namespace c8 {
         /*
          * We should not have a negative result!
          */
-        if (__compare_digit_arrays(src1, src1_num_digits, src2, src2_num_digits) == comparison::lt) {
+        if (__compare_lt_digit_arrays(src1, src1_num_digits, src2, src2_num_digits)) {
             throw not_a_number();
         }
 

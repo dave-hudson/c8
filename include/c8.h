@@ -18,15 +18,6 @@
 
 namespace c8 {
     /*
-     * Comparison enum class.
-     */
-    enum class comparison {
-        lt,                                 // Less than
-        eq,                                 // Equal
-        gt                                  // Greater than
-    };
-
-    /*
      * Exception class to signal an invalid argument.
      */
     class invalid_argument : public std::invalid_argument {
@@ -108,40 +99,48 @@ namespace c8 {
         natural(const std::string &v);
         natural(const natural &v);
         natural(natural &&v) noexcept;
+
         ~natural();
-        auto operator =(const natural &v) -> natural &;
-        auto operator =(natural &&v) noexcept -> natural &;
-        auto count_bits() const noexcept -> unsigned int;
-        auto compare(const natural &v) const noexcept -> comparison;
+
+        auto operator ==(const natural &v) const noexcept -> bool;
+        auto operator !=(const natural &v) const noexcept -> bool;
+        auto operator >(const natural &v) const noexcept -> bool;
+        auto operator >=(const natural &v) const noexcept -> bool;
+        auto operator <(const natural &v) const noexcept -> bool;
+        auto operator <=(const natural &v) const noexcept -> bool;
+
         auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
-        auto operator +=(natural_digit v) -> natural &;
-        auto operator +=(const natural &v) -> natural &;
         auto operator -(natural_digit v) const -> natural;
         auto operator -(const natural &v) const -> natural;
-        auto operator -=(natural_digit v) -> natural &;
-        auto operator -=(const natural &v) -> natural &;
-        auto operator <<(unsigned int count) const -> natural;
-        auto operator <<=(unsigned int count) -> natural &;
-        auto operator >>(unsigned int count) const -> natural;
-        auto operator >>=(unsigned int count) -> natural &;
         auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
-        auto operator *=(natural_digit v) -> natural &;
-        auto operator *=(const natural &v) -> natural &;
         auto operator /(natural_digit v) const -> natural;
         auto operator /(const natural &v) const -> natural;
-        auto operator /=(natural_digit v) -> natural &;
-        auto operator /=(const natural &v) -> natural &;
         auto operator %(natural_digit v) const -> natural_digit;
         auto operator %(const natural &v) const -> natural;
+        auto operator <<(unsigned int count) const -> natural;
+        auto operator >>(unsigned int count) const -> natural;
+
+        auto operator =(const natural &v) -> natural &;
+        auto operator =(natural &&v) noexcept -> natural &;
+        auto operator +=(natural_digit v) -> natural &;
+        auto operator +=(const natural &v) -> natural &;
+        auto operator -=(natural_digit v) -> natural &;
+        auto operator -=(const natural &v) -> natural &;
+        auto operator <<=(unsigned int count) -> natural &;
+        auto operator >>=(unsigned int count) -> natural &;
+        auto operator *=(natural_digit v) -> natural &;
+        auto operator *=(const natural &v) -> natural &;
+        auto operator /=(natural_digit v) -> natural &;
+        auto operator /=(const natural &v) -> natural &;
         auto operator %=(natural_digit v) -> natural &;
         auto operator %=(const natural &v) -> natural &;
+
+        auto count_bits() const noexcept -> unsigned int;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto gcd(const natural &v) const -> natural;
-        auto to_unsigned_long_long() const -> unsigned long long;
-        friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
         /*
          * Is this number zero?
@@ -150,29 +149,9 @@ namespace c8 {
             return (num_digits_ == 0) ? true : false;
         }
 
-        auto operator ==(const natural &v) const -> bool {
-            return compare(v) == comparison::eq;
-        }
+        auto to_unsigned_long_long() const -> unsigned long long;
 
-        auto operator !=(const natural &v) const -> bool {
-            return compare(v) != comparison::eq;
-        }
-
-        auto operator >(const natural &v) const -> bool {
-            return compare(v) == comparison::gt;
-        }
-
-        auto operator >=(const natural &v) const -> bool {
-            return compare(v) != comparison::lt;
-        }
-
-        auto operator <(const natural &v) const -> bool {
-            return compare(v) == comparison::lt;
-        }
-
-        auto operator <=(const natural &v) const -> bool {
-            return compare(v) != comparison::gt;
-        }
+        friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
     private:
         std::size_t num_digits_;            // The number of digits in this number
@@ -185,15 +164,7 @@ namespace c8 {
         auto expand(std::size_t new_digits) -> void;
         auto copy_digits(const natural &v) -> void;
         auto steal_digits(natural &v) -> void;
-
-        /*
-         * Delete digits array if it is marked for deletion.
-         */
-        auto delete_digits() -> void {
-            if (C8_UNLIKELY(delete_digits_on_final_)) {
-                delete[] digits_;
-            }
-        }
+        auto delete_digits() -> void;
     };
 
     inline auto is_zero(const natural &v) -> bool {
@@ -228,39 +199,34 @@ namespace c8 {
         integer(const std::string &v);
         integer(const integer &v) = default;
         integer(integer &&v) = default;
+
         ~integer() = default;
-        auto operator =(const integer &v) -> integer & = default;
-        auto operator =(integer &&v) -> integer & = default;
+
+        auto operator ==(const integer &v) const noexcept -> bool;
+        auto operator !=(const integer &v) const noexcept -> bool;
+        auto operator >(const integer &v) const noexcept -> bool;
+        auto operator >=(const integer &v) const noexcept -> bool;
+        auto operator <(const integer &v) const noexcept -> bool;
+        auto operator <=(const integer &v) const noexcept -> bool;
 
         auto operator +(const integer &v) const -> integer;
-        auto operator +=(const integer &v) -> integer &;
         auto operator -(const integer &v) const -> integer;
-        auto operator -=(const integer &v) -> integer &;
-        auto operator >>(unsigned int count) const -> integer;
-        auto operator <<(unsigned int count) const -> integer;
         auto operator *(const integer &v) const -> integer;
-        auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
         auto operator /(const integer &v) const -> integer;
         auto operator %(const integer &v) const -> integer;
-        auto compare(const integer &v) const -> comparison;
-        auto to_long_long() const -> long long;
-        friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
+        auto operator >>(unsigned int count) const -> integer;
+        auto operator <<(unsigned int count) const -> integer;
 
-        /*
-         * Left shift this integer by a number of bits.
-         */
-        auto operator <<=(unsigned int count) -> integer & {
-            magnitude_ <<= count;
-            return *this;
+        auto operator -() const -> integer {
+            integer res = *this;
+            res.negative_ ^= true;
+            return res;
         }
 
-        /*
-         * Right shift this integer by a number of bits.
-         */
-        auto operator >>=(unsigned int count) -> integer & {
-            magnitude_ >>= count;
-            return *this;
-        }
+        auto operator =(const integer &v) -> integer & = default;
+        auto operator =(integer &&v) -> integer & = default;
+        auto operator +=(const integer &v) -> integer &;
+        auto operator -=(const integer &v) -> integer &;
 
         /*
          * Multiply another integer with this one.
@@ -289,20 +255,47 @@ namespace c8 {
         }
 
         /*
+         * Left shift this integer by a number of bits.
+         */
+        auto operator <<=(unsigned int count) -> integer & {
+            magnitude_ <<= count;
+            return *this;
+        }
+
+        /*
+         * Right shift this integer by a number of bits.
+         */
+        auto operator >>=(unsigned int count) -> integer & {
+            magnitude_ >>= count;
+            return *this;
+        }
+
+        auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
+
+        /*
          * Is this number zero?
          */
         auto is_zero() const noexcept -> bool {
             return magnitude_.is_zero();
         }
 
+        /*
+         * Is this number negative?
+         */
         auto is_negative() const -> bool {
             return negative_;
         }
 
+        /*
+         * Return the absolute value (magnitude) of this integer.
+         */
         auto abs() const -> natural {
             return magnitude_;
         }
 
+        /*
+         * Negate this integer.
+         */
         auto negate() -> integer & {
             negative_ ^= true;
             return *this;
@@ -315,35 +308,9 @@ namespace c8 {
             return res;
         }
 
-        auto operator -() const -> integer {
-            integer res = *this;
-            res.negative_ ^= true;
-            return res;
-        }
+        auto to_long_long() const -> long long;
 
-        auto operator ==(const integer &v) const -> bool {
-            return compare(v) == comparison::eq;
-        }
-
-        auto operator !=(const integer &v) const -> bool {
-            return compare(v) != comparison::eq;
-        }
-
-        auto operator >(const integer &v) const -> bool {
-            return compare(v) == comparison::gt;
-        }
-
-        auto operator >=(const integer &v) const -> bool {
-            return compare(v) != comparison::lt;
-        }
-
-        auto operator <(const integer &v) const -> bool {
-            return compare(v) == comparison::lt;
-        }
-
-        auto operator <=(const integer &v) const -> bool {
-            return compare(v) != comparison::gt;
-        }
+        friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
     private:
         bool negative_;                     // Is this big integer negative?
@@ -392,25 +359,20 @@ namespace c8 {
         rational(const std::string &v);
         rational(const rational &v) = default;
         rational(rational &&v) = default;
+
         ~rational() = default;
-        auto operator =(const rational &v) -> rational & = default;
-        auto operator =(rational &&v) -> rational & = default;
+
+        auto operator ==(const rational &v) const -> bool;
+        auto operator !=(const rational &v) const -> bool;
+        auto operator >(const rational &v) const -> bool;
+        auto operator >=(const rational &v) const -> bool;
+        auto operator <(const rational &v) const -> bool;
+        auto operator <=(const rational &v) const -> bool;
 
         auto operator +(const rational &v) const -> rational;
-        auto operator +=(const rational &v) -> rational &;
         auto operator -(const rational &v) const -> rational;
-        auto operator -=(const rational &v) -> rational &;
         auto operator *(const rational &v) const -> rational;
-        auto operator *=(const rational &v) -> rational &;
         auto operator /(const rational &v) const -> rational;
-        auto operator /=(const rational &v) -> rational &;
-        auto compare(const rational &v) const -> comparison;
-        auto to_double() const -> double;
-        friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
-
-        auto to_parts() const -> std::pair<integer, integer> {
-            return std::make_pair(num_, denom_);
-        }
 
         auto operator -() const -> rational {
             rational res;
@@ -419,29 +381,12 @@ namespace c8 {
             return res;
         }
 
-        auto operator ==(const rational &v) const -> bool {
-            return compare(v) == comparison::eq;
-        }
-
-        auto operator !=(const rational &v) const -> bool {
-            return compare(v) != comparison::eq;
-        }
-
-        auto operator >(const rational &v) const -> bool {
-            return compare(v) == comparison::gt;
-        }
-
-        auto operator >=(const rational &v) const -> bool {
-            return compare(v) != comparison::lt;
-        }
-
-        auto operator <(const rational &v) const -> bool {
-            return compare(v) == comparison::lt;
-        }
-
-        auto operator <=(const rational &v) const -> bool {
-            return compare(v) != comparison::gt;
-        }
+        auto operator =(const rational &v) -> rational & = default;
+        auto operator =(rational &&v) -> rational & = default;
+        auto operator +=(const rational &v) -> rational &;
+        auto operator -=(const rational &v) -> rational &;
+        auto operator *=(const rational &v) -> rational &;
+        auto operator /=(const rational &v) -> rational &;
 
         /*
          * Is this number zero?
@@ -449,6 +394,14 @@ namespace c8 {
         auto is_zero() const noexcept -> bool {
             return num_.is_zero();
         }
+
+        auto to_double() const -> double;
+
+        auto to_parts() const -> std::pair<integer, integer> {
+            return std::make_pair(num_, denom_);
+        }
+
+        friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
     private:
         integer num_;                       // Numerator

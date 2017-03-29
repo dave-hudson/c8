@@ -95,6 +95,58 @@ namespace c8 {
     }
 
     /*
+     * Return true if this rational is equal to another one, false if it's not.
+     */
+    auto rational::operator ==(const rational &v) const -> bool {
+        /*
+         * As we always keep our numbers normalized then checking equivalence
+         * simply means comparing the numerators and denominators to see if they're
+         * different or not.
+         */
+        return (num_ == v.num_) && (denom_ == v.denom_);
+    }
+
+    /*
+     * Return true if this rational is not equal to another one, false if it's equal.
+     */
+    auto rational::operator !=(const rational &v) const -> bool {
+        /*
+         * As we always keep our numbers normalized then checking non-equivalence
+         * simply means comparing the numerators and denominators to see if they're
+         * different or not.
+         */
+        return (num_ != v.num_) || (denom_ != v.denom_);
+    }
+
+    /*
+     * Return true if this rational is greater than another one, false if it's not.
+     */
+    auto rational::operator >(const rational &v) const -> bool {
+        return (num_ * v.denom_) > (v.num_ * denom_);
+    }
+
+    /*
+     * Return true if this rational is greater than, or equal to, another one, false if it's not.
+     */
+    auto rational::operator >=(const rational &v) const -> bool {
+        return (num_ * v.denom_) >= (v.num_ * denom_);
+    }
+
+    /*
+     * Return true if this rational is less than another one, false if it's not.
+     */
+    auto rational::operator <(const rational &v) const -> bool {
+        return (num_ * v.denom_) < (v.num_ * denom_);
+    }
+
+    /*
+     * Return true if this rational is less than, or equal to, another one, false if it's not.
+     */
+    auto rational::operator <=(const rational &v) const -> bool {
+        return (num_ * v.denom_) <= (v.num_ * denom_);
+    }
+
+    /*
      * Add another rational to this one.
      */
     auto rational::operator +(const rational &v) const -> rational {
@@ -204,16 +256,6 @@ namespace c8 {
 
         normalize();
         return *this;
-    }
-
-    /*
-     * Compare a rational with this one.
-     */
-    auto rational::compare(const rational &v) const -> comparison {
-        integer lhs = num_ * v.denom_;
-        integer rhs = v.num_ * denom_;
-
-        return lhs.compare(rhs);
     }
 
     /*

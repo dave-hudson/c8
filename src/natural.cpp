@@ -15,6 +15,15 @@ namespace c8 {
     };
 
     /*
+     * Delete digits array if it is marked for deletion.
+     */
+    inline auto natural::delete_digits() -> void {
+        if (C8_UNLIKELY(delete_digits_on_final_)) {
+            delete[] digits_;
+        }
+    }
+
+    /*
      * Reserve a number of digits in this natural number.
      */
     inline auto natural::reserve(std::size_t new_digits) -> void {
@@ -222,6 +231,48 @@ namespace c8 {
     }
 
     /*
+     * Return true if this number is equal to another one, false if it's not.
+     */
+    auto natural::operator ==(const natural &v) const noexcept -> bool {
+        return compare_eq_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
+     * Return true if this number is not equal to another one, false if it's equal.
+     */
+    auto natural::operator !=(const natural &v) const noexcept -> bool {
+        return compare_ne_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
+     * Return true if this number is greater than another one, false if it's not.
+     */
+    auto natural::operator >(const natural &v) const noexcept -> bool {
+        return compare_gt_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
+     * Return true if this number is greater than, or equal to, another one, false if it's not.
+     */
+    auto natural::operator >=(const natural &v) const noexcept -> bool {
+        return compare_ge_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
+     * Return true if this number is less than another one, false if it's not.
+     */
+    auto natural::operator <(const natural &v) const noexcept -> bool {
+        return compare_lt_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
+     * Return true if this number is less than, or equal to, another one, false if it's not.
+     */
+    auto natural::operator <=(const natural &v) const noexcept -> bool {
+        return compare_le_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
+    }
+
+    /*
      * Copy assignment operator.
      */
     auto natural::operator =(const natural &v) -> natural & {
@@ -264,13 +315,6 @@ namespace c8 {
      */
     auto natural::count_bits() const noexcept -> unsigned int {
         return count_bits_digit_array(digits_, num_digits_);
-    }
-
-    /*
-     * Compare this natural number with another one.
-     */
-    auto natural::compare(const natural &v) const noexcept -> comparison {
-        return compare_digit_arrays(digits_, num_digits_, v.digits_, v.num_digits_);
     }
 
     /*
@@ -723,7 +767,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_le_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             p.second = *this;
             return p;
         }
@@ -780,7 +824,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             return quotient;
         }
 
@@ -832,7 +876,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             return *this;
         }
 
@@ -883,7 +927,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             remainder = *this;
             return remainder;
         }
@@ -937,7 +981,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             return *this;
         }
 
@@ -967,7 +1011,7 @@ namespace c8 {
         }
 
         natural larger;
-        if (compare_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits) == comparison::lt) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             smaller = *this;
             larger = v;
         } else {

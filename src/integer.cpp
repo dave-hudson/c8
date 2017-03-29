@@ -26,6 +26,196 @@ namespace c8 {
     }
 
     /*
+     * Return true if this integer is equal to another one, false if it's not.
+     */
+    auto integer::operator ==(const integer &v) const noexcept -> bool {
+        /*
+         * If our signs are different then we can't be equal.
+         */
+        if (negative_ != v.negative_) {
+            return false;
+        }
+
+        /*
+         * Signs are the same, so compare magnitudes.
+         */
+        return magnitude_ == v.magnitude_;
+    }
+
+    /*
+     * Return true if this integer is not equal to another one, false if it's equal.
+     */
+    auto integer::operator !=(const integer &v) const noexcept -> bool {
+        /*
+         * If our signs are different then we must be not-equal.
+         */
+        if (negative_ != v.negative_) {
+            return true;
+        }
+
+        /*
+         * Signs are the same, so compare magnitudes.
+         */
+        return magnitude_ != v.magnitude_;
+    }
+
+    /*
+     * Return true if this integer is greater than another one, false if it's not.
+     */
+    auto integer::operator >(const integer &v) const noexcept -> bool {
+        /*
+         * Is this number non-negative?
+         */
+        if (!negative_) {
+            /*
+             * If the number we're comparing with is non-negative too then we can
+             * just do a simple comparison of the magnitudes.
+             */
+            if (!v.negative_) {
+                return magnitude_ > v.magnitude_;
+            }
+
+            /*
+             * The number we're comparing with is negative so we're definitely greater
+             * than it.
+             */
+            return true;
+        }
+
+        /*
+         * This integer is negative, so if the number we're comparing with is also
+         * negative then we compare magnitudes, but we reverse the result.  The most
+         * negative value is smaller, not larger.
+         */
+        if (v.negative_) {
+            return magnitude_ < v.magnitude_;
+        }
+
+        /*
+         * This integer is negative, but the one we're comparing with is not, so we're
+         * smaller.
+         */
+        return false;
+    }
+
+    /*
+     * Return true if this integer is greater than, or equal to, another one, false if it's not.
+     */
+    auto integer::operator >=(const integer &v) const noexcept -> bool {
+        /*
+         * Is this number non-negative?
+         */
+        if (!negative_) {
+            /*
+             * If the number we're comparing with is non-negative too then we can
+             * just do a simple comparison of the magnitudes.
+             */
+            if (!v.negative_) {
+                return magnitude_ >= v.magnitude_;
+            }
+
+            /*
+             * The number we're comparing with is negative so we're definitely greater
+             * than it.
+             */
+            return true;
+        }
+
+        /*
+         * This integer is negative, so if the number we're comparing with is also
+         * negative then we compare magnitudes, but we reverse the result.  The most
+         * negative value is smaller, not larger.
+         */
+        if (v.negative_) {
+            return magnitude_ <= v.magnitude_;
+        }
+
+        /*
+         * This integer is negative, but the one we're comparing with is not, so we're
+         * smaller.
+         */
+        return false;
+    }
+
+    /*
+     * Return true if this integer is less than another one, false if it's not.
+     */
+    auto integer::operator <(const integer &v) const noexcept -> bool {
+        /*
+         * Is this number non-negative?
+         */
+        if (!negative_) {
+            /*
+             * If the number we're comparing with is non-negative too then we can
+             * just do a simple comparison of the magnitudes.
+             */
+            if (!v.negative_) {
+                return magnitude_ < v.magnitude_;
+            }
+
+            /*
+             * The number we're comparing with is negative so we're definitely not
+             * less than it.
+             */
+            return false;
+        }
+
+        /*
+         * This integer is negative, so if the number we're comparing with is also
+         * negative then we compare magnitudes, but we reverse the result.  The most
+         * negative value is smaller, not larger.
+         */
+        if (v.negative_) {
+            return magnitude_ > v.magnitude_;
+        }
+
+        /*
+         * This integer is negative, but the one we're comparing with is not, so we're
+         * smaller.
+         */
+        return true;
+    }
+
+    /*
+     * Return true if this integer is less than, or equal to, another one, false if it's not.
+     */
+    auto integer::operator <=(const integer &v) const noexcept -> bool {
+        /*
+         * Is this number non-negative?
+         */
+        if (!negative_) {
+            /*
+             * If the number we're comparing with is non-negative too then we can
+             * just do a simple comparison of the magnitudes.
+             */
+            if (!v.negative_) {
+                return magnitude_ <= v.magnitude_;
+            }
+
+            /*
+             * The number we're comparing with is negative so we're definitely not
+             * less than it.
+             */
+            return false;
+        }
+
+        /*
+         * This integer is negative, so if the number we're comparing with is also
+         * negative then we compare magnitudes, but we reverse the result.  The most
+         * negative value is smaller, not larger.
+         */
+        if (v.negative_) {
+            return magnitude_ >= v.magnitude_;
+        }
+
+        /*
+         * This integer is negative, but the one we're comparing with is not, so we're
+         * smaller.
+         */
+        return true;
+    }
+
+    /*
      * Add another integer to this one.
      */
     auto integer::operator +(const integer &v) const -> integer {
@@ -228,55 +418,6 @@ namespace c8 {
         res.negative_ = negative_;
         res.magnitude_ = magnitude_ % v.magnitude_;
         return res;
-    }
-
-    /*
-     * Compare a integer with this one.
-     */
-    auto integer::compare(const integer &v) const -> comparison {
-        /*
-         * Is this number non-negative?
-         */
-        if (!negative_) {
-            /*
-             * If the number we're comparing with is non-negative too then we can
-             * just do a simple comparison of the magnitudes.
-             */
-            if (!v.negative_) {
-                return magnitude_.compare(v.magnitude_);
-            }
-
-            /*
-             * The number we're comparing with is negative so we're definitely greater
-             * than it.
-             */
-            return comparison::gt;
-        }
-
-        /*
-         * This integer is negative, so if the number we're comparing with is also
-         * negative then we compare magnitudes, but we reverse the result.  The most
-         * negative value is smaller, not larger.
-         */
-        if (v.negative_) {
-            auto ures = magnitude_.compare(v.magnitude_);
-            switch (ures) {
-            case comparison::lt:
-                return comparison::gt;
-
-            case comparison::eq:
-                return comparison::eq;
-
-            case comparison::gt:
-                return comparison::lt;
-            }
-        }
-
-        /*
-         * This integer is negative, but the one we're comparing with is not, so we're
-         * smaller.
-         */
-        return comparison::lt;
     }
 
     /*
