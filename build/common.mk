@@ -33,6 +33,7 @@ INSTALLFLAGS =
 #LD := g++
 LD := clang++
 LDFLAGS = $(LDFLAGS_OS) $(LDFLAGS_EXTRA)
+PANDOC := pandoc --from markdown_github --to html --standalone -c $(ABS_PATH)/doc/github-pandoc.css
 RM := rm
 
 # CPPFLAGS += -fsanitize=address
