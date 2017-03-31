@@ -7,8 +7,9 @@ BASE_PATH := .
 # Define our subdirectories.
 #
 SUBDIRS := \
+	doc \
 	src \
-    test
+	test
 
 #
 # Dependencies
