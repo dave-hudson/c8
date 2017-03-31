@@ -95,7 +95,7 @@ namespace c8 {
             delete_digits_on_final_ = false;
         }
 
-        natural(unsigned long long v);
+        natural(unsigned long long v) noexcept;
         natural(const std::string &v);
         natural(const natural &v);
         natural(natural &&v) noexcept;

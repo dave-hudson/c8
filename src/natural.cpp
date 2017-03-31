@@ -118,7 +118,7 @@ namespace c8 {
     /*
      * Construct a natural number from an unsigned long long integer.
      */
-    natural::natural(unsigned long long v) {
+    natural::natural(unsigned long long v) noexcept {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
@@ -127,8 +127,6 @@ namespace c8 {
         if (!v) {
             return;
         }
-
-        reserve(sizeof(unsigned long long) / sizeof(natural_digit));
 
         natural_digit *this_digits = digits_;
 
