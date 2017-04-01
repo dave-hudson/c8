@@ -4,66 +4,66 @@
 
 ## Constructors ##
 
-[natural](c8_natural_natural)
+* [natural](c8_natural_natural)
 
 Construct a natural number.
 
 ## Destructor ##
 
-~natural
+* ~natural
 
 Destroy (and free all resources allocated to) a natural number.
 
 ## Comparison Operators ##
 
-[operator ==](c8_natural_operator_compare)
-[operator !=](c8_natural_operator_compare)
-[operator >](c8_natural_operator_compare)
-[operator >=](c8_natural_operator_compare)
-[operator &lt;](c8_natural_operator_compare)
-[operator &lt;=](c8_natural_operator_compare)
+* [operator ==](c8_natural_operator_compare)
+* [operator !=](c8_natural_operator_compare)
+* [operator >](c8_natural_operator_compare)
+* [operator >=](c8_natural_operator_compare)
+* [operator &lt;](c8_natural_operator_compare)
+* [operator &lt;=](c8_natural_operator_compare)
 
 Compare this natural number with another.
 
 ## Arithmetic Operators ##
 
-[operator +](c8_natural_operator_arithmetic)
-[operator -](c8_natural_operator_arithmetic)
-[operator *](c8_natural_operator_arithmetic)
-[operator /](c8_natural_operator_arithmetic)
-[operator %](c8_natural_operator_arithmetic)
+* [operator +](c8_natural_operator_arithmetic)
+* [operator -](c8_natural_operator_arithmetic)
+* [operator *](c8_natural_operator_arithmetic)
+* [operator /](c8_natural_operator_arithmetic)
+* [operator %](c8_natural_operator_arithmetic)
 
 Perform arithmetic with this number.
 
 ## Bitwise Operators ##
 
-[operator &lt;&lt;](c8_natural_operator_bitwise)
-[operator >>](c8_natural_operator_bitwise)
+* [operator &lt;&lt;](c8_natural_operator_bitwise)
+* [operator >>](c8_natural_operator_bitwise)
 
 Perform bitwise operations on this number.
 
 ## Assignment Operators ##
 
-[operator =](c8_natural_operator_assign)
-[operator +=](c8_natural_operator_assign)
-[operator -=](c8_natural_operator_assign)
-[operator *=](c8_natural_operator_assign)
-[operator /=](c8_natural_operator_assign)
-[operator %=](c8_natural_operator_assign)
-[operator &lt;&lt;=](c8_natural_operator_assign)
-[operator >>=](c8_natural_operator_assign)
+* [operator =](c8_natural_operator_assign)
+* [operator +=](c8_natural_operator_assign)
+* [operator -=](c8_natural_operator_assign)
+* [operator *=](c8_natural_operator_assign)
+* [operator /=](c8_natural_operator_assign)
+* [operator %=](c8_natural_operator_assign)
+* [operator &lt;&lt;=](c8_natural_operator_assign)
+* [operator >>=](c8_natural_operator_assign)
 
 Perform assignment operations on this number.
 
 ## Public Member Functions ##
 
-`auto count_bits() const noexcept -> unsigned int`
-`auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>`
-`auto divide_modulus(const natural &v) const -> std::pair<natural, natural>`
-`auto gcd(const natural &v) const -> natural`
-`auto to_unsigned_long_long() const -> unsigned long long`
-`auto is_zero() const noexcept -> bool`
-`friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &`
+* `auto count_bits() const noexcept -> unsigned int`
+* `auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>`
+* `auto divide_modulus(const natural &v) const -> std::pair<natural, natural>`
+* `auto gcd(const natural &v) const -> natural`
+* `auto to_unsigned_long_long() const -> unsigned long long`
+* `auto is_zero() const noexcept -> bool`
+* `friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &`
 
 TBD
 
