@@ -6,15 +6,15 @@ Assignment operators.
 
 1. `auto operator =(const natural &v) -> natural &`
 2. `auto operator =(const natural &&v) noexcept -> natural &`
-3. `auto operator +=(const natural &v) -> natural &`
+3. `auto operator +=(const natural &v) -> natural &`  
    `auto operator +=(natural_digit v) -> natural &`
-4. `auto operator -=(const natural &v) -> natural &`
+4. `auto operator -=(const natural &v) -> natural &`  
    `auto operator -=(natural_digit v) -> natural &`
-5. `auto operator *=(const natural &v) -> natural &`
+5. `auto operator *=(const natural &v) -> natural &`  
    `auto operator *=(natural_digit v) -> natural &`
-6. `auto operator /=(const natural &v) -> natural &`
+6. `auto operator /=(const natural &v) -> natural &`  
    `auto operator /=(natural_digit v) -> natural &`
-7. `auto operator %=(const natural &v) -> natural &`
+7. `auto operator %=(const natural &v) -> natural &`  
    `auto operator %=(natural_digit v) -> natural &`
 8. `auto operator <<=(unsigned int count) -> natural &`
 9. `auto operator >>=(unsigned int count) -> natural &`

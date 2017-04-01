@@ -4,15 +4,15 @@ Arithmetic operators.
 
 ## Definitions ##
 
-1. `auto operator +(const natural &v) const -> natural`
+1. `auto operator +(const natural &v) const -> natural`  
    `auto operator +(natural_digit v) const -> natural`
-2. `auto operator -(const natural &v) const -> natural`
+2. `auto operator -(const natural &v) const -> natural`  
    `auto operator -(natural_digit v) const -> natural`
-3. `auto operator *(const natural &v) const -> natural`
+3. `auto operator *(const natural &v) const -> natural`  
    `auto operator *(natural_digit v) const -> natural`
-4. `auto operator /(const natural &v) const -> natural`
+4. `auto operator /(const natural &v) const -> natural`  
    `auto operator /(natural_digit v) const -> natural`
-5. `auto operator %(const natural &v) const -> natural`
+5. `auto operator %(const natural &v) const -> natural`  
    `auto operator %(natural_digit v) const -> natural_digit`
 
 ## Descriptions ##
