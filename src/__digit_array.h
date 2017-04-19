@@ -807,15 +807,25 @@ namespace c8 {
         auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
         unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
 
-        natural_digit dividend[src1_num_digits];
-        auto dividend_num_digits = __left_shift_digit_array(dividend, src1, src1_num_digits, 0, normalize_shift);
-
+        /*
+         * By definition when we normalize the divisor it keeps the same number of digits.
+         */
         natural_digit divisor[src2_num_digits];
         auto divisor_num_digits = __left_shift_digit_array(divisor, src2, src2_num_digits, 0, normalize_shift);
 
+        /*
+         * Our dividend may end up one digit larger after the normalization.
+         */
+        natural_digit dividend[src1_num_digits + 1];
+        auto dividend_num_digits = __left_shift_digit_array(dividend, src1, src1_num_digits, 0, normalize_shift);
+
+        /*
+         * We need a temporary to hold various partial computations.  This needs to be
+         * as larger at the dividend.
+         */
         natural_digit t1[src1_num_digits + 1];
 
-        quotient_num_digits = src1_num_digits - src2_num_digits + 1;
+        quotient_num_digits = dividend_num_digits - divisor_num_digits + 1;
         __zero_digit_array(quotient, quotient_num_digits);
 
         /*
