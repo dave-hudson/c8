@@ -18,8 +18,8 @@ namespace c8 {
      * Delete digits array if it is marked for deletion.
      */
     inline auto natural::delete_digits() -> void {
-        if (C8_UNLIKELY(delete_digits_on_final_)) {
-            delete[] digits_;
+        if (C8_UNLIKELY(large_digits_)) {
+            delete[] large_digits_;
         }
     }
 
@@ -39,8 +39,8 @@ namespace c8 {
          * Allocate a new digit array and update book-keeping info.
          */
         digits_size_ = new_digits;
-        delete_digits_on_final_ = true;
-        digits_ = new natural_digit[new_digits];
+        large_digits_ = new natural_digit[new_digits];
+        digits_ = large_digits_;
     }
 
     /*
@@ -63,8 +63,8 @@ namespace c8 {
 
         delete_digits();
         digits_size_ = new_digits;
-        delete_digits_on_final_ = true;
-        digits_ = d;
+        large_digits_ = d;
+        digits_ = large_digits_;
     }
 
     /*
@@ -72,7 +72,7 @@ namespace c8 {
      */
     auto natural::copy_digits(const natural &v) -> void {
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
-        delete_digits_on_final_ = false;
+        large_digits_ = nullptr;
         digits_ = small_digits_;
         num_digits_ = v.num_digits_;
         if (C8_UNLIKELY(!num_digits_)) {
@@ -87,13 +87,13 @@ namespace c8 {
      * Steal the contents of a natural number into this one.
      */
     auto natural::steal_digits(natural &v) -> void {
-        delete_digits_on_final_ = v.delete_digits_on_final_;
+        large_digits_ = v.large_digits_;
 
         /*
          * Are we currently using the default small buffer, or do we have one allocated?
          */
-        if (C8_UNLIKELY(v.delete_digits_on_final_)) {
-            v.delete_digits_on_final_ = false;
+        if (C8_UNLIKELY(v.large_digits_)) {
+            v.large_digits_ = nullptr;
 
             /*
              * We're using an allocated buffer so just move it.
@@ -122,7 +122,7 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        delete_digits_on_final_ = false;
+        large_digits_ = nullptr;
 
         if (!v) {
             return;
@@ -150,7 +150,7 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        delete_digits_on_final_ = false;
+        large_digits_ = nullptr;
 
         std::size_t v_sz = v.size();
         if (C8_UNLIKELY(v_sz == 0)) {

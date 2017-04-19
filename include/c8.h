@@ -92,7 +92,7 @@ namespace c8 {
             num_digits_ = 0;
             digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
             digits_ = small_digits_;
-            delete_digits_on_final_ = false;
+            large_digits_ = nullptr;
         }
 
         natural(unsigned long long v) noexcept;
@@ -154,11 +154,12 @@ namespace c8 {
         friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &;
 
     private:
-        std::size_t num_digits_;            // The number of digits in this number
-        std::size_t digits_size_;           // Number of digits_ allocated
-        natural_digit *digits_;             // Digits of the natural number
-        bool delete_digits_on_final_;       // Do we need to delete digits_ on finalizing?
-        natural_digit small_digits_[16];    // Small fixed-size digit buffer
+        std::size_t num_digits_;        // The number of digits in this number
+        std::size_t digits_size_;       // Number of digits_ allocated
+        natural_digit *digits_;         // Digits of the natural number
+        natural_digit small_digits_[16];
+                                        // Small fixed-size digit buffer
+        natural_digit *large_digits_;   // Pointer to large digit buffer, if needed
 
         auto reserve(std::size_t new_digits) -> void;
         auto expand(std::size_t new_digits) -> void;
@@ -313,8 +314,8 @@ namespace c8 {
         friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &;
 
     private:
-        bool negative_;                     // Is this big integer negative?
-        natural magnitude_;                 // The magnitude of the integer
+        bool negative_;                 // Is this big integer negative?
+        natural magnitude_;             // The magnitude of the integer
     };
 
     inline auto is_zero(const integer &v) -> bool {
@@ -404,8 +405,8 @@ namespace c8 {
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
     private:
-        integer num_;                       // Numerator
-        integer denom_;                     // Denominator
+        integer num_;                   // Numerator
+        integer denom_;                 // Denominator
 
         auto normalize() -> void;
     };
