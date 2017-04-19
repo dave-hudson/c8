@@ -2369,6 +2369,111 @@ auto test_natural_divide_8c() -> result {
 }
 
 /*
+ * Divide a single digit natural number by a larger single digit value.
+ */
+auto test_natural_divide_9a() -> result {
+    result r("nat div 9a");
+    c8::natural d0("1");
+
+    r.start_clock();
+    auto d2 = d0 / 3;
+    auto mo2 = d0 % 3;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d2 << ',' << mo2;
+    r.check_pass("0,1");
+    return r;
+}
+
+/*
+ * Divide a single digit natural number by a larger single digit value.
+ */
+auto test_natural_divide_9b() -> result {
+    result r("nat div 9b");
+    c8::natural d0("1");
+    auto mo0 = d0;
+
+    r.start_clock();
+    d0 /= 3;
+    mo0 %= 3;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("0,1");
+    return r;
+}
+
+/*
+ * Divide a single digit natural number by a larger single digit value.
+ */
+auto test_natural_divide_9c() -> result {
+    result r("nat div 9c");
+    c8::natural d0("1");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(3);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
+    r.check_pass("0,1");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_10a() -> result {
+    result r("nat div 10a");
+    c8::natural d0("0x10000000000000001000000000000000100000000");
+    c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    auto d2 = d0 / d1;
+    auto mo2 = d0 % d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d2 << ',' << mo2;
+    r.check_pass("0,10000000000000001000000000000000100000000");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_10b() -> result {
+    result r("nat div 10b");
+    c8::natural d0("0x10000000000000001000000000000000100000000");
+    auto mo0 = d0;
+    c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("0,10000000000000001000000000000000100000000");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_10c() -> result {
+    result r("nat div 10c");
+    c8::natural d0("0x10000000000000001000000000000000100000000");
+    c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
+    r.check_pass("0,10000000000000001000000000000000100000000");
+    return r;
+}
+
+/*
  * Test greatest common divisor.
  */
 auto test_natural_gcd_0() -> result {

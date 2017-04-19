@@ -32,7 +32,7 @@ auto test_nop() -> result {
 static auto usage(const char *name) -> void {
     std::cerr << "usage: " << name << " [OPTIONS]\n\n";
     std::cerr << "Options\n";
-    std::cerr << "  -b  Generate benchmark results (optional)\n\n";
+    std::cerr << "  -b  Generate benchmark results (optional)\n";
     std::cerr << "  -v  Verbose reporting (optional)\n\n";
 }
 
@@ -175,6 +175,12 @@ test tests[] = {
     test_natural_divide_8a,
     test_natural_divide_8b,
     test_natural_divide_8c,
+    test_natural_divide_9a,
+    test_natural_divide_9b,
+    test_natural_divide_9c,
+    test_natural_divide_10a,
+    test_natural_divide_10b,
+    test_natural_divide_10c,
     test_natural_gcd_0,
     test_natural_gcd_1,
     test_natural_gcd_2,
