@@ -329,6 +329,10 @@ namespace c8 {
             return res;
         }
 
+        /*
+         * We need to reserve some space for our result.  When we add a single digit
+         * our result can't be more than one digit larger than this number.
+         */
         std::size_t this_num_digits = num_digits_;
         res.reserve(this_num_digits + 1);
 
@@ -369,6 +373,10 @@ namespace c8 {
             return res;
         }
 
+        /*
+         * We need to reserve some space for our result.  Our result can only be
+         * one digit larger than the largest number we have as an operand.
+         */
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         res.reserve(max_num_digits + 1);
         res.num_digits_ = add_digit_arrays(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -386,6 +394,10 @@ namespace c8 {
             return *this;
         }
 
+        /*
+         * We need to reserve some space for our result.  When we add a single digit
+         * our result can't be more than one digit larger than this number.
+         */
         std::size_t this_num_digits = num_digits_;
         expand(this_num_digits + 1);
 
@@ -423,6 +435,10 @@ namespace c8 {
             return *this;
         }
 
+        /*
+         * We need to reserve some space for our result.  Our result can only be
+         * one digit larger than the largest number we have as an operand.
+         */
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         expand(max_num_digits + 1);
         num_digits_ = add_digit_arrays(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -765,7 +781,7 @@ namespace c8 {
          * Is the result zero?  If yes then we're done.
          */
         std::size_t this_num_digits = num_digits_;
-        if (compare_le_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
+        if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
             p.second = *this;
             return p;
         }
@@ -850,6 +866,7 @@ namespace c8 {
          */
         std::size_t this_num_digits = num_digits_;
         if (!this_num_digits) {
+            num_digits_ = 0;
             return *this;
         }
 
@@ -875,6 +892,7 @@ namespace c8 {
          */
         std::size_t this_num_digits = num_digits_;
         if (compare_lt_digit_arrays(digits_, this_num_digits, v.digits_, v_num_digits)) {
+            num_digits_ = 0;
             return *this;
         }
 
