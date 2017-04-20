@@ -2,6 +2,7 @@
  * natural.cpp
  */
 #include <cctype>
+#include <vector>
 
 #include "c8.h"
 #include "digit_array.h"
@@ -13,15 +14,6 @@ namespace c8 {
     const char digits_upper[] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
-
-    /*
-     * Delete digits array if it is marked for deletion.
-     */
-    inline auto natural::delete_digits() -> void {
-        if (C8_UNLIKELY(large_digits_)) {
-            delete[] large_digits_;
-        }
-    }
 
     /*
      * Reserve a number of digits in this natural number.
@@ -39,8 +31,8 @@ namespace c8 {
          * Allocate a new digit array and update book-keeping info.
          */
         digits_size_ = new_digits;
-        large_digits_ = new natural_digit[new_digits];
-        digits_ = large_digits_;
+        large_digits_ = std::make_unique<natural_digit[]>(new_digits);
+        digits_ = large_digits_.get();
     }
 
     /*
@@ -58,13 +50,13 @@ namespace c8 {
         /*
          * Replace the old digit array with the new one.
          */
-        auto d = new natural_digit[new_digits];
-        copy_digit_array(d, digits_, num_digits_);
+        auto d = std::make_unique<natural_digit[]>(new_digits);
+        auto d_ptr = d.get();
+        copy_digit_array(d_ptr, digits_, num_digits_);
 
-        delete_digits();
         digits_size_ = new_digits;
-        large_digits_ = d;
-        digits_ = large_digits_;
+        large_digits_ = std::move(d);
+        digits_ = d_ptr;
     }
 
     /*
@@ -72,7 +64,6 @@ namespace c8 {
      */
     auto natural::copy_digits(const natural &v) -> void {
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
-        large_digits_ = nullptr;
         digits_ = small_digits_;
         num_digits_ = v.num_digits_;
         if (C8_UNLIKELY(!num_digits_)) {
@@ -87,14 +78,12 @@ namespace c8 {
      * Steal the contents of a natural number into this one.
      */
     auto natural::steal_digits(natural &v) -> void {
-        large_digits_ = v.large_digits_;
+        large_digits_ = std::move(v.large_digits_);
 
         /*
          * Are we currently using the default small buffer, or do we have one allocated?
          */
-        if (C8_UNLIKELY(v.large_digits_)) {
-            v.large_digits_ = nullptr;
-
+        if (C8_UNLIKELY(large_digits_.get())) {
             /*
              * We're using an allocated buffer so just move it.
              */
@@ -122,7 +111,6 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        large_digits_ = nullptr;
 
         if (!v) {
             return;
@@ -150,7 +138,6 @@ namespace c8 {
         num_digits_ = 0;
         digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
         digits_ = small_digits_;
-        large_digits_ = nullptr;
 
         std::size_t v_sz = v.size();
         if (C8_UNLIKELY(v_sz == 0)) {
@@ -225,7 +212,6 @@ namespace c8 {
      * Destructor.
      */
     natural::~natural() {
-        delete_digits();
     }
 
     /*
@@ -284,7 +270,6 @@ namespace c8 {
         /*
          * Delete the old contents of this natural number and copy the original's digits.
          */
-        delete_digits();
         copy_digits(v);
         return *this;
     }
@@ -303,7 +288,6 @@ namespace c8 {
         /*
          * Delete the old contents of this natural number and steal the original's digits.
          */
-        delete_digits();
         steal_digits(v);
         return *this;
     }
@@ -1051,7 +1035,6 @@ namespace c8 {
                 break;
             }
 
-            larger.delete_digits();
             larger.steal_digits(smaller);
             smaller.steal_digits(mod);
         }

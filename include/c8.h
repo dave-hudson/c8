@@ -6,8 +6,8 @@
 
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <string>
-#include <vector>
 #include <cstdint>
 
 /*
@@ -92,7 +92,6 @@ namespace c8 {
             num_digits_ = 0;
             digits_size_ = sizeof(small_digits_) / sizeof(natural_digit);
             digits_ = small_digits_;
-            large_digits_ = nullptr;
         }
 
         natural(unsigned long long v) noexcept;
@@ -159,13 +158,13 @@ namespace c8 {
         natural_digit *digits_;         // Digits of the natural number
         natural_digit small_digits_[16];
                                         // Small fixed-size digit buffer
-        natural_digit *large_digits_;   // Pointer to large digit buffer, if needed
+        std::unique_ptr<natural_digit[]> large_digits_;
+                                        // Pointer to large digit buffer, if needed
 
         auto reserve(std::size_t new_digits) -> void;
         auto expand(std::size_t new_digits) -> void;
         auto copy_digits(const natural &v) -> void;
         auto steal_digits(natural &v) -> void;
-        auto delete_digits() -> void;
     };
 
     inline auto is_zero(const natural &v) -> bool {
