@@ -14,6 +14,9 @@ all: $(TARGET_BIN)
 # For our test programs we don't want to use dynamic libraries because static
 # linking makes things a little more predictable.
 #
+# A counterpoint to this, however, is that using static linking causes valgrind
+# to get very upset.
+#
 LDFLAGS_EXTRA := -static
 
 LIB_DEPS1 := $(patsubst -l%,lib%.a,$(LIBS))
