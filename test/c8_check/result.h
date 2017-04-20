@@ -17,6 +17,7 @@ class result {
 public:
     result(const std::string &name) {
         name_ = name;
+        pass_ = false;
     }
 
     auto get_name() -> const std::string & {

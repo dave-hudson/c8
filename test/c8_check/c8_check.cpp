@@ -39,7 +39,7 @@ static auto usage(const char *name) -> void {
 /*
  * List of tests to run.
  */
-test tests[] = {
+const test tests[] = {
     test_natural_construct_0,
     test_natural_construct_1,
     test_natural_construct_2,
@@ -393,7 +393,7 @@ test tests[] = {
  */
 auto main(int argc, char **argv) -> int {
     bool verbose = false;
-    int loops = 1;
+    std::size_t loops = 1;
 
     /*
      * Parse the command line options.
@@ -421,12 +421,13 @@ auto main(int argc, char **argv) -> int {
      * repeatedly for 2 seconds.
      */
     std::vector<std::chrono::nanoseconds> nop_durations;
+    nop_durations.reserve(1000);
 
     std::time_t t = std::time(nullptr);
     std::time_t s;
 
     do {
-        for (auto i = 1; i < 1000; i++) {
+        for (std::size_t i = 1; i < 1000; i++) {
             result r = test_nop();
             nop_durations.push_back(r.get_elapsed());
         }
@@ -446,23 +447,24 @@ auto main(int argc, char **argv) -> int {
      */
     bool res = true;
 
-    test *p = tests;
+    const test *p = tests;
     while (*p) {
-        std::vector<std::chrono::nanoseconds> duration;
+        std::vector<std::chrono::nanoseconds> durations;
+        durations.reserve(loops);
 
         /*
          * Run one test every time.  This gives the pass/fail status.
          */
         result r = (*p)();
         bool rp = r.get_pass();
-        duration.push_back(r.get_elapsed());
+        durations.push_back(r.get_elapsed());
 
         /*
          * Run more tests if we're running a benchmark.
          */
-        for (auto i = 1; i < loops; i++) {
+        for (std::size_t i = 1; i < loops; i++) {
             result l = (*p)();
-            duration.push_back(l.get_elapsed());
+            durations.push_back(l.get_elapsed());
         }
 
         /*
@@ -472,9 +474,9 @@ auto main(int argc, char **argv) -> int {
          * related to scheduling.  The 20th percentile number is an empirical choice.
          */
         if (verbose) {
-            std::nth_element(duration.begin(), duration.begin() + (duration.size() / 5), duration.end());
+            std::nth_element(durations.begin(), durations.begin() + (durations.size() / 5), durations.end());
             std::cout << std::setw(14) << std::left << r.get_name() << " | ";
-            auto d = duration[duration.size() / 5] - nop_duration;
+            auto d = durations[durations.size() / 5] - nop_duration;
             std::cout << std::setw(10) << std::right << d.count() << " | " << (rp ? "pass" : "FAIL");
             std::cout << " | " << r.get_stream().str();
             if (!rp) {
