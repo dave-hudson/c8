@@ -825,7 +825,7 @@ namespace c8 {
          */
         natural_digit t1[src1_num_digits + 1];
 
-        quotient_num_digits = dividend_num_digits - divisor_num_digits + 1;
+        quotient_num_digits = src1_num_digits - src2_num_digits + 1;
         __zero_digit_array(quotient, quotient_num_digits);
 
         /*
