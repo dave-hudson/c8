@@ -486,7 +486,7 @@ namespace c8 {
 
         /*
          * Calculate the number of resulting digits.  With subtraction there's no
-         * easy way to estimate this numbers.
+         * easy way to estimate this.
          */
         std::size_t res_num_digits = src1_num_digits;
         while (res_num_digits--) {
