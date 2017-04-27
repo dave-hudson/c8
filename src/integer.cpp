@@ -427,7 +427,7 @@ namespace c8 {
         /*
          * Will this number fit in a long long?  If not then throw an exception.
          */
-        if (magnitude_.count_bits() > ((8 * sizeof(long long)) - 1)) {
+        if (magnitude_.size_bits() > ((8 * sizeof(long long)) - 1)) {
             throw overflow_error();
         }
 

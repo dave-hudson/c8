@@ -19,6 +19,7 @@ SRCS := \
 	c8_natural_operator_arithmetic.md \
 	c8_natural_operator_bitwise.md \
 	c8_natural_operator_compare.md \
+	c8_natural_size_bits.md \
 	c8_rational.md \
 	c8_rational_operator_assign.md \
 	c8_rational_operator_arithmetic.md \

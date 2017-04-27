@@ -295,22 +295,22 @@ namespace c8 {
          */
         natural d = denom_.abs();
         int eshift = 0;
-        unsigned int dbits = d.count_bits();
+        auto dbits = d.size_bits();
         if (dbits > 52) {
-            unsigned int s = dbits - 52;
+            std::size_t s = dbits - 52;
             eshift -= static_cast<int>(s);
             dbits = 52;
-            d >>= s;
+            d >>= static_cast<unsigned int>(s);
         }
 
-        unsigned int nbits = n.count_bits();
+        auto nbits = n.size_bits();
         if (nbits > dbits + 53) {
-            unsigned int s = nbits - (dbits + 53);
-            n >>= s;
+            std::size_t s = nbits - (dbits + 53);
+            n >>= static_cast<unsigned int>(s);
             eshift += static_cast<int>(s);
         } else {
-            unsigned int s = dbits + 53 - nbits;
-            n <<= s;
+            std::size_t s = dbits + 53 - nbits;
+            n <<= static_cast<unsigned int>(s);
             eshift -= static_cast<int>(s);
         }
 

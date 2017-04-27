@@ -8,9 +8,9 @@
 
 namespace c8 {
     /*
-     * Return the number of bits in this digit array.
+     * Return the number of bits actually used within this digit array.
      */
-    auto __count_bits_digit_array(const natural_digit *p, std::size_t p_num_digits) noexcept -> unsigned int {
+    auto __size_bits_digit_array(const natural_digit *p, std::size_t p_num_digits) noexcept -> std::size_t {
         /*
          * If we have no digits then this is a simple (special) case.
          */
@@ -28,7 +28,7 @@ namespace c8 {
         natural_digit d = p[p_num_digits - 1];
         auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
         auto clz = static_cast<unsigned int>(__builtin_clz(d));
-        return static_cast<unsigned int>((p_num_digits + c) * natural_digit_bits) - clz;
+        return static_cast<std::size_t>((p_num_digits + c) * natural_digit_bits) - clz;
     }
 
     /*
@@ -803,7 +803,7 @@ namespace c8 {
          * that it's most significant digit has its top bit set.  This may seem a little odd,
          * but we want to ensure that any quotient estimates are as accurate as possible.
          */
-        auto divisor_bits = __count_bits_digit_array(src2, src2_num_digits);
+        auto divisor_bits = __size_bits_digit_array(src2, src2_num_digits);
         auto divisor_digit_bits = divisor_bits & (natural_digit_bits - 1);
         unsigned int normalize_shift = static_cast<unsigned int>((natural_digit_bits - divisor_digit_bits) & (natural_digit_bits - 1));
 

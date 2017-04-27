@@ -11,10 +11,10 @@
 
 namespace c8 {
     /*
-     * Return the number of bits in this digit array.
+     * Return the number of bits required by this digit array.
      */
-    auto count_bits_digit_array(const natural_digit *p, std::size_t p_num_digits) noexcept -> unsigned int {
-        return __count_bits_digit_array(p, p_num_digits);
+    auto size_bits_digit_array(const natural_digit *p, std::size_t p_num_digits) noexcept -> std::size_t {
+        return __size_bits_digit_array(p, p_num_digits);
     }
 
     /*

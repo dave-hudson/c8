@@ -136,7 +136,7 @@ namespace c8 {
         auto operator %=(natural_digit v) -> natural &;
         auto operator %=(const natural &v) -> natural &;
 
-        auto count_bits() const noexcept -> unsigned int;
+        auto size_bits() const noexcept -> std::size_t;
         auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto gcd(const natural &v) const -> natural;

@@ -55,9 +55,12 @@ Perform bitwise operations on this number.
 
 Perform assignment operations on this number.
 
+## Sizing Member Function ##
+
+* [size\_bits](c8_natural_size_bits)
+
 ## Public Member Functions ##
 
-* `auto count_bits() const noexcept -> unsigned int`
 * `auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>`
 * `auto divide_modulus(const natural &v) const -> std::pair<natural, natural>`
 * `auto gcd(const natural &v) const -> natural`

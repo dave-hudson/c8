@@ -142,12 +142,12 @@ auto test_natural_construct_7() -> result {
 /*
  * Test bit counting.
  */
-auto test_natural_count_bits_0() -> result {
-    result r("nat count 0");
+auto test_natural_size_bits_0() -> result {
+    result r("nat size bits 0");
     c8::natural ct(0);
 
     r.start_clock();
-    auto b = ct.count_bits();
+    auto b = ct.size_bits();
     r.stop_clock();
 
     r.get_stream() << b;
@@ -158,12 +158,12 @@ auto test_natural_count_bits_0() -> result {
 /*
  * Test bit counting.
  */
-auto test_natural_count_bits_1() -> result {
-    result r("nat count 1");
+auto test_natural_size_bits_1() -> result {
+    result r("nat size bits 1");
     c8::natural ct(0xffffffffffffffffULL);
 
     r.start_clock();
-    auto b = ct.count_bits();
+    auto b = ct.size_bits();
     r.stop_clock();
 
     r.get_stream() << b;
@@ -174,12 +174,12 @@ auto test_natural_count_bits_1() -> result {
 /*
  * Test bit counting.
  */
-auto test_natural_count_bits_2() -> result {
-    result r("nat count 2");
+auto test_natural_size_bits_2() -> result {
+    result r("nat size bits 2");
     c8::natural ct(0x12345ULL);
 
     r.start_clock();
-    auto b = ct.count_bits();
+    auto b = ct.size_bits();
     r.stop_clock();
 
     r.get_stream() << b;
@@ -190,12 +190,12 @@ auto test_natural_count_bits_2() -> result {
 /*
  * Test bit counting.
  */
-auto test_natural_count_bits_3() -> result {
-    result r("nat count 3");
+auto test_natural_size_bits_3() -> result {
+    result r("nat size bits 3");
     c8::natural ct("0x123456789abcdef0123456789abcdef0123456789abcdef");
 
     r.start_clock();
-    auto b = ct.count_bits();
+    auto b = ct.size_bits();
     r.stop_clock();
 
     r.get_stream() << b;

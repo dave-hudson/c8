@@ -295,8 +295,8 @@ namespace c8 {
     /*
      * Return the number of bits required to represent this natural number.
      */
-    auto natural::count_bits() const noexcept -> unsigned int {
-        return count_bits_digit_array(digits_, num_digits_);
+    auto natural::size_bits() const noexcept -> std::size_t {
+        return size_bits_digit_array(digits_, num_digits_);
     }
 
     /*
@@ -1050,7 +1050,7 @@ namespace c8 {
          * Will this number fit in an unsigned long long?  If not then throw an
          * exception.
          */
-        if (count_bits() > (8 * sizeof(long long))) {
+        if (size_bits() > (8 * sizeof(long long))) {
             throw overflow_error();
         }
 
