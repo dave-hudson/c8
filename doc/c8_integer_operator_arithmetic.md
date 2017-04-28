@@ -14,7 +14,7 @@ Arithmetic operators.
 
 Perform arithmetic operations based on this number (left hand side of the operator) and another number `v` (right hand side of the operator), resulting in a new `c8::integer` number.
 
-## Returns ##
+## Return Values ##
 
 1. Returns a new integer number equal to this number plus `v`.
 2. Returns a new integer number equal `v` subtracted from this number.

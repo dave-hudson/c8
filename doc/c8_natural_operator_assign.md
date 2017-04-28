@@ -33,7 +33,7 @@ Perform operations that assign values to this number (left hand side of the oper
 8. Shift this number left by `count` bit positions.
 9. Shift this number right by `count` bit positions.
 
-## Returns ##
+## Return Values ##
 
 All operators return a reference to this number (left hand side of the operator).
 

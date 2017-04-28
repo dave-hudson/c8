@@ -22,7 +22,7 @@ Perform operations that assign values to this number (left hand side of the oper
 5. Multiply this number by `v`.
 6. Divide this number by `v`.
 
-## Returns ##
+## Return Values ##
 
 All operators return a reference to this number (left hand side of the operator).
 

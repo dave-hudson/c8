@@ -11,7 +11,7 @@ Bitwise operators.
 
 Perform bit manipulation operations on this number (left hand side of the operator) and another number `v` (right hand side of the operator), resulting in a new `c8::integer` number.
 
-## Returns ##
+## Return Values ##
 
 1. Returns a new integer equal to this number shifted left by `count` bit positions.
 1. Returns a new integer equal to this number shifted right by `count` bit positions.

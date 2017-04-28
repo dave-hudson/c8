@@ -13,9 +13,9 @@ Comparison operators.
 
 ## Description ##
 
-Numerically compare the value of this number (left hand side of the operator) and nother number `v` (right hand side of the operator).
+Numerically compare the value of this number (left hand side of the operator) and another number `v` (right hand side of the operator).
 
-## Returns ##
+## Return Values ##
 
 1. Returns `true` if this number is equal to `v`; `false` if it is not equal.
 2. Returns `true` if this number is not equal to `v`; `false` if it is equal.
