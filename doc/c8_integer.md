@@ -16,42 +16,42 @@ Destroy (and free all resources allocated to) a integer number.
 
 ## Comparison Operators ##
 
-* [operator ==](c8_integer_operator_compare)
-* [operator !=](c8_integer_operator_compare)
-* [operator >](c8_integer_operator_compare)
-* [operator >=](c8_integer_operator_compare)
-* [operator &lt;](c8_integer_operator_compare)
-* [operator &lt;=](c8_integer_operator_compare)
+* [operator ==](c8_integer_operator_eqeq)
+* [operator !=](c8_integer_operator_exeq)
+* [operator >](c8_integer_operator_gt)
+* [operator >=](c8_integer_operator_gteq)
+* [operator &lt;](c8_integer_operator_lt)
+* [operator &lt;=](c8_integer_operator_lteq)
 
 Compare this integer number with another.
 
 ## Arithmetic Operators ##
 
-* [operator +](c8_integer_operator_arithmetic)
-* [operator -](c8_integer_operator_arithmetic)
-* [operator *](c8_integer_operator_arithmetic)
-* [operator /](c8_integer_operator_arithmetic)
-* [operator %](c8_integer_operator_arithmetic)
+* [operator +](c8_integer_operator_pl)
+* [operator -](c8_integer_operator_mi)
+* [operator *](c8_integer_operator_mu)
+* [operator /](c8_integer_operator_di)
+* [operator %](c8_integer_operator_mo)
 
 Perform arithmetic with this number.
 
 ## Bitwise Operators ##
 
-* [operator &lt;&lt;](c8_integer_operator_bitwise)
-* [operator >>](c8_integer_operator_bitwise)
+* [operator &lt;&lt;](c8_integer_operator_ltlt)
+* [operator >>](c8_integer_operator_gtgt)
 
 Perform bitwise operations on this number.
 
 ## Assignment Operators ##
 
-* [operator =](c8_integer_operator_assign)
-* [operator +=](c8_integer_operator_assign)
-* [operator -=](c8_integer_operator_assign)
-* [operator *=](c8_integer_operator_assign)
-* [operator /=](c8_integer_operator_assign)
-* [operator %=](c8_integer_operator_assign)
-* [operator &lt;&lt;=](c8_integer_operator_assign)
-* [operator >>=](c8_integer_operator_assign)
+* [operator =](c8_integer_operator_eq)
+* [operator +=](c8_integer_operator_pleq)
+* [operator -=](c8_integer_operator_mieq)
+* [operator *=](c8_integer_operator_mueq)
+* [operator /=](c8_integer_operator_dieq)
+* [operator %=](c8_integer_operator_moeq)
+* [operator &lt;&lt;=](c8_integer_operator_ltlteq)
+* [operator >>=](c8_integer_operator_gtgteq)
 
 Perform assignment operations on this number.
 

@@ -16,42 +16,42 @@ Destroy (and free all resources allocated to) a natural number.
 
 ## Comparison Operators ##
 
-* [operator ==](c8_natural_operator_compare)
-* [operator !=](c8_natural_operator_compare)
-* [operator >](c8_natural_operator_compare)
-* [operator >=](c8_natural_operator_compare)
-* [operator &lt;](c8_natural_operator_compare)
-* [operator &lt;=](c8_natural_operator_compare)
+* [operator ==](c8_natural_operator_eqeq)
+* [operator !=](c8_natural_operator_exeq)
+* [operator >](c8_natural_operator_gt)
+* [operator >=](c8_natural_operator_gteq)
+* [operator &lt;](c8_natural_operator_lt)
+* [operator &lt;=](c8_natural_operator_lteq)
 
 Compare this natural number with another.
 
 ## Arithmetic Operators ##
 
-* [operator +](c8_natural_operator_arithmetic)
-* [operator -](c8_natural_operator_arithmetic)
-* [operator *](c8_natural_operator_arithmetic)
-* [operator /](c8_natural_operator_arithmetic)
-* [operator %](c8_natural_operator_arithmetic)
+* [operator +](c8_natural_operator_pl)
+* [operator -](c8_natural_operator_mi)
+* [operator *](c8_natural_operator_mu)
+* [operator /](c8_natural_operator_di)
+* [operator %](c8_natural_operator_mo)
 
 Perform arithmetic with this number.
 
 ## Bitwise Operators ##
 
-* [operator &lt;&lt;](c8_natural_operator_bitwise)
-* [operator >>](c8_natural_operator_bitwise)
+* [operator &lt;&lt;](c8_natural_operator_ltlt)
+* [operator >>](c8_natural_operator_gtgt)
 
 Perform bitwise operations on this number.
 
 ## Assignment Operators ##
 
-* [operator =](c8_natural_operator_assign)
-* [operator +=](c8_natural_operator_assign)
-* [operator -=](c8_natural_operator_assign)
-* [operator *=](c8_natural_operator_assign)
-* [operator /=](c8_natural_operator_assign)
-* [operator %=](c8_natural_operator_assign)
-* [operator &lt;&lt;=](c8_natural_operator_assign)
-* [operator >>=](c8_natural_operator_assign)
+* [operator =](c8_natural_operator_eq)
+* [operator +=](c8_natural_operator_pleq)
+* [operator -=](c8_natural_operator_mieq)
+* [operator *=](c8_natural_operator_mueq)
+* [operator /=](c8_natural_operator_dieq)
+* [operator %=](c8_natural_operator_moeq)
+* [operator &lt;&lt;=](c8_natural_operator_ltlteq)
+* [operator >>=](c8_natural_operator_gtgteq)
 
 Perform assignment operations on this number.
 

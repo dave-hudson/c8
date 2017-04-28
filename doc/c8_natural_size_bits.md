@@ -4,7 +4,9 @@ Returns the number of bits required to represent this natural number.
 
 ## Definition ##
 
-`auto size_bits() const noexcept -> std::size_t`
+```cpp
+auto size_bits() const noexcept -> std::size_t
+```
 
 ## Description ##
 

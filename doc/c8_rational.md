@@ -16,31 +16,31 @@ Destroy (and free all resources allocated to) a rational number.
 
 ## Comparison Operators ##
 
-* [operator ==](c8_rational_operator_compare)
-* [operator !=](c8_rational_operator_compare)
-* [operator >](c8_rational_operator_compare)
-* [operator >=](c8_rational_operator_compare)
-* [operator &lt;](c8_rational_operator_compare)
-* [operator &lt;=](c8_rational_operator_compare)
+* [operator ==](c8_rational_operator_eqeq)
+* [operator !=](c8_rational_operator_exeq)
+* [operator >](c8_rational_operator_gt)
+* [operator >=](c8_rational_operator_gteq)
+* [operator &lt;](c8_rational_operator_lt)
+* [operator &lt;=](c8_rational_operator_lteq)
 
 Compare this rational number with another.
 
 ## Arithmetic Operators ##
 
-* [operator +](c8_rational_operator_arithmetic)
-* [operator -](c8_rational_operator_arithmetic)
-* [operator *](c8_rational_operator_arithmetic)
-* [operator /](c8_rational_operator_arithmetic)
+* [operator +](c8_rational_operator_pl)
+* [operator -](c8_rational_operator_mi)
+* [operator *](c8_rational_operator_mu)
+* [operator /](c8_rational_operator_di)
 
 Perform arithmetic with this number.
 
 ## Assignment Operators ##
 
-* [operator =](c8_rational_operator_assign)
-* [operator +=](c8_rational_operator_assign)
-* [operator -=](c8_rational_operator_assign)
-* [operator *=](c8_rational_operator_assign)
-* [operator /=](c8_rational_operator_assign)
+* [operator =](c8_rational_operator_eq)
+* [operator +=](c8_rational_operator_pleq)
+* [operator -=](c8_rational_operator_mieq)
+* [operator *=](c8_rational_operator_mueq)
+* [operator /=](c8_rational_operator_dieq)
 
 Perform assignment operations on this number.
 
