@@ -209,12 +209,6 @@ namespace c8 {
     }
 
     /*
-     * Destructor.
-     */
-    natural::~natural() {
-    }
-
-    /*
      * Return true if this number is equal to another one, false if it's not.
      */
     auto natural::operator ==(const natural &v) const noexcept -> bool {

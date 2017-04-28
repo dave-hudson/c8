@@ -99,7 +99,7 @@ namespace c8 {
         natural(const natural &v);
         natural(natural &&v) noexcept;
 
-        ~natural();
+        ~natural() = default;
 
         auto operator ==(const natural &v) const noexcept -> bool;
         auto operator !=(const natural &v) const noexcept -> bool;
@@ -184,21 +184,21 @@ namespace c8 {
         /*
          * Constructors.
          */
-        integer() {
+        integer() noexcept {
             negative_ = false;
         }
 
-        integer(long long v) : magnitude_((v >= 0) ? static_cast<unsigned long long>(v) : static_cast<unsigned long long>(-v)) {
+        integer(long long v) noexcept : magnitude_((v >= 0) ? static_cast<unsigned long long>(v) : static_cast<unsigned long long>(-v)) {
             negative_ = (v < 0) ? true : false;
         }
 
-        integer(natural v) : magnitude_(v) {
+        integer(const natural &v) : magnitude_(v) {
             negative_ = false;
         }
 
         integer(const std::string &v);
         integer(const integer &v) = default;
-        integer(integer &&v) = default;
+        integer(integer &&v) noexcept = default;
 
         ~integer() = default;
 
@@ -342,23 +342,23 @@ namespace c8 {
         /*
          * Constructors.
          */
-        rational() {
+        rational() noexcept {
             num_ = 0;
             denom_ = 1;
         }
 
-        rational(long long n, long long d = 1) : num_(n), denom_(d) {
+        rational(long long n, long long d = 1) noexcept : num_(n), denom_(d) {
             normalize();
         }
 
-        rational(integer n, integer d) : num_(n), denom_(d) {
+        rational(const integer &n, const integer &d) : num_(n), denom_(d) {
             normalize();
         }
 
         rational(double v);
         rational(const std::string &v);
         rational(const rational &v) = default;
-        rational(rational &&v) = default;
+        rational(rational &&v) noexcept = default;
 
         ~rational() = default;
 
