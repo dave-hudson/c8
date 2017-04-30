@@ -6,13 +6,9 @@
 
 * [rational](c8_rational_rational)
 
-Construct a rational number.
-
 ## Destructor ##
 
 * ~rational
-
-Destroy (and free all resources allocated to) a rational number.
 
 ## Comparison Operators ##
 
@@ -23,16 +19,12 @@ Destroy (and free all resources allocated to) a rational number.
 * [operator &lt;](c8_rational_operator_lt)
 * [operator &lt;=](c8_rational_operator_lteq)
 
-Compare this rational number with another.
-
 ## Arithmetic Operators ##
 
 * [operator +](c8_rational_operator_pl)
 * [operator -](c8_rational_operator_mi)
 * [operator *](c8_rational_operator_mu)
 * [operator /](c8_rational_operator_di)
-
-Perform arithmetic with this number.
 
 ## Assignment Operators ##
 
@@ -41,8 +33,6 @@ Perform arithmetic with this number.
 * [operator -=](c8_rational_operator_mieq)
 * [operator *=](c8_rational_operator_mueq)
 * [operator /=](c8_rational_operator_dieq)
-
-Perform assignment operations on this number.
 
 ## Public Member Functions ##
 

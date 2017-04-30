@@ -6,13 +6,9 @@
 
 * [natural](c8_natural_natural)
 
-Construct a natural number.
-
 ## Destructor ##
 
 * ~natural
-
-Destroy (and free all resources allocated to) a natural number.
 
 ## Comparison Operators ##
 
@@ -23,8 +19,6 @@ Destroy (and free all resources allocated to) a natural number.
 * [operator &lt;](c8_natural_operator_lt)
 * [operator &lt;=](c8_natural_operator_lteq)
 
-Compare this natural number with another.
-
 ## Arithmetic Operators ##
 
 * [operator +](c8_natural_operator_pl)
@@ -33,14 +27,10 @@ Compare this natural number with another.
 * [operator /](c8_natural_operator_di)
 * [operator %](c8_natural_operator_mo)
 
-Perform arithmetic with this number.
-
 ## Bitwise Operators ##
 
 * [operator &lt;&lt;](c8_natural_operator_ltlt)
 * [operator >>](c8_natural_operator_gtgt)
-
-Perform bitwise operations on this number.
 
 ## Assignment Operators ##
 
@@ -52,8 +42,6 @@ Perform bitwise operations on this number.
 * [operator %=](c8_natural_operator_moeq)
 * [operator &lt;&lt;=](c8_natural_operator_ltlteq)
 * [operator >>=](c8_natural_operator_gtgteq)
-
-Perform assignment operations on this number.
 
 ## Sizing Member Function ##
 

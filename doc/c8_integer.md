@@ -6,13 +6,9 @@
 
 * [integer](c8_integer_integer)
 
-Construct a integer number.
-
 ## Destructor ##
 
 * ~integer
-
-Destroy (and free all resources allocated to) a integer number.
 
 ## Comparison Operators ##
 
@@ -23,8 +19,6 @@ Destroy (and free all resources allocated to) a integer number.
 * [operator &lt;](c8_integer_operator_lt)
 * [operator &lt;=](c8_integer_operator_lteq)
 
-Compare this integer number with another.
-
 ## Arithmetic Operators ##
 
 * [operator +](c8_integer_operator_pl)
@@ -33,14 +27,10 @@ Compare this integer number with another.
 * [operator /](c8_integer_operator_di)
 * [operator %](c8_integer_operator_mo)
 
-Perform arithmetic with this number.
-
 ## Bitwise Operators ##
 
 * [operator &lt;&lt;](c8_integer_operator_ltlt)
 * [operator >>](c8_integer_operator_gtgt)
-
-Perform bitwise operations on this number.
 
 ## Assignment Operators ##
 
@@ -52,8 +42,6 @@ Perform bitwise operations on this number.
 * [operator %=](c8_integer_operator_moeq)
 * [operator &lt;&lt;=](c8_integer_operator_ltlteq)
 * [operator >>=](c8_integer_operator_gtgteq)
-
-Perform assignment operations on this number.
 
 ## Public Member Functions ##
 
