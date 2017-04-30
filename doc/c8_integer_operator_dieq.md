@@ -4,11 +4,11 @@
 auto operator /=(const integer &v) -> integer &
 ```
 
-Divides this number (left hand side of the operator) by `v` (right hand side of the operator), and assigns the result back to this number.  Any remainder is lost.
+Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  Any remainder is lost.
 
 ### Return Value ###
 
-A reference to this number (left hand side of the operator).
+A reference to this object (left hand side of the operator).
 
 ### Exceptions ###
 

@@ -4,11 +4,11 @@
 auto operator /(const rational &v) const -> rational
 ```
 
-Perform arithmetic operations based on this number (left hand side of the operator) and another number `v` (right hand side of the operator), resulting in a new `c8::rational` number.
+Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::natural` object.
 
 ### Return Value ###
 
-A new rational number equal to this number divided by `v`.
+A new `c8::rational` object with a value equal to the value of this object divided by `v`.
 
 ### Exceptions ###
 

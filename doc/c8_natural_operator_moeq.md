@@ -11,7 +11,7 @@ Keep the remainder when this number is divided by `v`.
 
 ### Return Value ###
 
-A reference to this number (left hand side of the operator).
+A reference to this object (left hand side of the operator).
 
 ### Exceptions ###
 

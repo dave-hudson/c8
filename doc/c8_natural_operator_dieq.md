@@ -5,13 +5,11 @@ auto operator /=(const natural &v) -> natural &
 auto operator /=(natural_digit v) -> natural &
 ```
 
-Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
-
-Divide this number by `v`.  Any remainder is lost.
+Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  Any remainder is lost.
 
 ### Return Value ###
 
-A reference to this number (left hand side of the operator).
+A reference to this object (left hand side of the operator).
 
 ### Exceptions ###
 

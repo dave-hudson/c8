@@ -4,11 +4,11 @@
 auto operator /(const integer &v) const -> integer
 ```
 
-Divides this number (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::integer` number that represents the quotient.  Any remainder is ignored.
+Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::integer` object that represents the quotient.  Any remainder is lost.
 
 ### Return Value ###
 
-A new integer number equal to this number divided by `v`.
+A new `c8::integer` object with a value equal to the quotient of the value of this object divided by `v`.
 
 ### Exceptions ###
 

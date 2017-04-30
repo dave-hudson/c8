@@ -4,11 +4,11 @@
 auto operator >=(const rational &v) const noexcept -> bool
 ```
 
-Determines if the value of this number (left hand side of the operator) is numerically greater than, or equal to, `v` (right hand side of the operator).
+Determines if the value of this object (left hand side of the operator) is greater than, or equal to, `v` (right hand side of the operator).
 
 ### Return Value ###
 
-* `true` if this number is greater than, or equal to, `v`.
+* `true` if the value of this object is greater than, or equal to, `v`.
 * `false` if it is not.
 
 ### Exceptions ###
