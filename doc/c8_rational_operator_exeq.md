@@ -1,14 +1,8 @@
 # c8::rational::operator != #
 
-Inequality comparison operator.
-
-### Definition ###
-
 ```cpp
 auto operator !=(const rational &v) const noexcept -> bool
 ```
-
-### Description ###
 
 Determines if the value of this number (left hand side of the operator) is numerically different to `v` (right hand side of the operator).
 

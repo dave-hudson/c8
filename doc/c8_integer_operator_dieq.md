@@ -1,18 +1,10 @@
 # c8::integer::operator /= #
 
-Division assignment operator.
-
-### Definition ###
-
 ```cpp
 auto operator /=(const integer &v) -> integer &
 ```
 
-### Description ###
-
-Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
-
-Divide this number by `v`.  Any remainder is lost.
+Divides this number (left hand side of the operator) by `v` (right hand side of the operator), and assigns the result back to this number.  Any remainder is lost.
 
 ### Return Value ###
 

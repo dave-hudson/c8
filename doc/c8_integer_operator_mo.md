@@ -1,14 +1,8 @@
 # c8::integer::operator % #
 
-Modulus operator.
-
-### Definition ###
-
 ```cpp
 auto operator %(const integer &v) const -> integer
 ```
-
-### Description ###
 
 Divides this number (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::integer` number that represents the remainder.  The quotient is ignored.
 

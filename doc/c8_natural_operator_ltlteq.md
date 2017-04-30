@@ -1,14 +1,8 @@
 # c8::natural::operator &lt;&lt;= #
 
-Left shift assignment operator.
-
-### Definition ###
-
 ```cpp
 auto operator <<=(unsigned int count) -> natural &
 ```
-
-### Description ###
 
 Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
 

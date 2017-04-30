@@ -1,14 +1,8 @@
 # c8::integer::operator &lt;&lt; #
 
-Left shift operator.
-
-### Definition ###
-
 ```cpp
 auto operator <<(unsigned int count) const -> integer
 ```
-
-### Description ###
 
 Shifts this number (left hand side of the operator) left by `count` (right hand side of the operator) bit positions, resulting in a new `c8::integer` number.
 

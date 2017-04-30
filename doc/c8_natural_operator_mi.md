@@ -1,15 +1,9 @@
 # c8::natural::operator - #
 
-Subtraction operators.
-
-### Definitions ###
-
 ```cpp
 auto operator -(const natural &v) const -> natural
 auto operator -(natural_digit v) const -> natural
 ```
-
-### Description ###
 
 Subtracts `v` (right hand side of the operator) from this number (left hand side of the operator), resulting in a new `c8::natural` number.
 

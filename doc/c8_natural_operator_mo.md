@@ -1,15 +1,9 @@
 # c8::natural::operator % #
 
-Modulus operators.
-
-### Definitions ###
-
 ```cpp
 auto operator %(const natural &v) const -> natural
 auto operator %(natural_digit v) const -> natural_digit
 ```
-
-### Description ###
 
 Perform arithmetic operations based on this number (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::natural` number.  The quotient is ignored.
 

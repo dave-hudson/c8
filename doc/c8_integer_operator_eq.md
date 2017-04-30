@@ -1,14 +1,8 @@
 # c8::integer::operator = #
 
-Copy assignment operator.
-
-### Definition ###
-
 ```cpp
 auto operator =(const integer &v) -> integer &
 ```
-
-### Description ###
 
 Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
 
@@ -24,15 +18,9 @@ A reference to this number (left hand side of the operator).
 
 # c8::integer::operator = #
 
-Move assignment operator.
-
-### Definition ###
-
 ```cpp
 auto operator =(const integer &&v) noexcept -> integer &
 ```
-
-### Description ###
 
 Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
 

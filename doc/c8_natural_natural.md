@@ -1,14 +1,8 @@
 # c8::natural::natural #
 
-Constructs a natural number with a zero value.
-
-### Definition ###
-
 ```cpp
 natural() noexcept
 ```
-
-### Description ###
 
 Constructs a natural number with a value of zero.
 
@@ -18,15 +12,9 @@ None.
 
 # c8::natural::natural #
 
-Constructs a natural number from an unsigned integer value.
-
-### Definition ###
-
 ```cpp
 natural(unsigned long long v) noexcept
 ```
-
-### Description ###
 
 Construct a natural number with a value of `v`.
 
@@ -36,15 +24,9 @@ None.
 
 # c8::natural::natural #
 
-Constructs a natural number from a string.
-
-### Definition ###
-
 ```cpp
 natural(const std::string &v)
 ```
-
-### Description ###
 
 Construct a natural number by parsing the string `v`.  `v` may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.
 
@@ -55,15 +37,9 @@ Construct a natural number by parsing the string `v`.  `v` may have a prefix of 
 
 # c8::natural::natural #
 
-Copy constructs a natural number.
-
-### Definition ###
-
 ```cpp
 natural(const natural &v)
 ```
-
-### Description ###
 
 Construct a natural number by copying the existing natural number `v`.
 
@@ -73,15 +49,9 @@ Construct a natural number by copying the existing natural number `v`.
 
 # c8::natural::natural #
 
-Move constructs a natural number.
-
-### Definition ###
-
 ```cpp
 natural(natural &&v) noexcept
 ```
-
-### Description ###
 
 Construct a natural number by moving the contents of the existing natural number `v`.  Afterwards `v` will be left as zero.
 
