@@ -15,3 +15,8 @@ A reference to this object (left hand side of the operator).
 * `std::bad_alloc` in the event of a memory allocation failure.
 * `c8::divide_by_zero` if the divisor, `v` is zero.
 
+## See Also ##
+
+* [class integer](c8_integer)
+* [c8 library](c8)
+

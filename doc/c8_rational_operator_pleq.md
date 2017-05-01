@@ -14,3 +14,8 @@ A reference to this object (left hand side of the operator).
 
 * `std::bad_alloc` in the event of a memory allocation failure.
 
+## See Also ##
+
+* [class rational](c8_rational)
+* [c8 library](c8)
+

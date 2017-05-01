@@ -71,3 +71,8 @@ Construct an integer by moving the contents of the existing integer `v`.  Afterw
 
 None.
 
+## See Also ##
+
+* [class integer](c8_integer)
+* [c8 library](c8)
+

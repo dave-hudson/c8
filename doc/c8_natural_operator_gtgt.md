@@ -14,3 +14,8 @@ A new natural number equal to this number shifted right by `count` bit positions
 
 * `std::bad_alloc` in the event of a memory allocation failure.
 
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
+

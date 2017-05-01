@@ -15,3 +15,9 @@ The number of bits required to represent this natural number.
 ### Exceptions ###
 
 None.
+
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
+

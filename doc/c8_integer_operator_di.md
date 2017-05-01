@@ -15,3 +15,8 @@ A new `c8::integer` object with a value equal to the quotient of the value of th
 * `std::bad_alloc` in the event of a memory allocation failure.
 * `c8::divide_by_zero` if the divisor, `v` is zero.
 
+## See Also ##
+
+* [class integer](c8_integer)
+* [c8 library](c8)
+

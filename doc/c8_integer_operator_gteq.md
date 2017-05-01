@@ -15,3 +15,8 @@ Determines if the value of this object (left hand side of the operator) is great
 
 None.
 
+## See Also ##
+
+* [class integer](c8_integer)
+* [c8 library](c8)
+

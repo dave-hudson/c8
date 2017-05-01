@@ -83,3 +83,8 @@ Construct a rational by moving the contents of the existing rational `v`.  After
 
 None.
 
+## See Also ##
+
+* [class rational](c8_rational)
+* [c8 library](c8)
+

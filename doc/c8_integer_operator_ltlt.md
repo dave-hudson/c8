@@ -14,3 +14,8 @@ A new integer equal to this number shifted left by `count` bit positions.
 
 * `std::bad_alloc` in the event of a memory allocation failure.
 
+## See Also ##
+
+* [class integer](c8_integer)
+* [c8 library](c8)
+

@@ -5,14 +5,19 @@ auto operator %(const natural &v) const -> natural
 auto operator %(natural_digit v) const -> natural_digit
 ```
 
-Perform arithmetic operations based on this number (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::natural` number.  The quotient is ignored.
+Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::natural` object that represents the remainder.
 
 ### Return Value ###
 
-A new natural number equal to the remainder when this number is divided by `v`.
+A new `c8::natural` object with a value equal to the remainder of the value of this object divided by `v`.
 
 ### Exceptions ###
 
 * `std::bad_alloc` in the event of a memory allocation failure.
 * `c8::divide_by_zero` if the divisor, `v` is zero.
+
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
 

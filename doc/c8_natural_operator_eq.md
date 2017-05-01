@@ -4,13 +4,11 @@
 auto operator =(const natural &v) -> natural &
 ```
 
-Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
-
-Copy the natural number `v`.
+Copy the object `v` and assign the copy to this object (left hand side of the operator).
 
 ### Return Value ###
 
-A reference to this number (left hand side of the operator).
+A reference to this object (left hand side of the operator).
 
 ### Exceptions ###
 
@@ -22,15 +20,18 @@ A reference to this number (left hand side of the operator).
 auto operator =(const natural &&v) noexcept -> natural &
 ```
 
-Perform operations that assign values to this number (left hand side of the operator).  The previous value of this number is lost and any memory resources that were used by it are released.
-
-Move the natural number `v`, leaving `v` as zero.
+Move the contents of object `v` and assign them to this object (left hand side of the operator).  `v` is cleared down to zero.
 
 ### Return Value ###
 
-A reference to this number (left hand side of the operator).
+A reference to this object (left hand side of the operator).
 
 ### Exceptions ###
 
 * `std::bad_alloc` in the event of a memory allocation failure.
+
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
 

@@ -15,3 +15,8 @@ Determines if the value of this object (left hand side of the operator) is not e
 
 None.
 
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
+

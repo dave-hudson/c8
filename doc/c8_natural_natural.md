@@ -59,3 +59,8 @@ Construct a natural number by moving the contents of the existing natural number
 
 None.
 
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
+

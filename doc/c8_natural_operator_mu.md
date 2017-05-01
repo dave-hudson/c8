@@ -5,13 +5,18 @@ auto operator *(const natural &v) const -> natural
 auto operator *(natural_digit v) const -> natural
 ```
 
-Multiplies this number (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::natural` number.
+Multiplies the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::natural` object.
 
 ### Return Value ###
 
-A new natural number equal to this number multiplied by `v`.
+A new `c8::natural` object with a value equal to the value of this object multiplied by `v`.
 
 ### Exceptions ###
 
 * `std::bad_alloc` in the event of a memory allocation failure.
+
+## See Also ##
+
+* [class natural](c8_natural)
+* [c8 library](c8)
 
