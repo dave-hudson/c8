@@ -10,6 +10,28 @@
 
 * ~rational
 
+## Assignment Operators ##
+
+* [operator =](c8_rational_operator_eq)
+
+## Unary Operators ##
+
+* [operator -](c8_rational_operator_unary_mi)
+
+## Arithmetic Operators ##
+
+* [operator +](c8_rational_operator_pl)
+* [operator -](c8_rational_operator_mi)
+* [operator *](c8_rational_operator_mu)
+* [operator /](c8_rational_operator_di)
+
+## Compound Assignment Operators ##
+
+* [operator +=](c8_rational_operator_pleq)
+* [operator -=](c8_rational_operator_mieq)
+* [operator *=](c8_rational_operator_mueq)
+* [operator /=](c8_rational_operator_dieq)
+
 ## Comparison Operators ##
 
 * [operator ==](c8_rational_operator_eqeq)
@@ -19,26 +41,10 @@
 * [operator &lt;](c8_rational_operator_lt)
 * [operator &lt;=](c8_rational_operator_lteq)
 
-## Arithmetic Operators ##
-
-* [operator +](c8_rational_operator_pl)
-* [operator -](c8_rational_operator_mi)
-* [operator *](c8_rational_operator_mu)
-* [operator /](c8_rational_operator_di)
-
-## Assignment Operators ##
-
-* [operator =](c8_rational_operator_eq)
-* [operator +=](c8_rational_operator_pleq)
-* [operator -=](c8_rational_operator_mieq)
-* [operator *=](c8_rational_operator_mueq)
-* [operator /=](c8_rational_operator_dieq)
-
 ## Public Member Functions ##
 
-* `auto operator -() const -> rational`
+* [is\_zero](c8_rational_is_zero)
 * `auto to_double() const -> double`
-* `auto is_zero() const noexcept -> bool`
 * `auto to_parts() const -> std::pair<integer, integer>`
 * `friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &`
 

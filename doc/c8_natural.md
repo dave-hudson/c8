@@ -10,14 +10,9 @@
 
 * ~natural
 
-## Comparison Operators ##
+## Assignment Operators ##
 
-* [operator ==](c8_natural_operator_eqeq)
-* [operator !=](c8_natural_operator_exeq)
-* [operator >](c8_natural_operator_gt)
-* [operator >=](c8_natural_operator_gteq)
-* [operator &lt;](c8_natural_operator_lt)
-* [operator &lt;=](c8_natural_operator_lteq)
+* [operator =](c8_natural_operator_eq)
 
 ## Arithmetic Operators ##
 
@@ -32,9 +27,8 @@
 * [operator &lt;&lt;](c8_natural_operator_ltlt)
 * [operator >>](c8_natural_operator_gtgt)
 
-## Assignment Operators ##
+## Compound Assignment Operators ##
 
-* [operator =](c8_natural_operator_eq)
 * [operator +=](c8_natural_operator_pleq)
 * [operator -=](c8_natural_operator_mieq)
 * [operator *=](c8_natural_operator_mueq)
@@ -43,17 +37,23 @@
 * [operator &lt;&lt;=](c8_natural_operator_ltlteq)
 * [operator >>=](c8_natural_operator_gtgteq)
 
-## Sizing Member Function ##
+## Comparison Operators ##
 
-* [size\_bits](c8_natural_size_bits)
+* [operator ==](c8_natural_operator_eqeq)
+* [operator !=](c8_natural_operator_exeq)
+* [operator >](c8_natural_operator_gt)
+* [operator >=](c8_natural_operator_gteq)
+* [operator &lt;](c8_natural_operator_lt)
+* [operator &lt;=](c8_natural_operator_lteq)
 
 ## Public Member Functions ##
 
 * `auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>`
 * `auto divide_modulus(const natural &v) const -> std::pair<natural, natural>`
 * `auto gcd(const natural &v) const -> natural`
+* [is\_zero](c8_natural_is_zero)
+* [size\_bits](c8_natural_size_bits)
 * `auto to_unsigned_long_long() const -> unsigned long long`
-* `auto is_zero() const noexcept -> bool`
 * `friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &`
 
 TBD

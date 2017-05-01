@@ -10,14 +10,13 @@
 
 * ~integer
 
-## Comparison Operators ##
+## Assignment Operators ##
 
-* [operator ==](c8_integer_operator_eqeq)
-* [operator !=](c8_integer_operator_exeq)
-* [operator >](c8_integer_operator_gt)
-* [operator >=](c8_integer_operator_gteq)
-* [operator &lt;](c8_integer_operator_lt)
-* [operator &lt;=](c8_integer_operator_lteq)
+* [operator =](c8_integer_operator_eq)
+
+## Unary Operators ##
+
+* [operator -](c8_integer_operator_unary_mi)
 
 ## Arithmetic Operators ##
 
@@ -32,9 +31,8 @@
 * [operator &lt;&lt;](c8_integer_operator_ltlt)
 * [operator >>](c8_integer_operator_gtgt)
 
-## Assignment Operators ##
+## Compound Assignment Operators ##
 
-* [operator =](c8_integer_operator_eq)
 * [operator +=](c8_integer_operator_pleq)
 * [operator -=](c8_integer_operator_mieq)
 * [operator *=](c8_integer_operator_mueq)
@@ -43,16 +41,24 @@
 * [operator &lt;&lt;=](c8_integer_operator_ltlteq)
 * [operator >>=](c8_integer_operator_gtgteq)
 
+## Comparison Operators ##
+
+* [operator ==](c8_integer_operator_eqeq)
+* [operator !=](c8_integer_operator_exeq)
+* [operator >](c8_integer_operator_gt)
+* [operator >=](c8_integer_operator_gteq)
+* [operator &lt;](c8_integer_operator_lt)
+* [operator &lt;=](c8_integer_operator_lteq)
+
 ## Public Member Functions ##
 
-* `auto operator -() const -> integer`
+* `auto abs() const -> natural`
 * `auto divide_modulus(const integer &v) const -> std::pair<integer, integer>`
 * `auto gcd(const integer &v) const -> integer`
-* `auto to_long_long() const -> long long`
-* `auto is_zero() const noexcept -> bool`
+* [is\_zero](c8_integer_is_zero)
 * `auto is_negative() const -> bool`
-* `auto abs() const -> natural`
 * `auto negate() -> integer &`
+* `auto to_long_long() const -> long long`
 * `friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &`
 
 TBD

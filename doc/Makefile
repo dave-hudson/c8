@@ -10,6 +10,7 @@ SRCS := \
 	c8.md \
 	c8_integer.md \
 	c8_integer_integer.md \
+	c8_integer_is_zero.md \
 	c8_integer_operator_di.md \
 	c8_integer_operator_dieq.md \
 	c8_integer_operator_eq.md \
@@ -31,7 +32,9 @@ SRCS := \
 	c8_integer_operator_mueq.md \
 	c8_integer_operator_pl.md \
 	c8_integer_operator_pleq.md \
+	c8_integer_operator_unary_mi.md \
 	c8_natural.md \
+	c8_natural_is_zero.md \
 	c8_natural_natural.md \
 	c8_natural_operator_di.md \
 	c8_natural_operator_dieq.md \
@@ -56,7 +59,7 @@ SRCS := \
 	c8_natural_operator_pleq.md \
 	c8_natural_size_bits.md \
 	c8_rational.md \
-	c8_rational_rational.md \
+	c8_rational_is_zero.md \
 	c8_rational_operator_di.md \
 	c8_rational_operator_dieq.md \
 	c8_rational_operator_eq.md \
@@ -72,6 +75,8 @@ SRCS := \
 	c8_rational_operator_mueq.md \
 	c8_rational_operator_pl.md \
 	c8_rational_operator_pleq.md \
+	c8_rational_operator_unary_mi.md \
+	c8_rational_rational.md \
 
 #
 # Actual heavy lifting for the make.
