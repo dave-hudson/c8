@@ -53,15 +53,16 @@
 ## Public Member Functions ##
 
 * `auto abs() const -> natural`
-* `auto divide_modulus(const integer &v) const -> std::pair<integer, integer>`
+* [divide\_modulus](c8_integer_divide_modulus)
 * `auto gcd(const integer &v) const -> integer`
+* [is\_negative](c8_integer_is_negative)
 * [is\_zero](c8_integer_is_zero)
-* `auto is_negative() const -> bool`
 * `auto negate() -> integer &`
 * `auto to_long_long() const -> long long`
-* `friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &`
 
-TBD
+# Friend Functions ##
+
+* `friend auto operator <<(std::ostream &outstr, const integer &v) -> std::ostream &`
 
 ## See Also ##
 

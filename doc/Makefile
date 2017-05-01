@@ -9,7 +9,9 @@ BASE_PATH := ..
 SRCS := \
 	c8.md \
 	c8_integer.md \
+	c8_integer_divide_modulus.md \
 	c8_integer_integer.md \
+	c8_integer_is_negative.md \
 	c8_integer_is_zero.md \
 	c8_integer_operator_di.md \
 	c8_integer_operator_dieq.md \
@@ -34,6 +36,7 @@ SRCS := \
 	c8_integer_operator_pleq.md \
 	c8_integer_operator_unary_mi.md \
 	c8_natural.md \
+	c8_natural_divide_modulus.md \
 	c8_natural_is_zero.md \
 	c8_natural_natural.md \
 	c8_natural_operator_di.md \

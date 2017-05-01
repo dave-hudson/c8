@@ -46,9 +46,10 @@
 * [is\_zero](c8_rational_is_zero)
 * `auto to_double() const -> double`
 * `auto to_parts() const -> std::pair<integer, integer>`
-* `friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &`
 
-TBD
+# Friend Functions ##
+
+* `friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &`
 
 ## See Also ##
 

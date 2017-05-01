@@ -48,15 +48,15 @@
 
 ## Public Member Functions ##
 
-* `auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>`
-* `auto divide_modulus(const natural &v) const -> std::pair<natural, natural>`
+* [divide\_modulus](c8_natural_divide_modulus)
 * `auto gcd(const natural &v) const -> natural`
 * [is\_zero](c8_natural_is_zero)
 * [size\_bits](c8_natural_size_bits)
 * `auto to_unsigned_long_long() const -> unsigned long long`
-* `friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &`
 
-TBD
+# Friend Functions ##
+
+* `friend auto operator <<(std::ostream &outstr, const natural &v) -> std::ostream &`
 
 ## Examples ##
 
