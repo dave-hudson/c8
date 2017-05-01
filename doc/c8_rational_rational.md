@@ -4,7 +4,7 @@
 rational() noexcept
 ```
 
-Construct a rational with a value of zero.
+Constructs a `c8::rational` with a value of zero.
 
 ### Exceptions ###
 
@@ -16,7 +16,7 @@ None.
 rational(long long n, long long d) noexcept
 ```
 
-Construct a rational with a value of `n/d`.
+Constructs a `c8::rational` with a value of `n/d`.
 
 ### Exceptions ###
 
@@ -28,7 +28,7 @@ None.
 rational(const integer &n, const integer &d)
 ```
 
-Construct a rational with a value of `n/d`.
+Constructs a `c8::rational` with a value of `n/d`.
 
 ### Exceptions ###
 
@@ -40,7 +40,7 @@ Construct a rational with a value of `n/d`.
 rational(double v) noexcept
 ```
 
-Construct a rational that represents the floating point value `d`.
+Constructs a `c8::rational` that represents the floating point value `d`.
 
 ### Exceptions ###
 
@@ -52,7 +52,7 @@ Construct a rational that represents the floating point value `d`.
 rational(const std::string &v)
 ```
 
-Construct a rational by parsing the string `v`.  `v` must have the form n/d, where n and d are both integer values representing the numerator and denominator of the rational, respectively.  Either or both may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.  Either may also be prefaced with a '-' or '+' to indicate a negative or positive value respectively.
+Constructs a `c8::rational` by parsing the string `v`.  `v` must have the form n/d, where n and d are both integer values representing the numerator and denominator of the rational, respectively.  Either or both may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.  Either may also be prefaced with a '-' or '+' to indicate a negative or positive value respectively.
 
 ### Exceptions ###
 
@@ -65,7 +65,7 @@ Construct a rational by parsing the string `v`.  `v` must have the form n/d, whe
 rational(const rational &v)
 ```
 
-Construct a rational by copying the existing rational `v`.
+Constructs a `c8::rational` by copying the existing rational `v`.
 
 ### Exceptions ###
 
@@ -77,7 +77,7 @@ Construct a rational by copying the existing rational `v`.
 rational(rational &&v) noexcept
 ```
 
-Construct a rational by moving the contents of the existing rational `v`.  Afterwards `v` will be left as zero.
+Constructs a `c8::rational` by moving the contents of the existing rational `v`.  Afterwards `v` will be left as zero.
 
 ### Exceptions ###
 

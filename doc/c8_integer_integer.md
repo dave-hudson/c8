@@ -4,7 +4,7 @@
 integer() noexcept
 ```
 
-Construct an integer with a value of zero.
+Constructs a `c8::integer` with a value of zero.
 
 ### Exceptions ###
 
@@ -16,7 +16,7 @@ None.
 integer(long long v) noexcept
 ```
 
-Construct an integer with a value of `v`.
+Constructs a `c8::integer` with a value of `v`.
 
 ### Exceptions ###
 
@@ -28,7 +28,7 @@ None.
 integer(const natural &v)
 ```
 
-Construct a positive integer with a value of `v`.
+Constructs a positive `c8::integer` with a value of `v`.
 
 ### Exceptions ###
 
@@ -40,7 +40,7 @@ Construct a positive integer with a value of `v`.
 integer(const std::string &v)
 ```
 
-Construct an integer by parsing the string `v`.  `v` may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.  `v` may also be prefaced with a '-' or '+' to indicate a negative or positive value respectively.
+Constructs a `c8::integer` by parsing the string `v`.  `v` may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.  `v` may also be prefaced with a '-' or '+' to indicate a negative or positive value respectively.
 
 ### Exceptions ###
 
@@ -53,7 +53,7 @@ Construct an integer by parsing the string `v`.  `v` may have a prefix of "0" fo
 integer(const integer &v)
 ```
 
-Construct an integer by copying the existing integer `v`.
+Constructs a `c8::integer` by copying the existing integer `v`.
 
 ### Exceptions ###
 
@@ -65,7 +65,7 @@ Construct an integer by copying the existing integer `v`.
 integer(integer &&v) noexcept
 ```
 
-Construct an integer by moving the contents of the existing integer `v`.  Afterwards `v` will be left as zero.
+Constructs a `c8::integer` by moving the contents of the existing integer `v`.  Afterwards `v` will be left as zero.
 
 ### Exceptions ###
 
