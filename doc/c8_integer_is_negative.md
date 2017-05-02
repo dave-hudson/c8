@@ -4,7 +4,7 @@
 auto is_negative() const noexcept -> bool;
 ```
 
-Determine if this object has a value that is negative.
+Determines if this object has a value that is negative.
 
 ### Return Value ###
 

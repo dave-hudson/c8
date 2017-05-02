@@ -4,7 +4,7 @@
 auto is_zero() const noexcept -> bool;
 ```
 
-Determine if this object has a value of zero.
+Determines if this object has a value of zero.
 
 ### Return Value ###
 
