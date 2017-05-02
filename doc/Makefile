@@ -80,6 +80,7 @@ SRCS := \
 	c8_rational_operator_pleq.md \
 	c8_rational_operator_unary_mi.md \
 	c8_rational_rational.md \
+	c8_rational_to_double.md \
 
 #
 # Actual heavy lifting for the make.

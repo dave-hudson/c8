@@ -44,7 +44,7 @@
 ## Public Member Functions ##
 
 * [is\_zero](c8_rational_is_zero)
-* `auto to_double() const -> double`
+* [to\_double](c8_rational_to_double)
 * `auto to_parts() const -> std::pair<integer, integer>`
 
 # Friend Functions ##
