@@ -1,7 +1,7 @@
 # c8::rational::operator \* #
 
 ```cpp
-auto operator *(const rational &v) const -> rational
+auto operator *(const rational &v) const -> rational;
 ```
 
 Multiplies the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::rational` object.

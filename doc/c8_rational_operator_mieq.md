@@ -1,7 +1,7 @@
 # c8::rational::operator -= #
 
 ```cpp
-auto operator -=(const rational &v) -> rational &
+auto operator -=(const rational &v) -> rational &;
 ```
 
 Subtracts `v` (right hand side of the operator) from the value of this object (left hand side of the operator).

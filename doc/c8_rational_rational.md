@@ -1,7 +1,7 @@
 # c8::rational::rational #
 
 ```cpp
-rational() noexcept
+rational() noexcept;
 ```
 
 Constructs a `c8::rational` with a value of zero.
@@ -13,7 +13,7 @@ None.
 # c8::rational::rational #
 
 ```cpp
-rational(long long n, long long d) noexcept
+rational(long long n, long long d) noexcept;
 ```
 
 Constructs a `c8::rational` with a value of `n/d`.
@@ -25,7 +25,7 @@ None.
 # c8::rational::rational #
 
 ```cpp
-rational(const integer &n, const integer &d)
+rational(const integer &n, const integer &d);
 ```
 
 Constructs a `c8::rational` with a value of `n/d`.
@@ -37,7 +37,7 @@ Constructs a `c8::rational` with a value of `n/d`.
 # c8::rational::rational #
 
 ```cpp
-rational(double v) noexcept
+rational(double v) noexcept;
 ```
 
 Constructs a `c8::rational` that represents the floating point value `d`.
@@ -49,7 +49,7 @@ Constructs a `c8::rational` that represents the floating point value `d`.
 # c8::rational::rational #
 
 ```cpp
-rational(const std::string &v)
+rational(const std::string &v);
 ```
 
 Constructs a `c8::rational` by parsing the string `v`.  `v` must have the form n/d, where n and d are both integer values representing the numerator and denominator of the rational, respectively.  Either or both may have a prefix of "0" for an octal value, or "0x" for a hexadecimal value.  Either may also be prefaced with a '-' or '+' to indicate a negative or positive value respectively.
@@ -62,7 +62,7 @@ Constructs a `c8::rational` by parsing the string `v`.  `v` must have the form n
 # c8::rational::rational #
 
 ```cpp
-rational(const rational &v)
+rational(const rational &v);
 ```
 
 Constructs a `c8::rational` by copying the existing rational `v`.
@@ -74,7 +74,7 @@ Constructs a `c8::rational` by copying the existing rational `v`.
 # c8::rational::rational #
 
 ```cpp
-rational(rational &&v) noexcept
+rational(rational &&v) noexcept;
 ```
 
 Constructs a `c8::rational` by moving the contents of the existing rational `v`.  Afterwards `v` will be left as zero.

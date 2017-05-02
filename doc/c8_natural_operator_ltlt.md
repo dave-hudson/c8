@@ -1,7 +1,7 @@
 # c8::natural::operator &lt;&lt; #
 
 ```cpp
-auto operator <<(unsigned int count) const -> natural
+auto operator <<(unsigned int count) const -> natural;
 ```
 
 Shifts this number (left hand side of the operator) left by `count` (right hand side of the operator) bit positions, resulting in a new `c8::natural` number.

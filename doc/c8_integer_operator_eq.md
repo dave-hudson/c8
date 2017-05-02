@@ -1,7 +1,7 @@
 # c8::integer::operator = #
 
 ```cpp
-auto operator =(const integer &v) -> integer &
+auto operator =(const integer &v) -> integer &;
 ```
 
 Copy the object `v` and assign the copy to this object (left hand side of the operator).
@@ -17,7 +17,7 @@ A reference to this object (left hand side of the operator).
 # c8::integer::operator = #
 
 ```cpp
-auto operator =(const integer &&v) noexcept -> integer &
+auto operator =(const integer &&v) noexcept -> integer &;
 ```
 
 Move the contents of object `v` and assign them to this object (left hand side of the operator).  `v` is cleared down to zero.

@@ -1,7 +1,7 @@
 # c8::rational::operator + #
 
 ```cpp
-auto operator +(const rational &v) const -> rational
+auto operator +(const rational &v) const -> rational;
 ```
 
 Adds the value of this object (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::rational` object.

@@ -1,7 +1,7 @@
 # c8::integer::is\_negative #
 
 ```cpp
-auto is_negative() const noexcept -> bool
+auto is_negative() const noexcept -> bool;
 ```
 
 Determine if this object has a value that is negative.

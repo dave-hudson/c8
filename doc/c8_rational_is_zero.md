@@ -1,7 +1,7 @@
 # c8::rational::is\_zero #
 
 ```cpp
-auto is_zero() const noexcept -> bool
+auto is_zero() const noexcept -> bool;
 ```
 
 Determine if this object has a value of zero.

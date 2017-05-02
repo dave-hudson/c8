@@ -1,7 +1,7 @@
 # c8::natural::size\_bits #
 
 ```cpp
-auto size_bits() const noexcept -> std::size_t
+auto size_bits() const noexcept -> std::size_t;
 ```
 
 It is often useful to determine the minimum number of bits required to represent a `natural`, without any rounding to the nearest multiple of a digit.  This function computes and returns that number.

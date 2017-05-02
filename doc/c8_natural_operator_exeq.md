@@ -1,7 +1,7 @@
 # c8::natural::operator != #
 
 ```cpp
-auto operator !=(const natural &v) const noexcept -> bool
+auto operator !=(const natural &v) const noexcept -> bool;
 ```
 
 Determines if the value of this object (left hand side of the operator) is not equal to `v` (right hand side of the operator).

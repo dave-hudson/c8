@@ -1,7 +1,7 @@
 # c8::integer::divide\_modulus #
 
 ```cpp
-auto divide_modulus(const integer &v) const -> std::pair<integer, integer>
+auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
 ```
 
 Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  The result is a pair that represents the quotient, and the remainder.

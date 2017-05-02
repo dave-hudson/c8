@@ -1,7 +1,7 @@
 # c8::integer::operator -= #
 
 ```cpp
-auto operator -=(const integer &v) -> integer &
+auto operator -=(const integer &v) -> integer &;
 ```
 
 Subtracts `v` (right hand side of the operator) from the value of this object (left hand side of the operator).

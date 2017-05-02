@@ -1,7 +1,7 @@
 # c8::rational::operator /= #
 
 ```cpp
-auto operator /=(const rational &v) -> rational &
+auto operator /=(const rational &v) -> rational &;
 ```
 
 Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  Any remainder is lost.

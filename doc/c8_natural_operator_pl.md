@@ -1,8 +1,8 @@
 # c8::natural::operator + #
 
 ```cpp
-auto operator +(const natural &v) const -> natural
-auto operator +(natural_digit v) const -> natural
+auto operator +(const natural &v) const -> natural;
+auto operator +(natural_digit v) const -> natural;
 ```
 
 Adds the value of this object (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::natural` object.
