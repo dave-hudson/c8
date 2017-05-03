@@ -5,7 +5,7 @@ auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
 auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
 ```
 
-Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  The result is a pair that represents the quotient, and the remainder.
+Divides the value of this object by `v` (right hand side of the operator).  The result is a pair that represents the quotient, and the remainder.
 
 ### Return Value ###
 

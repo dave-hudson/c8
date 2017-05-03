@@ -4,7 +4,7 @@
 auto divide_modulus(const integer &v) const -> std::pair<integer, integer>;
 ```
 
-Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  The result is a pair that represents the quotient, and the remainder.
+Divides the value of this object `v` (right hand side of the operator).  The result is a pair that represents the quotient, and the remainder.
 
 ### Return Value ###
 
