@@ -1563,6 +1563,54 @@ auto test_integer_divide_4b() -> result {
 }
 
 /*
+ * Test magnitude functionality.
+ */
+auto test_integer_magnitude_0() -> result {
+    result r("int mag 0");
+    c8::integer i(0);
+
+    r.start_clock();
+    auto m0 = magnitude(i);
+    r.stop_clock();
+
+    r.get_stream() << m0;
+    r.check_pass("0");
+    return r;
+}
+
+/*
+ * Test magnitude functionality.
+ */
+auto test_integer_magnitude_1() -> result {
+    result r("int mag 1");
+    c8::integer i("327972384723987892758278957285728937582792798275982711419841");
+
+    r.start_clock();
+    auto m0 = magnitude(i);
+    r.stop_clock();
+
+    r.get_stream() << m0;
+    r.check_pass("327972384723987892758278957285728937582792798275982711419841");
+    return r;
+}
+
+/*
+ * Test magnitude functionality.
+ */
+auto test_integer_magnitude_2() -> result {
+    result r("int mag 2");
+    c8::integer i("-347137515815980165165781407409651563019573157");
+
+    r.start_clock();
+    auto m0 = magnitude(i);
+    r.stop_clock();
+
+    r.get_stream() << m0;
+    r.check_pass("347137515815980165165781407409651563019573157");
+    return r;
+}
+
+/*
  * Test to_long_long functionality.
  */
 auto test_integer_to_long_long_0() -> result {

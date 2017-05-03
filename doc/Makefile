@@ -13,6 +13,7 @@ SRCS := \
 	c8_integer_integer.md \
 	c8_integer_is_negative.md \
 	c8_integer_is_zero.md \
+	c8_integer_magnitude.md \
 	c8_integer_operator_di.md \
 	c8_integer_operator_dieq.md \
 	c8_integer_operator_eq.md \

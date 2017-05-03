@@ -282,7 +282,7 @@ namespace c8 {
         /*
          * Is our value zero?  If it is then handle this as a special case.
          */
-        natural n = num_.abs();
+        natural n = num_.magnitude();
         if (n.is_zero()) {
             return 0.0;
         }
@@ -293,7 +293,7 @@ namespace c8 {
          * want our division operation to be too expensive either, so one of the
          * other things we can do is scale our denominator down.
          */
-        natural d = denom_.abs();
+        natural d = denom_.magnitude();
         int eshift = 0;
         auto dbits = d.size_bits();
         if (dbits > 52) {

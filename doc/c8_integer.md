@@ -52,11 +52,11 @@
 
 ## Public Member Functions ##
 
-* `auto abs() const -> natural`
 * [divide\_modulus](c8_integer_divide_modulus)
 * `auto gcd(const integer &v) const -> integer`
 * [is\_negative](c8_integer_is_negative)
 * [is\_zero](c8_integer_is_zero)
+* [magnitude](c8_integer_magnitude)
 * `auto negate() -> integer &`
 * `auto to_long_long() const -> long long`
 

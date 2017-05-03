@@ -287,9 +287,9 @@ namespace c8 {
         }
 
         /*
-         * Return the absolute value (magnitude) of this integer.
+         * Return the magnitude of this integer.
          */
-        auto abs() const -> natural {
+        auto magnitude() const -> natural {
             return magnitude_;
         }
 
@@ -325,8 +325,8 @@ namespace c8 {
         return v.is_negative();
     }
 
-    inline auto abs(integer v) -> natural {
-        return v.abs();
+    inline auto magnitude(integer v) -> natural {
+        return v.magnitude();
     }
 
     inline auto gcd(const integer &v, const integer &u) -> integer {
