@@ -4,7 +4,7 @@
 auto operator *=(const natural &v) -> natural &;
 ```
 
-Multiplies the value of this object (left hand side of the operator) by `v` (right hand side of the operator).
+Multiplies the value of this object (left hand side of the operator) by the value of `v` (right hand side of the operator).
 
 ### Return Value ###
 

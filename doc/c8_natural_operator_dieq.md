@@ -4,7 +4,7 @@
 auto operator /=(const natural &v) -> natural &;
 ```
 
-Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator).  Any remainder is lost.
+Divides the value of this object (left hand side of the operator) by the value of `v` (right hand side of the operator).  Any remainder is lost.
 
 ### Return Value ###
 

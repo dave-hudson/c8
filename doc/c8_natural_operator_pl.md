@@ -4,11 +4,11 @@
 auto operator +(const natural &v) const -> natural;
 ```
 
-Adds the value of this object (left hand side of the operator) and `v` (right hand side of the operator), resulting in a new `c8::natural` object.
+Adds the value of this object (left hand side of the operator) and the value of `v` (right hand side of the operator), resulting in a new `c8::natural` object.
 
 ### Return Value ###
 
-A new `c8::natural` object with a value equal to the sum of the value of this object and `v`.
+A new `c8::natural` object with a value equal to the sum of the value of this object and the value of `v`.
 
 ### Exceptions ###
 

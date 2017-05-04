@@ -4,11 +4,11 @@
 auto operator !=(const natural &v) const noexcept -> bool;
 ```
 
-Determines if the value of this object (left hand side of the operator) is not equal to `v` (right hand side of the operator).
+Determines if the value of this object (left hand side of the operator) is not equal to the value of `v` (right hand side of the operator).
 
 ### Return Value ###
 
-* `true` if the value of this object is not equal to `v`.
+* `true` if the value of this object is not equal to the value of `v`.
 * `false` if it is equal.
 
 ### Exceptions ###

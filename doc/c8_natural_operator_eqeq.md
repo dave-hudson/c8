@@ -4,7 +4,7 @@
 auto operator ==(const natural &v) const noexcept -> bool;
 ```
 
-Determines if the value of this object (left hand side of the operator) is equal to `v` (right hand side of the operator).
+Determines if the value of this object (left hand side of the operator) is equal to the value of `v` (right hand side of the operator).
 
 ### Return Value ###
 

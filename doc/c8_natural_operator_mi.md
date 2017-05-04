@@ -4,11 +4,11 @@
 auto operator -(const natural &v) const -> natural;
 ```
 
-Subtracts `v` (right hand side of the operator) from the value of this object (left hand side of the operator), resulting in a new `c8::natural` number.
+Subtracts the value of `v` (right hand side of the operator) from the value of this object (left hand side of the operator), resulting in a new `c8::natural` number.
 
 ### Return Value ###
 
-A new `c8::natural` object with a value equal to `v` subtracted from this number.
+A new `c8::natural` object with a value equal to the value of `v` subtracted from the value of this object.
 
 ### Exceptions ###
 

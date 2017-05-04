@@ -4,7 +4,7 @@
 auto operator -=(const natural &v) -> natural &;
 ```
 
-Subtracts `v` (right hand side of the operator) from the value of this object (left hand side of the operator).
+Subtracts the value of `v` (right hand side of the operator) from the value of this object (left hand side of the operator).
 
 ### Return Value ###
 

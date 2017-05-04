@@ -4,11 +4,11 @@
 auto operator /(const natural &v) const -> natural;
 ```
 
-Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::natural` object that represents the quotient.  Any remainder is lost.
+Divides the value of this object (left hand side of the operator) by the value of `v` (right hand side of the operator), resulting in a new `c8::natural` object that represents the quotient.  Any remainder is lost.
 
 ### Return Value ###
 
-A new `c8::natural` object with a value equal to the quotient of the value of this object divided by `v`.
+A new `c8::natural` object with a value equal to the quotient of the value of this object divided by the value of `v`.
 
 ### Exceptions ###
 

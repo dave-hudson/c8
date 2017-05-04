@@ -4,11 +4,11 @@
 auto operator >(const natural &v) const noexcept -> bool;
 ```
 
-Determines if the value of this object (left hand side of the operator) is greater than `v` (right hand side of the operator).
+Determines if the value of this object (left hand side of the operator) is greater than the value of `v` (right hand side of the operator).
 
 ### Return Value ###
 
-* `true` if the value of this object is greater than `v`.
+* `true` if the value of this object is greater than the value of `v`.
 * `false` if it is not.
 
 ### Exceptions ###
