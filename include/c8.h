@@ -108,36 +108,25 @@ namespace c8 {
         auto operator <(const natural &v) const noexcept -> bool;
         auto operator <=(const natural &v) const noexcept -> bool;
 
-        auto operator +(natural_digit v) const -> natural;
         auto operator +(const natural &v) const -> natural;
-        auto operator -(natural_digit v) const -> natural;
         auto operator -(const natural &v) const -> natural;
-        auto operator *(natural_digit v) const -> natural;
         auto operator *(const natural &v) const -> natural;
-        auto operator /(natural_digit v) const -> natural;
         auto operator /(const natural &v) const -> natural;
-        auto operator %(natural_digit v) const -> natural_digit;
         auto operator %(const natural &v) const -> natural;
         auto operator <<(unsigned int count) const -> natural;
         auto operator >>(unsigned int count) const -> natural;
 
         auto operator =(const natural &v) -> natural &;
         auto operator =(natural &&v) noexcept -> natural &;
-        auto operator +=(natural_digit v) -> natural &;
         auto operator +=(const natural &v) -> natural &;
-        auto operator -=(natural_digit v) -> natural &;
         auto operator -=(const natural &v) -> natural &;
         auto operator <<=(unsigned int count) -> natural &;
         auto operator >>=(unsigned int count) -> natural &;
-        auto operator *=(natural_digit v) -> natural &;
         auto operator *=(const natural &v) -> natural &;
-        auto operator /=(natural_digit v) -> natural &;
         auto operator /=(const natural &v) -> natural &;
-        auto operator %=(natural_digit v) -> natural &;
         auto operator %=(const natural &v) -> natural &;
 
         auto size_bits() const noexcept -> std::size_t;
-        auto divide_modulus(natural_digit v) const -> std::pair<natural, natural_digit>;
         auto divide_modulus(const natural &v) const -> std::pair<natural, natural>;
         auto gcd(const natural &v) const -> natural;
 
@@ -343,15 +332,15 @@ namespace c8 {
          * Constructors.
          */
         rational() noexcept {
-            num_ = 0;
-            denom_ = 1;
+            numerator_ = 0;
+            denominator_ = 1;
         }
 
-        rational(long long n, long long d = 1) noexcept : num_(n), denom_(d) {
+        rational(long long n, long long d = 1) noexcept : numerator_(n), denominator_(d) {
             normalize();
         }
 
-        rational(const integer &n, const integer &d) : num_(n), denom_(d) {
+        rational(const integer &n, const integer &d) : numerator_(n), denominator_(d) {
             normalize();
         }
 
@@ -376,8 +365,8 @@ namespace c8 {
 
         auto operator -() const -> rational {
             rational res;
-            res.num_ = -num_;
-            res.denom_ = denom_;
+            res.numerator_ = -numerator_;
+            res.denominator_ = denominator_;
             return res;
         }
 
@@ -392,20 +381,20 @@ namespace c8 {
          * Is this number zero?
          */
         auto is_zero() const noexcept -> bool {
-            return num_.is_zero();
+            return numerator_.is_zero();
         }
 
         auto to_double() const -> double;
 
         auto to_parts() const -> std::pair<integer, integer> {
-            return std::make_pair(num_, denom_);
+            return std::make_pair(numerator_, denominator_);
         }
 
         friend auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream &;
 
     private:
-        integer num_;                   // Numerator
-        integer denom_;                 // Denominator
+        integer numerator_;             // Numerator
+        integer denominator_;           // Denominator
 
         auto normalize() -> void;
     };

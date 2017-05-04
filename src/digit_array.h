@@ -87,27 +87,6 @@ namespace c8 {
     }
 
     /*
-     * Add a single digit to a digit array.
-     *
-     * Note: It is OK for res and src to be the same pointer.
-     */
-    inline auto add_digit_array_digit(natural_digit *res,
-                                      const natural_digit *src, std::size_t src_num_digits,
-                                      natural_digit v) -> std::size_t {
-        /*
-         * Does src have only one digit?  If yes, then just add that digit and v.
-         */
-        if (src_num_digits == 1) {
-            return __add_digit_digit(res, src[0], v);
-        }
-
-        /*
-         * Add v to the n digits of src.
-         */
-        return __add_digit_array_digit(res, src, src_num_digits, v);
-    }
-
-    /*
      * Add two digit arrays.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
@@ -115,49 +94,19 @@ namespace c8 {
     inline auto add_digit_arrays(natural_digit *res,
                                  const natural_digit *src1, std::size_t src1_num_digits,
                                  const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
-        /*
-         * Does src2 have only one digit?  If yes then add that single digit to src1
-         */
         if (src2_num_digits == 1) {
-            return add_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+            if (src1_num_digits == 1) {
+                return __add_digit_digit(res, src1[0], src2[0]);
+            }
+
+            return __add_digit_array_digit(res, src1, src1_num_digits, src2[0]);
         }
 
-        /*
-         * Does src1 have only one digit?  If yes then add that single digit to src2.
-         */
         if (src1_num_digits == 1) {
             return __add_digit_array_digit(res, src2, src2_num_digits, src1[0]);
         }
 
-        /*
-         * Worst case scenario:  We're adding two arrays of digits.
-         */
         return __add_digit_arrays(res, src1, src1_num_digits, src2, src2_num_digits);
-    }
-
-    /*
-     * Subtract a single digit from a digit array.
-     *
-     * Note: It is OK for res and src to be the same pointer.
-     */
-    inline auto subtract_digit_array_digit(natural_digit *res,
-                                           const natural_digit *src, std::size_t src_num_digits,
-                                           natural_digit v) -> std::size_t {
-        /*
-         * Does src have only one digit?  If yes, then subtract v from just that digit.
-         */
-        if (src_num_digits == 1) {
-            if (src[0] < v) {
-                throw not_a_number();
-            }
-
-            return __subtract_digit_digit(res, src[0], v);
-        }
-
-        /*
-         * Subtract v from the n digits of this number.
-         */
-        return __subtract_digit_array_digit(res, src, src_num_digits, v);
     }
 
     /*
@@ -168,11 +117,19 @@ namespace c8 {
     inline auto subtract_digit_arrays(natural_digit *res,
                                       const natural_digit *src1, std::size_t src1_num_digits,
                                       const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
-        /*
-         * Does src2 have only one digit?  If yes, then we can use faster approaches.
-         */
         if (src2_num_digits == 1) {
-            return subtract_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+            if (src1_num_digits == 1) {
+                /*
+                 * If our result would be negative then throw an exception.
+                 */
+                if (src1[0] < src2[0]) {
+                    throw not_a_number();
+                }
+
+                return __subtract_digit_digit(res, src1[0], src2[0]);
+            }
+
+            return __subtract_digit_array_digit(res, src1, src1_num_digits, src2[0]);
         }
 
         /*
@@ -193,16 +150,10 @@ namespace c8 {
     inline auto left_shift_digit_array(natural_digit *res,
                                        const natural_digit *src, std::size_t src_num_digits,
                                        std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
-        /*
-         * Does src have only one digit?  If yes then use a faster approach.
-         */
         if (src_num_digits == 1) {
             return __left_shift_digit(res, src[0], shift_digits, shift_bits);
         }
 
-        /*
-         * Worst case:  Shift our digit array.
-         */
         return __left_shift_digit_array(res, src, src_num_digits, shift_digits, shift_bits);
     }
 
@@ -214,38 +165,11 @@ namespace c8 {
     inline auto right_shift_digit_array(natural_digit *res,
                                         const natural_digit *src, std::size_t src_num_digits,
                                         std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
-        /*
-         * Does src have only one digit?  If yes, then use a faster approach.
-         */
         if (src_num_digits == 1) {
             return __right_shift_digit(res, src[0], shift_bits);
         }
 
-        /*
-         * Worst case:  Shift our digit array.
-         */
         return __right_shift_digit_array(res, src, src_num_digits, shift_digits, shift_bits);
-    }
-
-    /*
-     * Multiply a digit array by a single digit.
-     *
-     * Note: It is OK for res and src to be the same pointer.
-     */
-    inline auto multiply_digit_array_digit(natural_digit *res,
-                                           const natural_digit *src, std::size_t src_num_digits,
-                                           natural_digit v) -> std::size_t {
-        /*
-         * Does this number have only one digit?  If yes, then just multiply that digit and v.
-         */
-        if (src_num_digits == 1) {
-            return __multiply_digit_digit(res, src[0], v);
-        }
-
-        /*
-         * Multiply the n digits of this number by v.
-         */
-        return __multiply_digit_array_digit(res, src, src_num_digits, v);
     }
 
     /*
@@ -254,22 +178,22 @@ namespace c8 {
     inline auto multiply_digit_arrays(natural_digit *res,
                                       const natural_digit *src1, std::size_t src1_num_digits,
                                       const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
-        /*
-         * Does src2 have only one digit?  If yes, then we can use faster approaches.
-         */
         if (src2_num_digits == 1) {
-            return multiply_digit_array_digit(res, src1, src1_num_digits, src2[0]);
+            if (src1_num_digits == 1) {
+                return __multiply_digit_digit(res, src1[0], src2[0]);
+            }
+
+            return __multiply_digit_array_digit(res, src1, src1_num_digits, src2[0]);
         }
 
-        /*
-         * Does src1 have only one digit?  If yes then multiply that digit and the n digits of src2.
-         */
         if (src1_num_digits == 1) {
             return __multiply_digit_array_digit(res, src2, src2_num_digits, src1[0]);
         }
 
         /*
-         * Worst case scenario:  We're multiplying two arrays of digits.
+         * Worst case scenario:  We're multiplying two arrays of digits.  If we're going to
+         * update in place then we actually have to copy the source array because we'll
+         * overwrite it.
          */
         auto src1_1 = src1;
         natural_digit src1_copy[src1_num_digits];
@@ -279,24 +203,6 @@ namespace c8 {
         }
 
         return __multiply_digit_arrays(res, src1_1, src1_num_digits, src2, src2_num_digits);
-    }
-
-    /*
-     * Divide/modulus a digit array by a single digit.
-     *
-     * Note: It is OK for res and src to be the same pointer.
-     */
-    inline auto divide_modulus_digit_array_digit(natural_digit *res, natural_digit &mod,
-                                                 const natural_digit *src, std::size_t src_num_digits,
-                                                 natural_digit v) -> std::size_t {
-        /*
-         * Does this number have only one digit?  If yes, then divide that digit by v.
-         */
-        if (src_num_digits == 1) {
-            return __divide_modulus_digit_digit(res, mod, src[0], v);
-        }
-
-        return __divide_modulus_digit_array_digit(res, mod, src, src_num_digits, v);
     }
 
     /*
@@ -311,7 +217,16 @@ namespace c8 {
          * of divide_modulus.
          */
         if (src2_num_digits == 1) {
-            quotient_num_digits = divide_modulus_digit_array_digit(quotient, remainder[0], src1, src1_num_digits, src2[0]);
+            /*
+             * Does this number have only one digit?  If yes, then divide that digit by v.
+             */
+            if (src1_num_digits == 1) {
+                quotient_num_digits = __divide_modulus_digit_digit(quotient, remainder[0], src1[0], src2[0]);
+            } else {
+                quotient_num_digits = __divide_modulus_digit_array_digit(quotient, remainder[0],
+                                                                         src1, src1_num_digits, src2[0]);
+            }
+
             remainder_num_digits = 0;
             if (remainder[0]) {
                 remainder_num_digits = 1;

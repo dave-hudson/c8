@@ -2,7 +2,6 @@
 
 ```cpp
 auto operator *=(const natural &v) -> natural &;
-auto operator *=(natural_digit v) -> natural &;
 ```
 
 Multiplies the value of this object (left hand side of the operator) by `v` (right hand side of the operator).

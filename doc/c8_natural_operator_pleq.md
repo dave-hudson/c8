@@ -2,7 +2,6 @@
 
 ```cpp
 auto operator +=(const natural &v) -> natural &;
-auto operator +=(natural_digit v) -> natural &;
 ```
 
 Adds `v` (right hand side of the operator) to the value of this object (left hand side of the operator).

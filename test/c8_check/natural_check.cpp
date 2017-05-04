@@ -143,7 +143,7 @@ auto test_natural_construct_7() -> result {
  * Test bit counting.
  */
 auto test_natural_size_bits_0() -> result {
-    result r("nat size bits 0");
+    result r("nat sz bits 0");
     c8::natural ct(0);
 
     r.start_clock();
@@ -159,7 +159,7 @@ auto test_natural_size_bits_0() -> result {
  * Test bit counting.
  */
 auto test_natural_size_bits_1() -> result {
-    result r("nat size bits 1");
+    result r("nat sz bits 1");
     c8::natural ct(0xffffffffffffffffULL);
 
     r.start_clock();
@@ -175,7 +175,7 @@ auto test_natural_size_bits_1() -> result {
  * Test bit counting.
  */
 auto test_natural_size_bits_2() -> result {
-    result r("nat size bits 2");
+    result r("nat sz bits 2");
     c8::natural ct(0x12345ULL);
 
     r.start_clock();
@@ -191,7 +191,7 @@ auto test_natural_size_bits_2() -> result {
  * Test bit counting.
  */
 auto test_natural_size_bits_3() -> result {
-    result r("nat size bits 3");
+    result r("nat sz bits 3");
     c8::natural ct("0x123456789abcdef0123456789abcdef0123456789abcdef");
 
     r.start_clock();
@@ -340,78 +340,10 @@ auto test_natural_add_3b() -> result {
 }
 
 /*
- * Add a single digit value and a 1 digit natural number.
+ * Add a 1 digit natural number and a 2 digit natural number, resulting in a 3 digit natural number.
  */
 auto test_natural_add_4a() -> result {
     result r("nat add 4a");
-    c8::natural a0("13");
-    c8::natural_digit a1 = 42;
-
-    r.start_clock();
-    auto a2 = a0 + a1;
-    r.stop_clock();
-
-    r.get_stream() << a2;
-    r.check_pass("55");
-    return r;
-}
-
-/*
- * Add a single digit value and a 1 digit natural number.
- */
-auto test_natural_add_4b() -> result {
-    result r("nat add 4b");
-    c8::natural a0("13");
-    c8::natural_digit a1 = 42;
-
-    r.start_clock();
-    a0 += a1;
-    r.stop_clock();
-
-    r.get_stream() << a0;
-    r.check_pass("55");
-    return r;
-}
-
-/*
- * Add a 3 digit natural number and a 1 digit value, resulting in a 4 digit natural number.
- */
-auto test_natural_add_5a() -> result {
-    result r("nat add 5a");
-    c8::natural a0("0xffffffffffffffffffffffff");
-    c8::natural_digit a1 = 2;
-
-    r.start_clock();
-    auto a2 = a0 + a1;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << a2;
-    r.check_pass("1000000000000000000000001");
-    return r;
-}
-
-/*
- * Add a 3 digit natural number and a 1 digit value, resulting in a 4 digit natural number.
- */
-auto test_natural_add_5b() -> result {
-    result r("nat add 5b");
-    c8::natural a0("0xffffffffffffffffffffffff");
-    c8::natural_digit a1 = 2;
-
-    r.start_clock();
-    a0 += a1;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << a0;
-    r.check_pass("1000000000000000000000001");
-    return r;
-}
-
-/*
- * Add a 1 digit natural number and a 2 digit natural number, resulting in a 3 digit natural number.
- */
-auto test_natural_add_6a() -> result {
-    result r("nat add 6a");
     c8::natural a0(0x9ULL);
     c8::natural a1(0xffffffffffffffffULL);
 
@@ -427,8 +359,8 @@ auto test_natural_add_6a() -> result {
 /*
  * Add a 1 digit natural number and a 2 digit natural number, resulting in a 3 digit natural number.
  */
-auto test_natural_add_6b() -> result {
-    result r("nat add 6b");
+auto test_natural_add_4b() -> result {
+    result r("nat add 4b");
     c8::natural a0(0x9ULL);
     c8::natural a1(0xffffffffffffffffULL);
 
@@ -602,162 +534,6 @@ auto test_natural_subtract_3b() -> result {
         r.set_pass(false);
     }
 
-    return r;
-}
-
-/*
- * Subtract a single digit from a 1 digit natural number.
- */
-auto test_natural_subtract_4a() -> result {
-    result r("nat sub 4a");
-    c8::natural s0(53);
-
-    r.start_clock();
-    auto s2 = s0 - 15;
-    r.stop_clock();
-
-    r.get_stream() << s2;
-    r.check_pass("38");
-    return r;
-}
-
-/*
- * Subtract a single digit from a 1 digit natural number.
- */
-auto test_natural_subtract_4b() -> result {
-    result r("nat sub 4b");
-    c8::natural s0(53);
-
-    r.start_clock();
-    s0 -= 15;
-    r.stop_clock();
-
-    r.get_stream() << s0;
-    r.check_pass("38");
-    return r;
-}
-
-/*
- * Subtract a larger single digit from a smaller natural number.  This will throw an exception
- * because there aren't any negative natural numbers.
- */
-auto test_natural_subtract_5a() -> result {
-    result r("nat sub 5a");
-    c8::natural s0(100);
-
-    r.start_clock();
-    try {
-        auto s2 = s0 - 127;
-        r.stop_clock();
-
-        r.get_stream() << "failed to throw exception";
-        r.set_pass(false);
-    } catch (const c8::not_a_number &e) {
-        r.stop_clock();
-
-        r.get_stream() << "exception thrown: " + std::string(e.what());
-        r.set_pass(true);
-    } catch (...) {
-        r.stop_clock();
-
-        r.get_stream() << "unexpected exception thrown";
-        r.set_pass(false);
-    }
-
-    return r;
-}
-
-/*
- * Subtract a larger single digit from a smaller natural number.  This will throw an exception
- * because there aren't any negative natural numbers.
- */
-auto test_natural_subtract_5b() -> result {
-    result r("nat sub 5b");
-    c8::natural s0(100);
-
-    r.start_clock();
-    try {
-        s0 -= 127;
-        r.stop_clock();
-
-        r.get_stream() << "failed to throw exception";
-        r.set_pass(false);
-    } catch (const c8::not_a_number &e) {
-        r.stop_clock();
-
-        r.get_stream() << "exception thrown: " + std::string(e.what());
-        r.set_pass(true);
-    } catch (...) {
-        r.stop_clock();
-
-        r.get_stream() << "unexpected exception thrown";
-        r.set_pass(false);
-    }
-
-    return r;
-}
-
-/*
- * Subtract a single digit zero from a zero natural number.
- */
-auto test_natural_subtract_6a() -> result {
-    result r("nat sub 6a");
-    c8::natural s0(0);
-
-    r.start_clock();
-    auto s2 = s0 - 0;
-    r.stop_clock();
-
-    r.get_stream() << s2;
-    r.check_pass("0");
-    return r;
-}
-
-/*
- * Subtract a single digit zero from a zero natural number.
- */
-auto test_natural_subtract_6b() -> result {
-    result r("nat sub 6b");
-    c8::natural s0(0);
-
-    r.start_clock();
-    s0 -= 0;
-    r.stop_clock();
-
-    r.get_stream() << s0;
-    r.check_pass("0");
-    return r;
-}
-
-/*
- * Subtract a single digit from a larger natural number.
- */
-auto test_natural_subtract_7a() -> result {
-    result r("nat sub 7a");
-    c8::natural s0("0x1000000000000000000000000");
-
-    r.start_clock();
-    auto s2 = s0 - 1;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << s2;
-    r.check_pass("ffffffffffffffffffffffff");
-    return r;
-}
-
-/*
- * Subtract a single digit from a larger natural number.
- */
-auto test_natural_subtract_7b() -> result {
-    result r("nat sub 7b");
-    c8::natural s0("0x1000000000000000000000000");
-
-    r.start_clock();
-    s0 -= 1;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << s0;
-    r.check_pass("ffffffffffffffffffffffff");
     return r;
 }
 
@@ -1821,38 +1597,6 @@ auto test_natural_multiply_5b() -> result {
 }
 
 /*
- * Multiply a large natural number by a single digit.
- */
-auto test_natural_multiply_6a() -> result {
-    result r("nat mul 6a");
-    c8::natural mu0("0x1000000000000000100000000000000100000000");
-
-    r.start_clock();
-    auto mu2 = mu0 * 0x0abcdef12;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << mu2;
-    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
-    return r;
-}
-
-/*
- * Multiply a large natural number by a single digit.
- */
-auto test_natural_multiply_6b() -> result {
-    result r("nat mul 6b");
-    c8::natural mu0("0x1000000000000000100000000000000100000000");
-
-    r.start_clock();
-    mu0 *= 0x0abcdef12;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << mu0;
-    r.check_pass("abcdef1200000000abcdef120000000abcdef1200000000");
-    return r;
-}
-
-/*
  * Divide a 2 digit natural number by another 2 digit natural number.
  */
 auto test_natural_divide_0a() -> result {
@@ -2267,163 +2011,10 @@ auto test_natural_divide_6c() -> result {
 }
 
 /*
- * Divide a 3 digit natural number by a single digit value.
+ * Divide a large natural number by another large natural number.
  */
 auto test_natural_divide_7a() -> result {
     result r("nat div 7a");
-    c8::natural d0("0x100000000000000000");
-
-    r.start_clock();
-    auto d2 = d0 / 0x10000000;
-    auto mo2 = d0 % 0x10000000;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << d2 << ',' << mo2;
-    r.check_pass("10000000000,0");
-    return r;
-}
-
-/*
- * Divide a 3 digit natural number by a single digit value.
- */
-auto test_natural_divide_7b() -> result {
-    result r("nat div 7b");
-    c8::natural d0("0x100000000000000000");
-    auto mo0 = d0;
-
-    r.start_clock();
-    d0 /= 0x10000000;
-    mo0 %= 0x10000000;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << d0 << ',' << mo0;
-    r.check_pass("10000000000,0");
-    return r;
-}
-
-/*
- * Divide a 3 digit natural number by a single digit value.
- */
-auto test_natural_divide_7c() -> result {
-    result r("nat div 7c");
-    c8::natural d0("0x100000000000000000");
-
-    r.start_clock();
-    auto dm = d0.divide_modulus(0x10000000);
-    r.stop_clock();
-
-    r.get_stream() << std::hex << dm.first << ',' << dm.second;
-    r.check_pass("10000000000,0");
-    return r;
-}
-
-/*
- * Divide a 1 digit natural number by a single digit value.
- */
-auto test_natural_divide_8a() -> result {
-    result r("nat div 8a");
-    c8::natural d0("894597578");
-
-    r.start_clock();
-    auto d2 = d0 / 33;
-    auto mo2 = d0 % 33;
-    r.stop_clock();
-
-    r.get_stream() << d2 << ',' << mo2;
-    r.check_pass("27109017,17");
-    return r;
-}
-
-/*
- * Divide a 1 digit natural number by a single digit value.
- */
-auto test_natural_divide_8b() -> result {
-    result r("nat div 8b");
-    c8::natural d0("894597578");
-    auto mo0 = d0;
-
-    r.start_clock();
-    d0 /= 33;
-    mo0 %= 33;
-    r.stop_clock();
-
-    r.get_stream() << d0 << ',' << mo0;
-    r.check_pass("27109017,17");
-    return r;
-}
-
-/*
- * Divide a 1 digit natural number by a single digit value.
- */
-auto test_natural_divide_8c() -> result {
-    result r("nat div 8c");
-    c8::natural d0("894597578");
-
-    r.start_clock();
-    auto dm = d0.divide_modulus(33);
-    r.stop_clock();
-
-    r.get_stream() << dm.first << ',' << dm.second;
-    r.check_pass("27109017,17");
-    return r;
-}
-
-/*
- * Divide a single digit natural number by a larger single digit value.
- */
-auto test_natural_divide_9a() -> result {
-    result r("nat div 9a");
-    c8::natural d0("1");
-
-    r.start_clock();
-    auto d2 = d0 / 3;
-    auto mo2 = d0 % 3;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << d2 << ',' << mo2;
-    r.check_pass("0,1");
-    return r;
-}
-
-/*
- * Divide a single digit natural number by a larger single digit value.
- */
-auto test_natural_divide_9b() -> result {
-    result r("nat div 9b");
-    c8::natural d0("1");
-    auto mo0 = d0;
-
-    r.start_clock();
-    d0 /= 3;
-    mo0 %= 3;
-    r.stop_clock();
-
-    r.get_stream() << std::hex << d0 << ',' << mo0;
-    r.check_pass("0,1");
-    return r;
-}
-
-/*
- * Divide a single digit natural number by a larger single digit value.
- */
-auto test_natural_divide_9c() -> result {
-    result r("nat div 9c");
-    c8::natural d0("1");
-
-    r.start_clock();
-    auto dm = d0.divide_modulus(3);
-    r.stop_clock();
-
-    r.get_stream() << std::hex << dm.first << ',' << dm.second;
-    r.check_pass("0,1");
-    return r;
-}
-
-/*
- * Divide a large natural number by another large natural number.
- */
-auto test_natural_divide_10a() -> result {
-    result r("nat div 10a");
     c8::natural d0("0x10000000000000001000000000000000100000000");
     c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
 
@@ -2440,8 +2031,8 @@ auto test_natural_divide_10a() -> result {
 /*
  * Divide a large natural number by another large natural number.
  */
-auto test_natural_divide_10b() -> result {
-    result r("nat div 10b");
+auto test_natural_divide_7b() -> result {
+    result r("nat div 7b");
     c8::natural d0("0x10000000000000001000000000000000100000000");
     auto mo0 = d0;
     c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
@@ -2459,8 +2050,8 @@ auto test_natural_divide_10b() -> result {
 /*
  * Divide a large natural number by another large natural number.
  */
-auto test_natural_divide_10c() -> result {
-    result r("nat div 10c");
+auto test_natural_divide_7c() -> result {
+    result r("nat div 7c");
     c8::natural d0("0x10000000000000001000000000000000100000000");
     c8::natural d1("0x100000000000000000000000000000000000000000000000000000000000000000000000");
 

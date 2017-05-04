@@ -61,11 +61,11 @@ namespace c8 {
         integer i = integer(sig);
 
         if (exp < 0) {
-            num_ = i;
-            denom_ = integer(1) << static_cast<unsigned int>(-exp);
+            numerator_ = i;
+            denominator_ = integer(1) << static_cast<unsigned int>(-exp);
         } else {
-            num_ = i << static_cast<unsigned int>(exp);
-            denom_ = integer(1);
+            numerator_ = i << static_cast<unsigned int>(exp);
+            denominator_ = integer(1);
         }
 
         normalize();
@@ -85,10 +85,10 @@ namespace c8 {
          */
         std::size_t pos = v.find(std::string("/"));
         if (pos == std::string::npos) {
-            num_ = integer(v);
+            numerator_ = integer(v);
         } else {
-            num_ = integer(v.substr(0, pos));
-            denom_ = integer(v.substr(pos + 1));
+            numerator_ = integer(v.substr(0, pos));
+            denominator_ = integer(v.substr(pos + 1));
         }
 
         normalize();
@@ -103,7 +103,7 @@ namespace c8 {
          * simply means comparing the numerators and denominators to see if they're
          * different or not.
          */
-        return (num_ == v.num_) && (denom_ == v.denom_);
+        return (numerator_ == v.numerator_) && (denominator_ == v.denominator_);
     }
 
     /*
@@ -115,35 +115,35 @@ namespace c8 {
          * simply means comparing the numerators and denominators to see if they're
          * different or not.
          */
-        return (num_ != v.num_) || (denom_ != v.denom_);
+        return (numerator_ != v.numerator_) || (denominator_ != v.denominator_);
     }
 
     /*
      * Return true if this rational is greater than another one, false if it's not.
      */
     auto rational::operator >(const rational &v) const -> bool {
-        return (num_ * v.denom_) > (v.num_ * denom_);
+        return (numerator_ * v.denominator_) > (v.numerator_ * denominator_);
     }
 
     /*
      * Return true if this rational is greater than, or equal to, another one, false if it's not.
      */
     auto rational::operator >=(const rational &v) const -> bool {
-        return (num_ * v.denom_) >= (v.num_ * denom_);
+        return (numerator_ * v.denominator_) >= (v.numerator_ * denominator_);
     }
 
     /*
      * Return true if this rational is less than another one, false if it's not.
      */
     auto rational::operator <(const rational &v) const -> bool {
-        return (num_ * v.denom_) < (v.num_ * denom_);
+        return (numerator_ * v.denominator_) < (v.numerator_ * denominator_);
     }
 
     /*
      * Return true if this rational is less than, or equal to, another one, false if it's not.
      */
     auto rational::operator <=(const rational &v) const -> bool {
-        return (num_ * v.denom_) <= (v.num_ * denom_);
+        return (numerator_ * v.denominator_) <= (v.numerator_ * denominator_);
     }
 
     /*
@@ -152,8 +152,8 @@ namespace c8 {
     auto rational::operator +(const rational &v) const -> rational {
         rational res;
 
-        res.num_ = (num_ * v.denom_) + (denom_ * v.num_);
-        res.denom_ = denom_ * v.denom_;
+        res.numerator_ = (numerator_ * v.denominator_) + (denominator_ * v.numerator_);
+        res.denominator_ = denominator_ * v.denominator_;
 
         res.normalize();
         return res;
@@ -163,9 +163,9 @@ namespace c8 {
      * Add another rational to this one.
      */
     auto rational::operator +=(const rational &v) -> rational & {
-        num_ *= v.denom_;
-        num_ += (denom_ * v.num_);
-        denom_ *= v.denom_;
+        numerator_ *= v.denominator_;
+        numerator_ += (denominator_ * v.numerator_);
+        denominator_ *= v.denominator_;
 
         normalize();
         return *this;
@@ -177,8 +177,8 @@ namespace c8 {
     auto rational::operator -(const rational &v) const -> rational {
         rational res;
 
-        res.num_ = (num_ * v.denom_) - (denom_ * v.num_);
-        res.denom_ = denom_ * v.denom_;
+        res.numerator_ = (numerator_ * v.denominator_) - (denominator_ * v.numerator_);
+        res.denominator_ = denominator_ * v.denominator_;
 
         res.normalize();
         return res;
@@ -188,9 +188,9 @@ namespace c8 {
      * Subtract another rational from this one.
      */
     auto rational::operator -=(const rational &v) -> rational & {
-        num_ *= v.denom_;
-        num_ -= (denom_ * v.num_);
-        denom_ *= v.denom_;
+        numerator_ *= v.denominator_;
+        numerator_ -= (denominator_ * v.numerator_);
+        denominator_ *= v.denominator_;
 
         normalize();
         return *this;
@@ -202,8 +202,8 @@ namespace c8 {
     auto rational::operator *(const rational &v) const -> rational {
         rational res;
 
-        res.num_ = num_ * v.num_;
-        res.denom_ = denom_ * v.denom_;
+        res.numerator_ = numerator_ * v.numerator_;
+        res.denominator_ = denominator_ * v.denominator_;
 
         res.normalize();
         return res;
@@ -213,8 +213,8 @@ namespace c8 {
      * Multiply another rational with this one.
      */
     auto rational::operator *=(const rational &v) -> rational & {
-        num_ *= v.num_;
-        denom_ *= v.denom_;
+        numerator_ *= v.numerator_;
+        denominator_ *= v.denominator_;
 
         normalize();
         return *this;
@@ -233,8 +233,8 @@ namespace c8 {
             throw c8::divide_by_zero();
         }
 
-        res.num_ = num_ * v.denom_;
-        res.denom_ = denom_ * v.num_;
+        res.numerator_ = numerator_ * v.denominator_;
+        res.denominator_ = denominator_ * v.numerator_;
 
         res.normalize();
         return res;
@@ -251,8 +251,8 @@ namespace c8 {
             throw c8::divide_by_zero();
         }
 
-        num_ *= v.denom_;
-        denom_ *= v.num_;
+        numerator_ *= v.denominator_;
+        denominator_ *= v.numerator_;
 
         normalize();
         return *this;
@@ -262,17 +262,17 @@ namespace c8 {
      * Normalize the data.
      */
     auto rational::normalize() -> void {
-        if (C8_UNLIKELY(is_negative(denom_))) {
-            num_.negate();
-            denom_.negate();
+        if (C8_UNLIKELY(is_negative(denominator_))) {
+            numerator_.negate();
+            denominator_.negate();
         }
 
         /*
          * Find the GCD of the numerator and denominator.
          */
-        integer g = gcd(num_, denom_);
-        num_ /= g;
-        denom_ /= g;
+        integer g = gcd(numerator_, denominator_);
+        numerator_ /= g;
+        denominator_ /= g;
     }
 
     /*
@@ -282,7 +282,7 @@ namespace c8 {
         /*
          * Is our value zero?  If it is then handle this as a special case.
          */
-        natural n = num_.magnitude();
+        natural n = numerator_.magnitude();
         if (n.is_zero()) {
             return 0.0;
         }
@@ -293,7 +293,7 @@ namespace c8 {
          * want our division operation to be too expensive either, so one of the
          * other things we can do is scale our denominator down.
          */
-        natural d = denom_.magnitude();
+        natural d = denominator_.magnitude();
         int eshift = 0;
         auto dbits = d.size_bits();
         if (dbits > 52) {
@@ -350,7 +350,7 @@ namespace c8 {
         /*
          * Is our numerator negative?
          */
-        if (is_negative(num_)) {
+        if (is_negative(numerator_)) {
             res |= 0x8000000000000000ULL;
         }
 
@@ -367,7 +367,7 @@ namespace c8 {
      * << operator to print a rational.
      */
     auto operator <<(std::ostream &outstr, const rational &v) -> std::ostream & {
-        outstr << v.num_ << '/' << v.denom_;
+        outstr << v.numerator_ << '/' << v.denominator_;
 
         return outstr;
     }

@@ -2,7 +2,6 @@
 
 ```cpp
 auto operator %(const natural &v) const -> natural;
-auto operator %(natural_digit v) const -> natural_digit;
 ```
 
 Divides the value of this object (left hand side of the operator) by `v` (right hand side of the operator), resulting in a new `c8::natural` object that represents the remainder.

@@ -2,7 +2,6 @@
 
 ```cpp
 auto operator -(const natural &v) const -> natural;
-auto operator -(natural_digit v) const -> natural;
 ```
 
 Subtracts `v` (right hand side of the operator) from the value of this object (left hand side of the operator), resulting in a new `c8::natural` number.
