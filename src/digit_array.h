@@ -82,14 +82,14 @@ namespace c8 {
                                 const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
-                return __digit_array_add_1_1(res, src1[0], src2[0]);
+                return __digit_array_add_1_1(res, src1, src2);
             }
 
-            return __digit_array_add_m_1(res, src1, src1_num_digits, src2[0]);
+            return __digit_array_add_m_1(res, src1, src1_num_digits, src2);
         }
 
         if (src1_num_digits == 1) {
-            return __digit_array_add_m_1(res, src2, src2_num_digits, src1[0]);
+            return __digit_array_add_m_1(res, src2, src2_num_digits, src1);
         }
 
         return __digit_array_add_m_n(res, src1, src1_num_digits, src2, src2_num_digits);
@@ -112,10 +112,10 @@ namespace c8 {
                     throw not_a_number();
                 }
 
-                return __digit_array_subtract_1_1(res, src1[0], src2[0]);
+                return __digit_array_subtract_1_1(res, src1, src2);
             }
 
-            return __digit_array_subtract_m_1(res, src1, src1_num_digits, src2[0]);
+            return __digit_array_subtract_m_1(res, src1, src1_num_digits, src2);
         }
 
         /*
@@ -166,14 +166,14 @@ namespace c8 {
                                      const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
-                return __digit_array_multiply_1_1(res, src1[0], src2[0]);
+                return __digit_array_multiply_1_1(res, src1, src2);
             }
 
-            return __digit_array_multiply_m_1(res, src1, src1_num_digits, src2[0]);
+            return __digit_array_multiply_m_1(res, src1, src1_num_digits, src2);
         }
 
         if (src1_num_digits == 1) {
-            return __digit_array_multiply_m_1(res, src2, src2_num_digits, src1[0]);
+            return __digit_array_multiply_m_1(res, src2, src2_num_digits, src1);
         }
 
         /*
@@ -207,10 +207,10 @@ namespace c8 {
              * Does this number have only one digit?  If yes, then divide that digit by v.
              */
             if (src1_num_digits == 1) {
-                quotient_num_digits = __digit_array_divide_modulus_1_1(quotient, remainder[0], src1[0], src2[0]);
+                quotient_num_digits = __digit_array_divide_modulus_1_1(quotient, remainder[0], src1, src2);
             } else {
                 quotient_num_digits = __digit_array_divide_modulus_m_1(quotient, remainder[0],
-                                                                       src1, src1_num_digits, src2[0]);
+                                                                       src1, src1_num_digits, src2);
             }
 
             remainder_num_digits = 0;
