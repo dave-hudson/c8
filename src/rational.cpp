@@ -32,7 +32,7 @@ namespace c8 {
          * Is this an infinity or a NaN?
          */
         if (exp == 1024) {
-            throw c8::not_a_number();
+            throw not_a_number();
         }
 
         /*
