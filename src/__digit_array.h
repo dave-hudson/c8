@@ -306,14 +306,6 @@ namespace c8 {
                                       const natural_digit *src1, std::size_t src1_num_digits,
                                       const natural_digit *src2) -> void {
         /*
-         * Is this number zero?  If yes then just construct the result.
-         */
-        if (C8_UNLIKELY(!src1_num_digits)) {
-            res[0] = src2[0];
-            res_num_digits = 1;
-        }
-
-        /*
          * Add the first digit.
          */
         auto a = src1[0];
@@ -425,15 +417,6 @@ namespace c8 {
     inline auto __digit_array_subtract_m_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2) -> void {
-        /*
-         * Is this number zero?  If yes then just construct the result.  We know
-         * that we cannot have a negative result so we don't need to worry about
-         * throwing exceptions.
-         */
-        if (C8_UNLIKELY(!src1_num_digits)) {
-            res_num_digits = 0;
-        }
-
         /*
          * Subtract the digits from this number's lowest digit.
          */
