@@ -76,6 +76,7 @@ namespace c8 {
      * Add two digit arrays.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
+     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_add(natural_digit *res, std::size_t &res_num_digits,
                                 const natural_digit *src1, std::size_t src1_num_digits,
@@ -102,6 +103,7 @@ namespace c8 {
      * Subtract one digit array from another.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
+     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_subtract(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
@@ -137,6 +139,7 @@ namespace c8 {
      * Left shift a digit array.
      *
      * Note: It is OK for res and src to be the same pointer.
+     * src_num_digits must be >= 1.
      */
     inline auto digit_array_left_shift(natural_digit *res, std::size_t &res_num_digits,
                                        const natural_digit *src, std::size_t src_num_digits,
@@ -146,13 +149,14 @@ namespace c8 {
             return;
         }
 
-        return __digit_array_left_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
+        __digit_array_left_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
     }
 
     /*
      * Right shift a digit array.
      *
      * Note: It is OK for res and src to be the same pointer.
+     * src_num_digits must be >= 1.
      */
     inline auto digit_array_right_shift(natural_digit *res, std::size_t &res_num_digits,
                                         const natural_digit *src, std::size_t src_num_digits,
@@ -162,11 +166,13 @@ namespace c8 {
             return;
         }
 
-        return __digit_array_right_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
+        __digit_array_right_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
     }
 
     /*
      * Multiply two digit arrays.
+     *
+     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_multiply(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
@@ -203,6 +209,8 @@ namespace c8 {
 
     /*
      * Divide two digit arrays.
+     *
+     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_divide_modulus(natural_digit *quotient, std::size_t &quotient_num_digits,
                                            natural_digit *remainder, std::size_t &remainder_num_digits,
