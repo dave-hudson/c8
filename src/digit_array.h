@@ -77,22 +77,25 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto digit_array_add(natural_digit *res,
+    inline auto digit_array_add(natural_digit *res, std::size_t &res_num_digits,
                                 const natural_digit *src1, std::size_t src1_num_digits,
-                                const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                const natural_digit *src2, std::size_t src2_num_digits) -> void {
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
-                return __digit_array_add_1_1(res, src1, src2);
+                __digit_array_add_1_1(res, res_num_digits, src1, src2);
+                return;
             }
 
-            return __digit_array_add_m_1(res, src1, src1_num_digits, src2);
+            __digit_array_add_m_1(res, res_num_digits, src1, src1_num_digits, src2);
+            return;
         }
 
         if (src1_num_digits == 1) {
-            return __digit_array_add_m_1(res, src2, src2_num_digits, src1);
+            __digit_array_add_m_1(res, res_num_digits, src2, src2_num_digits, src1);
+            return;
         }
 
-        return __digit_array_add_m_n(res, src1, src1_num_digits, src2, src2_num_digits);
+        __digit_array_add_m_n(res, res_num_digits, src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -100,9 +103,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto digit_array_subtract(natural_digit *res,
+    inline auto digit_array_subtract(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
-                                     const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                     const natural_digit *src2, std::size_t src2_num_digits) -> void {
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
                 /*
@@ -112,10 +115,12 @@ namespace c8 {
                     throw not_a_number();
                 }
 
-                return __digit_array_subtract_1_1(res, src1, src2);
+                __digit_array_subtract_1_1(res, res_num_digits, src1, src2);
+                return;
             }
 
-            return __digit_array_subtract_m_1(res, src1, src1_num_digits, src2);
+            __digit_array_subtract_m_1(res, res_num_digits, src1, src1_num_digits, src2);
+            return;
         }
 
         /*
@@ -125,7 +130,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        return __digit_array_subtract_m_n(res, src1, src1_num_digits, src2, src2_num_digits);
+        __digit_array_subtract_m_n(res, res_num_digits, src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -133,14 +138,15 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto digit_array_left_shift(natural_digit *res,
+    inline auto digit_array_left_shift(natural_digit *res, std::size_t &res_num_digits,
                                        const natural_digit *src, std::size_t src_num_digits,
-                                       std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+                                       std::size_t shift_digits, std::size_t shift_bits) -> void {
         if (src_num_digits == 1) {
-            return __digit_array_left_shift_1(res, src[0], shift_digits, shift_bits);
+            __digit_array_left_shift_1(res, res_num_digits, src, shift_digits, shift_bits);
+            return;
         }
 
-        return __digit_array_left_shift_m(res, src, src_num_digits, shift_digits, shift_bits);
+        return __digit_array_left_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
     }
 
     /*
@@ -148,32 +154,36 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto digit_array_right_shift(natural_digit *res,
+    inline auto digit_array_right_shift(natural_digit *res, std::size_t &res_num_digits,
                                         const natural_digit *src, std::size_t src_num_digits,
-                                        std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
+                                        std::size_t shift_digits, std::size_t shift_bits) -> void {
         if (src_num_digits == 1) {
-            return __digit_array_right_shift_1(res, src[0], shift_bits);
+            __digit_array_right_shift_1(res, res_num_digits, src, shift_bits);
+            return;
         }
 
-        return __digit_array_right_shift_m(res, src, src_num_digits, shift_digits, shift_bits);
+        return __digit_array_right_shift_m(res, res_num_digits, src, src_num_digits, shift_digits, shift_bits);
     }
 
     /*
      * Multiply two digit arrays.
      */
-    inline auto digit_array_multiply(natural_digit *res,
+    inline auto digit_array_multiply(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
-                                     const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                     const natural_digit *src2, std::size_t src2_num_digits) -> void {
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
-                return __digit_array_multiply_1_1(res, src1, src2);
+                __digit_array_multiply_1_1(res, res_num_digits, src1, src2);
+                return;
             }
 
-            return __digit_array_multiply_m_1(res, src1, src1_num_digits, src2);
+            __digit_array_multiply_m_1(res, res_num_digits, src1, src1_num_digits, src2);
+            return;
         }
 
         if (src1_num_digits == 1) {
-            return __digit_array_multiply_m_1(res, src2, src2_num_digits, src1);
+            __digit_array_multiply_m_1(res, res_num_digits, src2, src2_num_digits, src1);
+            return;
         }
 
         /*
@@ -188,7 +198,7 @@ namespace c8 {
             src1_1 = src1_copy;
         }
 
-        return __digit_array_multiply_m_n(res, src1_1, src1_num_digits, src2, src2_num_digits);
+        __digit_array_multiply_m_n(res, res_num_digits, src1_1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -207,17 +217,13 @@ namespace c8 {
              * Does this number have only one digit?  If yes, then divide that digit by v.
              */
             if (src1_num_digits == 1) {
-                quotient_num_digits = __digit_array_divide_modulus_1_1(quotient, remainder[0], src1, src2);
-            } else {
-                quotient_num_digits = __digit_array_divide_modulus_m_1(quotient, remainder[0],
-                                                                       src1, src1_num_digits, src2);
+                __digit_array_divide_modulus_1_1(quotient, quotient_num_digits, remainder, remainder_num_digits,
+                                                 src1, src2);
+                return;
             }
 
-            remainder_num_digits = 0;
-            if (remainder[0]) {
-                remainder_num_digits = 1;
-            }
-
+            __digit_array_divide_modulus_m_1(quotient, quotient_num_digits, remainder, remainder_num_digits,
+                                             src1, src1_num_digits, src2);
             return;
         }
 

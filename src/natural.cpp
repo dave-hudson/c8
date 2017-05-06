@@ -323,7 +323,7 @@ namespace c8 {
          */
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         res.reserve(max_num_digits + 1);
-        res.num_digits_ = digit_array_add(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_add(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -354,7 +354,7 @@ namespace c8 {
          */
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         expand(max_num_digits + 1);
-        num_digits_ = digit_array_add(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_add(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -382,7 +382,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits);
-        res.num_digits_ = digit_array_subtract(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_subtract(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -406,7 +406,7 @@ namespace c8 {
             throw not_a_number();
         }
 
-        num_digits_ = digit_array_subtract(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_subtract(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -428,7 +428,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         res.reserve(this_num_digits + trailing_digits + 1);
-        res.num_digits_ = digit_array_left_shift(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        digit_array_left_shift(res.digits_, res.num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -448,7 +448,7 @@ namespace c8 {
         std::size_t digit_shift = count % natural_digit_bits;
 
         expand(this_num_digits + trailing_digits + 1);
-        num_digits_ = digit_array_left_shift(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        digit_array_left_shift(digits_, num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 
@@ -470,7 +470,7 @@ namespace c8 {
         }
 
         res.reserve(this_num_digits - trailing_digits);
-        res.num_digits_ = digit_array_right_shift(res.digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        digit_array_right_shift(res.digits_, res.num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return res;
     }
 
@@ -490,7 +490,7 @@ namespace c8 {
             return *this;
         }
 
-        num_digits_ = digit_array_right_shift(digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        digit_array_right_shift(digits_, num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
         return *this;
     }
 
@@ -518,7 +518,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         res.reserve(res_num_digits);
-        res.num_digits_ = digit_array_multiply(res.digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_multiply(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return res;
     }
 
@@ -544,7 +544,7 @@ namespace c8 {
 
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         expand(res_num_digits);
-        num_digits_ = digit_array_multiply(digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_multiply(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
         return *this;
     }
 

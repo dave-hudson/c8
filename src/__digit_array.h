@@ -279,20 +279,22 @@ namespace c8 {
     /*
      * Add two non-zero single digits.
      */
-    inline auto __digit_array_add_1_1(natural_digit *res,
+    inline auto __digit_array_add_1_1(natural_digit *res, std::size_t &res_num_digits,
                                       const natural_digit *src1,
-                                      const natural_digit *src2) -> std::size_t {
+                                      const natural_digit *src2) -> void {
         natural_double_digit r = static_cast<natural_double_digit>(src1[0]);
         r += static_cast<natural_double_digit>(src2[0]);
 
         res[0] = static_cast<natural_digit>(r);
+        std::size_t r_num_digits = 1;
+
         r >>= natural_digit_bits;
-        if (C8_LIKELY(!r)) {
-            return 1;
+        if (r) {
+            res[1] = static_cast<natural_digit>(r);
+            r_num_digits = 2;
         }
 
-        res[1] = static_cast<natural_digit>(r);
-        return 2;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -300,15 +302,15 @@ namespace c8 {
      *
      * Note: It is OK for res and src1 to be the same pointer.
      */
-    inline auto __digit_array_add_m_1(natural_digit *res,
+    inline auto __digit_array_add_m_1(natural_digit *res, std::size_t &res_num_digits,
                                       const natural_digit *src1, std::size_t src1_num_digits,
-                                      const natural_digit *src2) -> std::size_t {
+                                      const natural_digit *src2) -> void {
         /*
          * Is this number zero?  If yes then just construct the result.
          */
         if (C8_UNLIKELY(!src1_num_digits)) {
             res[0] = src2[0];
-            return 1;
+            res_num_digits = 1;
         }
 
         /*
@@ -331,12 +333,12 @@ namespace c8 {
         /*
          * We may have a final carry digit, so handle that if it exists.
          */
-        std::size_t res_num_digits = src1_num_digits;
+        std::size_t r_num_digits = src1_num_digits;
         if (C8_UNLIKELY(acc)) {
-            res[res_num_digits++] = static_cast<natural_digit>(acc);
+            res[r_num_digits++] = static_cast<natural_digit>(acc);
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -344,9 +346,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto __digit_array_add_m_n(natural_digit *res,
+    inline auto __digit_array_add_m_n(natural_digit *res, std::size_t &res_num_digits,
                                       const natural_digit *src1, std::size_t src1_num_digits,
-                                      const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                      const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
          * Work out which of the two numbers is larger and which is smaller.
          */
@@ -390,27 +392,29 @@ namespace c8 {
         /*
          * We may have a final carry digit, so handle that if it exists.
          */
-        std::size_t res_num_digits = larger_num_digits;
+        std::size_t r_num_digits = larger_num_digits;
         if (C8_UNLIKELY(acc)) {
-            res[res_num_digits++] = static_cast<natural_digit>(acc);
+            res[r_num_digits++] = static_cast<natural_digit>(acc);
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
      * Subtract a single digit from another single digit.
      */
-    inline auto __digit_array_subtract_1_1(natural_digit *res,
+    inline auto __digit_array_subtract_1_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1,
-                                           const natural_digit *src2) -> std::size_t {
+                                           const natural_digit *src2) -> void {
+        std::size_t r_num_digits = 1;
+
         natural_digit r = src1[0] - src2[0];
-        if (!r) {
-            return 0;
+        if (r) {
+            res[0] = r;
+            r_num_digits = 1;
         }
 
-        res[0] = r;
-        return 1;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -418,16 +422,16 @@ namespace c8 {
      *
      * Note: It is OK for res and src1 to be the same pointer.
      */
-    inline auto __digit_array_subtract_m_1(natural_digit *res,
+    inline auto __digit_array_subtract_m_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
-                                           const natural_digit *src2) -> std::size_t {
+                                           const natural_digit *src2) -> void {
         /*
          * Is this number zero?  If yes then just construct the result.  We know
          * that we cannot have a negative result so we don't need to worry about
          * throwing exceptions.
          */
         if (C8_UNLIKELY(!src1_num_digits)) {
-            return 0;
+            res_num_digits = 0;
         }
 
         /*
@@ -450,12 +454,12 @@ namespace c8 {
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t res_num_digits = src1_num_digits;
-        if (!res[res_num_digits - 1]) {
-            res_num_digits--;
+        std::size_t r_num_digits = src1_num_digits;
+        if (!res[r_num_digits - 1]) {
+            r_num_digits--;
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -463,9 +467,9 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto __digit_array_subtract_m_n(natural_digit *res,
+    inline auto __digit_array_subtract_m_n(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
-                                           const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                           const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
          */
@@ -492,45 +496,47 @@ namespace c8 {
          * Calculate the number of resulting digits.  With subtraction there's no
          * easy way to estimate this.
          */
-        std::size_t res_num_digits = src1_num_digits;
-        while (res_num_digits--) {
-            if (res[res_num_digits]) {
+        std::size_t r_num_digits = src1_num_digits;
+        while (r_num_digits--) {
+            if (res[r_num_digits]) {
                 break;
             }
         }
 
-        return res_num_digits + 1;
+        res_num_digits = r_num_digits + 1;
     }
 
     /*
      * Left shift a digit.
      */
-    inline auto __digit_array_left_shift_1(natural_digit *res,natural_digit v,
-                                           std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
-        std::size_t res_num_digits = 1 + shift_digits;
+    inline auto __digit_array_left_shift_1(natural_digit *res, std::size_t &res_num_digits,
+                                           const natural_digit *src,
+                                           std::size_t shift_digits, std::size_t shift_bits) -> void {
+        std::size_t r_num_digits = 1 + shift_digits;
 
         /*
          * Are we shifting by whole digits?
          */
         if (C8_UNLIKELY(shift_bits == 0)) {
-            res[shift_digits] = v;
+            res[shift_digits] = src[0];
             __digit_array_zero(res, shift_digits);
-            return res_num_digits;
+            res_num_digits = r_num_digits;
+            return;
         }
 
         /*
          * Shift the original value by the remaining number of bits that we
          * need, and insert those in the result.
          */
-        auto d = static_cast<natural_double_digit>(v) << shift_bits;
+        auto d = static_cast<natural_double_digit>(src[0]) << shift_bits;
         res[shift_digits] = static_cast<natural_digit>(d);
         auto d_hi = static_cast<natural_digit>(d >> natural_digit_bits);
         if (d_hi) {
-            res[res_num_digits++] = d_hi;
+            res[r_num_digits++] = d_hi;
         }
 
         __digit_array_zero(res, shift_digits);
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -538,10 +544,10 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto __digit_array_left_shift_m(natural_digit *res,
+    inline auto __digit_array_left_shift_m(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src, std::size_t src_num_digits,
-                                           std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
-        std::size_t res_num_digits = src_num_digits + shift_digits;
+                                           std::size_t shift_digits, std::size_t shift_bits) -> void {
+        std::size_t r_num_digits = src_num_digits + shift_digits;
 
         /*
          * Are we shifting by whole digits?
@@ -549,7 +555,8 @@ namespace c8 {
         if (C8_UNLIKELY(shift_bits == 0)) {
             __digit_array_rcopy(&res[shift_digits], src, src_num_digits);
             __digit_array_zero(res, shift_digits);
-            return res_num_digits;
+            res_num_digits = r_num_digits;
+            return;
         }
 
         /*
@@ -559,7 +566,7 @@ namespace c8 {
         natural_digit d = src[src_num_digits - 1];
         natural_digit d_hi = d >> (natural_digit_bits - shift_bits);
         if (d_hi) {
-            res[res_num_digits++] = d_hi;
+            res[r_num_digits++] = d_hi;
         }
 
         for (std::size_t i = src_num_digits - 1; i > 0; i--) {
@@ -570,20 +577,23 @@ namespace c8 {
 
         res[shift_digits] = d << shift_bits;
         __digit_array_zero(res, shift_digits);
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
      * Right shift a digit.
      */
-    inline auto __digit_array_right_shift_1(natural_digit *res, natural_digit v, std::size_t shift_bits) -> std::size_t {
-        auto r = v >> shift_bits;
-        if (!r) {
-            return 0;
+    inline auto __digit_array_right_shift_1(natural_digit *res, std::size_t &res_num_digits,
+                                            const natural_digit *src, std::size_t shift_bits) -> void {
+        std::size_t r_num_digits = 0;
+
+        auto r = src[0] >> shift_bits;
+        if (r) {
+            res[0] = r;
+            r_num_digits = 1;
         }
 
-        res[0] = r;
-        return 1;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -591,54 +601,57 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto __digit_array_right_shift_m(natural_digit *res,
+    inline auto __digit_array_right_shift_m(natural_digit *res, std::size_t &res_num_digits,
                                             const natural_digit *src, std::size_t src_num_digits,
-                                            std::size_t shift_digits, std::size_t shift_bits) -> std::size_t {
-        std::size_t res_num_digits = src_num_digits - (shift_digits + 1);
+                                            std::size_t shift_digits, std::size_t shift_bits) -> void {
+        std::size_t r_num_digits = src_num_digits - (shift_digits + 1);
 
         /*
          * Are we shifting by whole digits?
          */
         if (C8_UNLIKELY(shift_bits == 0)) {
-            res_num_digits++;
-            __digit_array_copy(res, &src[shift_digits], res_num_digits);
-            return res_num_digits;
+            r_num_digits++;
+            __digit_array_copy(res, &src[shift_digits], r_num_digits);
+            res_num_digits = r_num_digits;
+            return;
         }
 
         /*
          * Shift the original value and insert in the result.
          */
         natural_digit d_lo = src[shift_digits] >> shift_bits;
-        for (std::size_t i = 1; i <= res_num_digits; i++) {
+        for (std::size_t i = 1; i <= r_num_digits; i++) {
             natural_digit d = src[i + shift_digits];
             res[i - 1] = d_lo | (d << (natural_digit_bits - shift_bits));
             d_lo = d >> shift_bits;
         }
 
         if (d_lo) {
-            res[res_num_digits++] = d_lo;
+            res[r_num_digits++] = d_lo;
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
      * Multiply two non-zero single digits.
      */
-    inline auto __digit_array_multiply_1_1(natural_digit *res,
+    inline auto __digit_array_multiply_1_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1,
-                                           const natural_digit *src2) -> std::size_t {
+                                           const natural_digit *src2) -> void {
         natural_double_digit r = static_cast<natural_double_digit>(src1[0]);
         r *= static_cast<natural_double_digit>(src2[0]);
 
         res[0] = static_cast<natural_digit>(r);
+        std::size_t r_num_digits = 1;
+
         r >>= natural_digit_bits;
-        if (C8_LIKELY(!r)) {
-            return 1;
+        if (r) {
+            res[1] = static_cast<natural_digit>(r);
+            r_num_digits = 2;
         }
 
-        res[1] = static_cast<natural_digit>(r);
-        return 2;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -646,11 +659,9 @@ namespace c8 {
      *
      * Note: It is OK for res and src1 to be the same pointer.
      */
-    inline auto __digit_array_multiply_m_1(natural_digit *res,
+    inline auto __digit_array_multiply_m_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
-                                           const natural_digit *src2) -> std::size_t {
-        std::size_t res_num_digits = src1_num_digits;
-
+                                           const natural_digit *src2) -> void {
         auto v = src2[0];
 
         /*
@@ -664,19 +675,20 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
+        std::size_t r_num_digits = src1_num_digits;
         if (acc) {
-            res[res_num_digits++] = static_cast<natural_digit>(acc);
+            res[r_num_digits++] = static_cast<natural_digit>(acc);
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
      * Multiply two digit arrays.
      */
-    inline auto __digit_array_multiply_m_n(natural_digit *res,
+    inline auto __digit_array_multiply_m_n(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
-                                           const natural_digit *src2, std::size_t src2_num_digits) -> std::size_t {
+                                           const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
          * Comba multiply.
          *
@@ -687,11 +699,12 @@ namespace c8 {
          * the upper digit via an accumulator, acc1, along with all previous accumulated
          * carries.
          */
-        std::size_t res_num_digits = src1_num_digits + src2_num_digits - 1;
         natural_double_digit acc1 = 0;
         std::size_t tj_lim = src2_num_digits - 1;
 
-        for (std::size_t res_column = 0; res_column < res_num_digits; res_column++) {
+        std::size_t r_num_digits = src1_num_digits + src2_num_digits - 1;
+
+        for (std::size_t res_column = 0; res_column < r_num_digits; res_column++) {
             std::size_t tj = (res_column < tj_lim) ? res_column : tj_lim;
             std::size_t ti = res_column - tj;
             std::size_t num_multiplies = ((src1_num_digits - ti) < (tj + 1)) ? (src1_num_digits - ti) : (tj + 1);
@@ -712,10 +725,10 @@ namespace c8 {
          * We may have an extra upper digit, so account for this.
          */
         if (acc1) {
-            res[res_num_digits++] = static_cast<natural_digit>(acc1);
+            res[r_num_digits++] = static_cast<natural_digit>(acc1);
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
@@ -723,11 +736,10 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto __digit_array_multiply_and_left_shift_1(natural_digit *res,
+    inline auto __digit_array_multiply_and_left_shift_1(natural_digit *res, std::size_t &res_num_digits,
                                                         const natural_digit *src, std::size_t src_num_digits,
-                                                        natural_digit v, std::size_t shift_digits) -> std::size_t {
+                                                        natural_digit v, std::size_t shift_digits) -> void {
         __digit_array_zero(res, shift_digits);
-        std::size_t res_num_digits = src_num_digits + shift_digits;
 
         /*
          * Long multiply, but include the digit shift in the result.
@@ -740,30 +752,43 @@ namespace c8 {
             acc >>= natural_digit_bits;
         }
 
+        std::size_t r_num_digits = src_num_digits + shift_digits;
         if (acc) {
-            res[res_num_digits++] = static_cast<natural_digit>(acc);
+            res[r_num_digits++] = static_cast<natural_digit>(acc);
         }
 
-        return res_num_digits;
+        res_num_digits = r_num_digits;
     }
 
     /*
      * Divide/modulus a single digit by another single digit.
      */
-    inline auto __digit_array_divide_modulus_1_1(natural_digit *res, natural_digit &mod,
+    inline auto __digit_array_divide_modulus_1_1(natural_digit *quotient, std::size_t &quotient_num_digits,
+                                                 natural_digit *remainder, std::size_t &remainder_num_digits,
                                                  const natural_digit *src1,
-                                                 const natural_digit *src2) -> std::size_t {
+                                                 const natural_digit *src2) -> void {
         auto v1 = src1[0];
         auto v2 = src2[0];
 
-        natural_digit d = v1 / v2;
-        mod = v1 % v2;
-        if (!d) {
-            return 0;
+        natural_digit q = v1 / v2;
+        natural_digit r = v1 % v2;
+
+        std::size_t r_num_digits = 0;
+
+        if (r) {
+            remainder[0] = r;
+            r_num_digits = 1;
         }
 
-        res[0] = d;
-        return 1;
+        remainder_num_digits = r_num_digits;
+
+        std::size_t q_num_digits = 0;
+        if (q) {
+            quotient[0] = q;
+            q_num_digits = 1;
+        }
+
+        quotient_num_digits = q_num_digits;
     }
 
     /*
@@ -771,9 +796,10 @@ namespace c8 {
      *
      * Note: It is OK for res and src1 to be the same pointer.
      */
-    inline auto __digit_array_divide_modulus_m_1(natural_digit *res, natural_digit &mod,
+    inline auto __digit_array_divide_modulus_m_1(natural_digit *quotient, std::size_t &quotient_num_digits,
+                                                 natural_digit *remainder, std::size_t &remainder_num_digits,
                                                  const natural_digit *src1, std::size_t src1_num_digits,
-                                                 const natural_digit *src2) -> std::size_t {
+                                                 const natural_digit *src2) -> void {
         auto v = src2[0];
 
         /*
@@ -786,20 +812,27 @@ namespace c8 {
             acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
             natural_double_digit q = acc / v;
             acc = acc % v;
-            res[i] = static_cast<natural_digit>(q);
+            quotient[i] = static_cast<natural_digit>(q);
         }
 
-        mod = static_cast<natural_digit>(acc);
+        std::size_t r_num_digits = 0;
+        if (acc) {
+            remainder[0] = static_cast<natural_digit>(acc);
+            r_num_digits = 1;
+        }
+
+        remainder_num_digits = r_num_digits;
 
         /*
          * We may have a zero upper digit so account for this.
          */
-        std::size_t res_num_digits = src1_num_digits;
-        if (!res[res_num_digits - 1]) {
-            res_num_digits--;
+        std::size_t q_num_digits = src1_num_digits;
+
+        if (!quotient[q_num_digits - 1]) {
+            q_num_digits--;
         }
 
-        return res_num_digits;
+        quotient_num_digits = q_num_digits;
     }
 
     /*
@@ -825,13 +858,15 @@ namespace c8 {
          * By definition when we normalize the divisor it keeps the same number of digits.
          */
         natural_digit divisor[src2_num_digits];
-        auto divisor_num_digits = __digit_array_left_shift_m(divisor, src2, src2_num_digits, 0, normalize_shift);
+        std::size_t divisor_num_digits;
+        __digit_array_left_shift_m(divisor, divisor_num_digits, src2, src2_num_digits, 0, normalize_shift);
 
         /*
          * Our dividend may end up one digit larger after the normalization.
          */
         natural_digit dividend[src1_num_digits + 1];
-        auto dividend_num_digits = __digit_array_left_shift_m(dividend, src1, src1_num_digits, 0, normalize_shift);
+        std::size_t dividend_num_digits;
+        __digit_array_left_shift_m(dividend, dividend_num_digits, src1, src1_num_digits, 0, normalize_shift);
 
         /*
          * We need a temporary to hold various partial computations.  This needs to be
@@ -864,7 +899,7 @@ namespace c8 {
                  * that the subsequent digits of the divisor are large enough that it's actually
                  * still zero, but in that case our next digit will be as large as it can be.
                  */
-                t1_num_digits = __digit_array_left_shift_m(t1, divisor, divisor_num_digits, (next_res_digit + 1), 0);
+                __digit_array_left_shift_m(t1, t1_num_digits, divisor, divisor_num_digits, (next_res_digit + 1), 0);
                 if (__digit_array_compare_le(t1, t1_num_digits, dividend, dividend_num_digits)) {
                     /*
                      * Our result was 1.
@@ -876,8 +911,8 @@ namespace c8 {
                      * digit is it's maximum possible size.
                      */
                     const auto q = static_cast<natural_digit>(-1);
-                    t1_num_digits = __digit_array_multiply_and_left_shift_1(t1, divisor, divisor_num_digits,
-                                                                            q, next_res_digit);
+                    __digit_array_multiply_and_left_shift_1(t1, t1_num_digits, divisor, divisor_num_digits,
+                                                            q, next_res_digit);
                     quotient[next_res_digit] = q;
                 }
             } else {
@@ -888,8 +923,8 @@ namespace c8 {
                 natural_double_digit d_hi_d = static_cast<natural_double_digit>(d_hi);
                 natural_double_digit d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
                 auto q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(upper_div_digit));
-                t1_num_digits = __digit_array_multiply_and_left_shift_1(t1, divisor, divisor_num_digits,
-                                                                        q, next_res_digit);
+                __digit_array_multiply_and_left_shift_1(t1, t1_num_digits, divisor, divisor_num_digits,
+                                                        q, next_res_digit);
 
                 /*
                  * It's possible that our estimate might be slightly too large, so we have
@@ -898,14 +933,14 @@ namespace c8 {
                  */
                 if (C8_UNLIKELY(__digit_array_compare_gt(t1, t1_num_digits, dividend, dividend_num_digits))) {
                     q--;
-                    t1_num_digits = __digit_array_multiply_and_left_shift_1(t1, divisor, divisor_num_digits,
-                                                                            q, next_res_digit);
+                    __digit_array_multiply_and_left_shift_1(t1, t1_num_digits, divisor, divisor_num_digits,
+                                                            q, next_res_digit);
                 }
 
                 quotient[next_res_digit] = q;
             }
 
-            dividend_num_digits = __digit_array_subtract_m_n(dividend, dividend, dividend_num_digits, t1, t1_num_digits);
+            __digit_array_subtract_m_n(dividend, dividend_num_digits, dividend, dividend_num_digits, t1, t1_num_digits);
             if (C8_UNLIKELY(__digit_array_compare_le(dividend, dividend_num_digits, divisor, divisor_num_digits))) {
                 break;
             }
@@ -920,7 +955,7 @@ namespace c8 {
 
         remainder_num_digits = 0;
         if (dividend_num_digits) {
-            remainder_num_digits = __digit_array_right_shift_m(remainder, dividend, dividend_num_digits, 0, normalize_shift);
+             __digit_array_right_shift_m(remainder, remainder_num_digits, dividend, dividend_num_digits, 0, normalize_shift);
         }
     }
 }
