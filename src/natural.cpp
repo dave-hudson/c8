@@ -508,50 +508,77 @@ namespace c8 {
      * Find the greatest common divisor of this and another natural number.
      */
     auto natural::gcd(const natural &v) const -> natural {
-        natural smaller;
+        natural num2;
 
+        /*
+         * If either this number or v are zero then our GCD is just the non-zero value.
+         */
         std::size_t v_num_digits = v.num_digits_;
         if (!v.num_digits_) {
-            smaller = *this;
-            return smaller;
+            num2 = *this;
+            return num2;
         }
 
         std::size_t this_num_digits = num_digits_;
         if (!num_digits_) {
-            smaller = v;
-            return smaller;
+            num2 = v;
+            return num2;
         }
 
-        natural larger;
+        /*
+         * We're going to use Euclid's algorithm.  We need to know which is the larger
+         * of our two numbers and we'll call that num1, while the smaller will be num2.
+         */
+        natural num1;
         if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            smaller = *this;
-            larger = v;
+            num1 = v;
+            num2 = *this;
         } else {
-            smaller = v;
-            larger = *this;
+            num1 = *this;
+            num2 = v;
         }
 
-        natural_digit quotient_digits[larger.num_digits_ - smaller.num_digits_ + 1];
+        /*
+         * We never actually use the quotient - this is just somewhere to dump the output.
+         */
+        natural_digit quotient_digits[num1.num_digits_ - num2.num_digits_ + 1];
+        std::size_t quotient_num_digits;
 
+        /*
+         * Euler's algorithm is essentially to take the modulus of num1 and num2 and check
+         * if the result is zero.  If it is zero then num2 is the GCD.  If it's not zero then
+         * try again, but replacing num1 with num2 and num2 with the modulus from the previous
+         * attempt.  We iterate thus:
+         *
+         * r0 = num1 % num2
+         * r1 = num2 % r0
+         * r2 = r0 % r1
+         * r3 = r1 % r2
+         * ...
+         *
+         * We can implement a very efficient version of this with in-place modulus operations
+         * if we observe that the dividend in each case is never used and can thus be overwritten.
+         * When we do this we unroll into an iterating pair of operations:
+         *
+         * num1 = num1 % num2
+         * num2 = num2 % num1
+         */
         while (true) {
-            /*
-             * Essentially mod = larger % smaller, larger = smaller, smaller = mod.
-             */
-            natural mod;
-            mod.reserve(smaller.num_digits_);
-
-            std::size_t quotient_num_digits;
-            digit_array_divide_modulus(quotient_digits, quotient_num_digits, mod.digits_, mod.num_digits_,
-                                       larger.digits_, larger.num_digits_, smaller.digits_, smaller.num_digits_);
-            if (!mod.num_digits_) {
+            digit_array_divide_modulus(quotient_digits, quotient_num_digits, num1.digits_, num1.num_digits_,
+                                       num1.digits_, num1.num_digits_, num2.digits_, num2.num_digits_);
+            if (!num1.num_digits_) {
                 break;
             }
 
-            larger.steal_digits(smaller);
-            smaller.steal_digits(mod);
+            digit_array_divide_modulus(quotient_digits, quotient_num_digits, num2.digits_, num2.num_digits_,
+                                       num2.digits_, num2.num_digits_, num1.digits_, num1.num_digits_);
+            if (!num2.num_digits_) {
+                num2.steal_digits(num1);
+                break;
+            }
         }
 
-        return smaller;
+        return num2;
     }
 
     /*
