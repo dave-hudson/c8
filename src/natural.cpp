@@ -181,18 +181,17 @@ namespace c8 {
                 c = static_cast<char>(c - ('a' - '0' - 10));
             }
 
-            c -= '0';
+            natural_digit c_digit = static_cast<natural_digit>(c) - '0';
 
             if (base == 8) {
-                if (c >= 8) {
+                if (c_digit >= 8) {
                     throw invalid_argument("invalid digit");
                 }
             }
 
             digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base, 1);
             if (c) {
-                natural_digit ndig = static_cast<natural_digit>(c);
-                digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &ndig, 1);
+                digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &c_digit, 1);
             }
         }
 
