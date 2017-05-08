@@ -643,23 +643,51 @@ namespace c8 {
 
         natural_digit modulus_digit;
         std::size_t modulus_num_digits;
-        std::vector<char> res;
-        auto rem = v;
-        do {
-            digit_array_divide_modulus(rem.digits_, rem.num_digits_, &modulus_digit, modulus_num_digits,
-                                       rem.digits_, rem.num_digits_, &base, 1);
+
+        /*
+         * Allocate space for a result buffer.  We want this to be fast, so we go old-school
+         * and use a C-style string (yes this isn't nice, but we're very careful).  We assume
+         * a worst case of octal, so each 3 bits requires one result character.  We also want
+         * a NUL terminator.  We also give ourselves one extra digit to handle any partial
+         * digits, or the zero digit case.
+         */
+        std::size_t res_sz = ((v_num_digits * natural_digit_bits) / 3) + 2;
+        char res[res_sz];
+        res[--res_sz] = '\0';
+
+        natural_digit rem_digits[v.num_digits_];
+        std::size_t rem_num_digits;
+
+        /*
+         * We always have at least one digit, so compute that now.
+         */
+        digit_array_divide_modulus(rem_digits, rem_num_digits, &modulus_digit, modulus_num_digits,
+                                   v.digits_, v.num_digits_, &base, 1);
+        unsigned int d = 0;
+        if (modulus_num_digits) {
+            d = static_cast<unsigned int>(modulus_digit);
+        }
+
+        res[--res_sz] = digits[d];
+
+        /*
+         * Now compute any other digits.
+         */
+        while (rem_num_digits) {
+            digit_array_divide_modulus(rem_digits, rem_num_digits, &modulus_digit, modulus_num_digits,
+                                       rem_digits, rem_num_digits, &base, 1);
             unsigned int d = 0;
             if (modulus_num_digits) {
                 d = static_cast<unsigned int>(modulus_digit);
             }
 
-            res.emplace_back(digits[d]);
-        } while (!rem.is_zero());
-
-        std::size_t res_sz = res.size();
-        for (std::size_t i = 0; i < res_sz; i++) {
-            outstr << res[res_sz - 1 - i];
+            res[--res_sz] = digits[d];
         }
+
+        /*
+         * Output the digits we accumulated.
+         */
+        outstr << &res[res_sz];
 
         return outstr;
     }
