@@ -181,14 +181,19 @@ namespace c8 {
                 c = static_cast<char>(c - ('a' - '0' - 10));
             }
 
+            c -= '0';
+
             if (base == 8) {
-                if (c >= '8') {
+                if (c >= 8) {
                     throw invalid_argument("invalid digit");
                 }
             }
 
-            res *= base;
-            res += static_cast<natural_digit>(c - '0');
+            digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base, 1);
+            if (c) {
+                natural_digit ndig = static_cast<natural_digit>(c);
+                digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &ndig, 1);
+            }
         }
 
         *this = std::move(res);
@@ -300,27 +305,11 @@ namespace c8 {
         natural res;
 
         /*
-         * Does v have zero digits?  If yes, then our result is just this number.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            res = *this;
-            return res;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then our result is just v.
-         */
-        std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            res = v;
-            return res;
-        }
-
-        /*
          * We need to reserve some space for our result.  Our result can only be
          * one digit larger than the largest number we have as an operand.
          */
+        std::size_t v_num_digits = v.num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         res.reserve(max_num_digits + 1);
         digit_array_add(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -332,26 +321,11 @@ namespace c8 {
      */
     auto natural::operator +=(const natural &v) -> natural & {
         /*
-         * Does v have zero digits?  If yes, then our result is just this number.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            return *this;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then our result is just v.
-         */
-        std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            *this = v;
-            return *this;
-        }
-
-        /*
          * We need to reserve some space for our result.  Our result can only be
          * one digit larger than the largest number we have as an operand.
          */
+        std::size_t v_num_digits = v.num_digits_;
+        std::size_t this_num_digits = num_digits_;
         std::size_t max_num_digits = (v_num_digits > this_num_digits) ? v_num_digits : this_num_digits;
         expand(max_num_digits + 1);
         digit_array_add(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -364,25 +338,9 @@ namespace c8 {
     auto natural::operator -(const natural &v) const -> natural {
         natural res;
 
-        /*
-         * Does v have zero digits?  If yes, then our result is just this number.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            res = *this;
-            return res;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then we have an exception.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            throw not_a_number();
-        }
-
         res.reserve(this_num_digits);
-        digit_array_subtract(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_subtract(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v.num_digits_);
         return res;
     }
 
@@ -390,23 +348,7 @@ namespace c8 {
      * Subtract another natural number from this one.
      */
     auto natural::operator -=(const natural &v) -> natural & {
-        /*
-         * Does v have zero digits?  If yes, then our result is just this number.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            return *this;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then we have an exception.
-         */
-        std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            throw not_a_number();
-        }
-
-        digit_array_subtract(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
+        digit_array_subtract(digits_, num_digits_, digits_, num_digits_, v.digits_, v.num_digits_);
         return *this;
     }
 
@@ -416,19 +358,12 @@ namespace c8 {
     auto natural::operator <<(unsigned int count) const -> natural {
         natural res;
 
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
+        std::size_t shift_digits = count / natural_digit_bits;
+        std::size_t shift_bits = count % natural_digit_bits;
+
         std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            return res;
-        }
-
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
-        res.reserve(this_num_digits + trailing_digits + 1);
-        digit_array_left_shift(res.digits_, res.num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.reserve(this_num_digits + shift_digits + 1);
+        digit_array_left_shift(res.digits_, res.num_digits_, digits_, this_num_digits, shift_digits, shift_bits);
         return res;
     }
 
@@ -436,19 +371,12 @@ namespace c8 {
      * Left shift this natural number by a bit count.
      */
     auto natural::operator <<=(unsigned int count) -> natural & {
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
+        std::size_t shift_digits = count / natural_digit_bits;
+        std::size_t shift_bits = count % natural_digit_bits;
+
         std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            return *this;
-        }
-
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
-        expand(this_num_digits + trailing_digits + 1);
-        digit_array_left_shift(digits_, num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        expand(this_num_digits + shift_digits + 1);
+        digit_array_left_shift(digits_, num_digits_, digits_, this_num_digits, shift_digits, shift_bits);
         return *this;
     }
 
@@ -458,19 +386,12 @@ namespace c8 {
     auto natural::operator >>(unsigned int count) const -> natural {
         natural res;
 
+        std::size_t shift_digits = count / natural_digit_bits;
+        std::size_t shift_bits = count % natural_digit_bits;
+
         std::size_t this_num_digits = num_digits_;
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
-        /*
-         * Does this number have fewer digits than we want to shift by?  If yes, then our result is zero.
-         */
-        if (this_num_digits <= trailing_digits) {
-            return res;
-        }
-
-        res.reserve(this_num_digits - trailing_digits);
-        digit_array_right_shift(res.digits_, res.num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        res.reserve(this_num_digits);
+        digit_array_right_shift(res.digits_, res.num_digits_, digits_, this_num_digits, shift_digits, shift_bits);
         return res;
     }
 
@@ -478,19 +399,11 @@ namespace c8 {
      * Right shift this natural number by a bit count.
      */
     auto natural::operator >>=(unsigned int count) -> natural & {
+        std::size_t shift_digits = count / natural_digit_bits;
+        std::size_t shift_bits = count % natural_digit_bits;
+
         std::size_t this_num_digits = num_digits_;
-        std::size_t trailing_digits = count / natural_digit_bits;
-        std::size_t digit_shift = count % natural_digit_bits;
-
-        /*
-         * Does this number have fewer digits than we want to shift by?  If yes, then our result is zero.
-         */
-        if (this_num_digits <= trailing_digits) {
-            num_digits_ = 0;
-            return *this;
-        }
-
-        digit_array_right_shift(digits_, num_digits_, digits_, this_num_digits, trailing_digits, digit_shift);
+        digit_array_right_shift(digits_, num_digits_, digits_, this_num_digits, shift_digits, shift_bits);
         return *this;
     }
 
@@ -500,22 +413,8 @@ namespace c8 {
     auto natural::operator *(const natural &v) const -> natural {
         natural res;
 
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
         std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            return res;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            return res;
-        }
-
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         res.reserve(res_num_digits);
         digit_array_multiply(res.digits_, res.num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -526,22 +425,8 @@ namespace c8 {
      * Multiply this natural number with another one.
      */
     auto natural::operator *=(const natural &v) -> natural & {
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
         std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            return *this;
-        }
-
-        /*
-         * Does this number have zero digits?  If yes, then our result is zero.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (!this_num_digits) {
-            return *this;
-        }
-
         std::size_t res_num_digits = this_num_digits + v_num_digits;
         expand(res_num_digits);
         digit_array_multiply(digits_, num_digits_, digits_, this_num_digits, v.digits_, v_num_digits);
@@ -552,26 +437,11 @@ namespace c8 {
      * Divide this natural number by another one, returning the quotient and remainder.
      */
     auto natural::divide_modulus(const natural &v) const -> std::pair<natural, natural> {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            throw divide_by_zero();
-        }
-
         std::pair<natural, natural> p;
 
-        /*
-         * Is the result zero?  If yes then we're done.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            p.second = *this;
-            return p;
-        }
-
-        p.first.reserve(this_num_digits - v_num_digits + 1);
+        p.first.reserve(this_num_digits);
+        std::size_t v_num_digits = v.num_digits_;
         p.second.reserve(v_num_digits);
         digit_array_divide_modulus(p.first.digits_, p.first.num_digits_, p.second.digits_, p.second.num_digits_,
                                    digits_, this_num_digits, v.digits_, v_num_digits);
@@ -582,25 +452,11 @@ namespace c8 {
      * Divide this natural number by another one, returning the quotient.
      */
     auto natural::operator /(const natural &v) const -> natural {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            throw divide_by_zero();
-        }
-
         natural quotient;
 
-        /*
-         * Is the result zero?  If yes then we're done.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            return quotient;
-        }
-
-        quotient.reserve(this_num_digits - v_num_digits + 1);
+        quotient.reserve(this_num_digits);
+        std::size_t v_num_digits = v.num_digits_;
         natural_digit remainder_digits[v_num_digits];
         std::size_t remainder_num_digits;
         digit_array_divide_modulus(quotient.digits_, quotient.num_digits_, remainder_digits, remainder_num_digits,
@@ -612,27 +468,11 @@ namespace c8 {
      * Divide this natural number by another one, returning the quotient.
      */
     auto natural::operator /=(const natural &v) -> natural & {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
         std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            throw divide_by_zero();
-        }
-
-        /*
-         * Is the result zero?  If yes then we're done.
-         */
-        std::size_t this_num_digits = num_digits_;
-        if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            num_digits_ = 0;
-            return *this;
-        }
-
         natural_digit remainder_digits[v_num_digits];
         std::size_t remainder_num_digits;
         digit_array_divide_modulus(digits_, num_digits_, remainder_digits, remainder_num_digits,
-                                   digits_, this_num_digits, v.digits_, v_num_digits);
+                                   digits_, num_digits_, v.digits_, v_num_digits);
         return *this;
     }
 
@@ -640,28 +480,13 @@ namespace c8 {
      * Divide this natural number by another one, returning the remainder.
      */
     auto natural::operator %(const natural &v) const -> natural {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            throw divide_by_zero();
-        }
-
         natural remainder;
 
-        /*
-         * Is the result zero?  If yes then we're done.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            remainder = *this;
-            return remainder;
-        }
-
-        natural_digit quotient_digits[this_num_digits - v_num_digits + 1];
-        std::size_t quotient_num_digits;
+        natural_digit quotient_digits[this_num_digits];
+        std::size_t v_num_digits = v.num_digits_;
         remainder.reserve(v_num_digits);
+        std::size_t quotient_num_digits;
         digit_array_divide_modulus(quotient_digits, quotient_num_digits, remainder.digits_, remainder.num_digits_,
                                    digits_, this_num_digits, v.digits_, v_num_digits);
         return remainder;
@@ -671,26 +496,11 @@ namespace c8 {
      * Divide this natural number by another one, returning the remainder.
      */
     auto natural::operator %=(const natural &v) -> natural & {
-        /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
-         */
-        std::size_t v_num_digits = v.num_digits_;
-        if (!v_num_digits) {
-            throw divide_by_zero();
-        }
-
-        /*
-         * Is the result zero?  If yes then we're done.
-         */
         std::size_t this_num_digits = num_digits_;
-        if (digit_array_compare_lt(digits_, this_num_digits, v.digits_, v_num_digits)) {
-            return *this;
-        }
-
-        natural_digit quotient_digits[this_num_digits - v_num_digits + 1];
+        natural_digit quotient_digits[this_num_digits];
         std::size_t quotient_num_digits;
         digit_array_divide_modulus(quotient_digits, quotient_num_digits, digits_, num_digits_,
-                                   digits_, this_num_digits, v.digits_, v_num_digits);
+                                   digits_, this_num_digits, v.digits_, v.num_digits_);
         return *this;
     }
 
@@ -783,7 +593,7 @@ namespace c8 {
             return outstr;
         }
 
-        unsigned int base = 10;
+        natural_digit base = 10;
         auto flags = outstr.flags();
         if (flags & std::ios_base::hex) {
             base = 16;
@@ -805,20 +615,19 @@ namespace c8 {
             }
         }
 
-        natural nbase = base;
-
+        natural_digit modulus_digit;
+        std::size_t modulus_num_digits;
         std::vector<char> res;
         auto rem = v;
         do {
-            std::pair<natural, natural> qm = rem.divide_modulus(nbase);
+            digit_array_divide_modulus(rem.digits_, rem.num_digits_, &modulus_digit, modulus_num_digits,
+                                       rem.digits_, rem.num_digits_, &base, 1);
             unsigned int d = 0;
-            if (!qm.second.is_zero()) {
-                d = qm.second.digits_[0];
+            if (modulus_num_digits) {
+                d = static_cast<unsigned int>(modulus_digit);
             }
 
             res.emplace_back(digits[d]);
-
-            rem = std::move(qm.first);
         } while (!rem.is_zero());
 
         std::size_t res_sz = res.size();

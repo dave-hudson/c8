@@ -76,11 +76,37 @@ namespace c8 {
      * Add two digit arrays.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
-     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_add(natural_digit *res, std::size_t &res_num_digits,
                                 const natural_digit *src1, std::size_t src1_num_digits,
                                 const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        /*
+         * Are we adding zero?  If yes, then just duplicate src1.
+         */
+        if (src2_num_digits == 0) {
+            if (res != src1) {
+                __digit_array_copy(res, src1, src1_num_digits);
+            }
+
+            res_num_digits = src1_num_digits;
+            return;
+        }
+
+        /*
+         * Are we adding to zero?  If yes, then just duplicate src2.
+         */
+        if (src1_num_digits == 0) {
+            if (res != src2) {
+                __digit_array_copy(res, src2, src2_num_digits);
+            }
+
+            res_num_digits = src2_num_digits;
+            return;
+        }
+
+        /*
+         * Handle the various digit number permutations.
+         */
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
                 __digit_array_add_1_1(res, res_num_digits, src1, src2);
@@ -103,33 +129,40 @@ namespace c8 {
      * Subtract one digit array from another.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
-     * Both src1_num_digits and src2_num_digits must be >= 1.
      */
     inline auto digit_array_subtract(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
                                      const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        /*
+         * Are we subtracting zero?  If yes, then just duplicate src1.
+         */
+        if (src2_num_digits == 0) {
+            if (res != src1) {
+                __digit_array_copy(res, src1, src1_num_digits);
+            }
+
+            res_num_digits = src1_num_digits;
+            return;
+        }
+
+        /*
+         * src1 must be greater than, or equal to src2.
+         */
+        if (__digit_array_compare_lt(src1, src1_num_digits, src2, src2_num_digits)) {
+            throw not_a_number();
+        }
+
+        /*
+         * Handle the various digit number permutations.
+         */
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
-                /*
-                 * If our result would be negative then throw an exception.
-                 */
-                if (src1[0] < src2[0]) {
-                    throw not_a_number();
-                }
-
                 __digit_array_subtract_1_1(res, res_num_digits, src1, src2);
                 return;
             }
 
             __digit_array_subtract_m_1(res, res_num_digits, src1, src1_num_digits, src2);
             return;
-        }
-
-        /*
-         * We should not have a negative result!
-         */
-        if (__digit_array_compare_lt(src1, src1_num_digits, src2, src2_num_digits)) {
-            throw not_a_number();
         }
 
         __digit_array_subtract_m_n(res, res_num_digits, src1, src1_num_digits, src2, src2_num_digits);
@@ -139,11 +172,21 @@ namespace c8 {
      * Left shift a digit array.
      *
      * Note: It is OK for res and src to be the same pointer.
-     * src_num_digits must be >= 1.
      */
     inline auto digit_array_left_shift(natural_digit *res, std::size_t &res_num_digits,
                                        const natural_digit *src, std::size_t src_num_digits,
                                        std::size_t shift_digits, std::size_t shift_bits) -> void {
+        /*
+         * Are we shifting zero?  If yes, then our result is zero.
+         */
+        if (src_num_digits == 0) {
+            res_num_digits = 0;
+            return;
+        }
+
+        /*
+         * Handle the various digit number permutations.
+         */
         if (src_num_digits == 1) {
             __digit_array_left_shift_1(res, res_num_digits, src, shift_digits, shift_bits);
             return;
@@ -156,11 +199,21 @@ namespace c8 {
      * Right shift a digit array.
      *
      * Note: It is OK for res and src to be the same pointer.
-     * src_num_digits must be >= 1.
      */
     inline auto digit_array_right_shift(natural_digit *res, std::size_t &res_num_digits,
                                         const natural_digit *src, std::size_t src_num_digits,
                                         std::size_t shift_digits, std::size_t shift_bits) -> void {
+        /*
+         * Are we going to shift the result to zero?
+         */
+        if (src_num_digits <= shift_digits) {
+            res_num_digits = 0;
+            return;
+        }
+
+        /*
+         * Handle the various digit number permutations.
+         */
         if (src_num_digits == 1) {
             __digit_array_right_shift_1(res, res_num_digits, src, shift_bits);
             return;
@@ -177,6 +230,25 @@ namespace c8 {
     inline auto digit_array_multiply(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
                                      const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        /*
+         * Are we multiplying by zero?  If yes, the result is zero.
+         */
+        if (src2_num_digits == 0) {
+            res_num_digits = 0;
+            return;
+        }
+
+        /*
+         * Are we multiplying zero?  If yes, the result is zero.
+         */
+        if (src1_num_digits == 0) {
+            res_num_digits = 0;
+            return;
+        }
+
+        /*
+         * Handle the various digit number permutations.
+         */
         if (src2_num_digits == 1) {
             if (src1_num_digits == 1) {
                 __digit_array_multiply_1_1(res, res_num_digits, src1, src2);
@@ -192,19 +264,7 @@ namespace c8 {
             return;
         }
 
-        /*
-         * Worst case scenario:  We're multiplying two arrays of digits.  If we're going to
-         * update in place then we actually have to copy the source array because we'll
-         * overwrite it.
-         */
-        auto src1_1 = src1;
-        natural_digit src1_copy[src1_num_digits];
-        if (res == src1) {
-            __digit_array_copy(src1_copy, src1, src1_num_digits);
-            src1_1 = src1_copy;
-        }
-
-        __digit_array_multiply_m_n(res, res_num_digits, src1_1, src1_num_digits, src2, src2_num_digits);
+        __digit_array_multiply_m_n(res, res_num_digits, src1, src1_num_digits, src2, src2_num_digits);
     }
 
     /*
@@ -216,6 +276,23 @@ namespace c8 {
                                            natural_digit *remainder, std::size_t &remainder_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2, std::size_t src2_num_digits) -> void {
+        /*
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (src2_num_digits == 0) {
+            throw divide_by_zero();
+        }
+
+        /*
+         * Is our result going to be zero?
+         */
+        if (__digit_array_compare_lt(src1, src1_num_digits, src2, src2_num_digits)) {
+            __digit_array_copy(remainder, src1, src1_num_digits);
+            remainder_num_digits = src1_num_digits;
+            quotient_num_digits = 0;
+            return;
+        }
+
         /*
          * Does, our divisor src2, only have one digit?  If yes, then use the fast version
          * of divide_modulus.

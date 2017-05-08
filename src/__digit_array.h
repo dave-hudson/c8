@@ -394,6 +394,8 @@ namespace c8 {
 
     /*
      * Subtract a single digit from another single digit.
+     *
+     * The value of src1 must be larger than, or equal to, src2.
      */
     inline auto __digit_array_subtract_1_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1,
@@ -413,6 +415,7 @@ namespace c8 {
      * Subtract a single digit from a digit array.
      *
      * Note: It is OK for res and src1 to be the same pointer.
+     * The value of src1 must be larger than, or equal to, src2.
      */
     inline auto __digit_array_subtract_m_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
@@ -449,6 +452,7 @@ namespace c8 {
      * Subtract one digit array from another.
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
+     * The value of src1 must be larger than, or equal to, src2.
      */
     inline auto __digit_array_subtract_m_n(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
@@ -673,6 +677,17 @@ namespace c8 {
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
+         * If we're going to update in place then we actually have to copy the source array
+         * because we'll overwrite it.
+         */
+        auto src1_1 = src1;
+        natural_digit src1_copy[src1_num_digits];
+        if (res == src1) {
+            __digit_array_copy(src1_copy, src1, src1_num_digits);
+            src1_1 = src1_copy;
+        }
+
+        /*
          * Comba multiply.
          *
          * In this style of multplier we work out all of the multplies that contribute to
@@ -694,7 +709,7 @@ namespace c8 {
             auto acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(acc1));
             acc1 >>= natural_digit_bits;
             for (std::size_t j = 0; j < num_multiplies; j++) {
-                auto a = static_cast<natural_double_digit>(src1[ti++]);
+                auto a = static_cast<natural_double_digit>(src1_1[ti++]);
                 auto b = static_cast<natural_double_digit>(src2[tj--]);
                 natural_double_digit d0 = acc0 + (a * b);
                 acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(d0));
