@@ -652,10 +652,17 @@ namespace c8 {
         auto v = src2[0];
 
         /*
-         * Long multiply.
+         * Long multiply.  Start with the first digit.
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < src1_num_digits; i++) {
+        auto a = src1[0];
+        natural_double_digit acc = (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+        res[0] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        /*
+         * Multiply the remaining digits. 
+         */
+        for (std::size_t i = 1; i < src1_num_digits; i++) {
             auto a = src1[i];
             acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
             res[i] = static_cast<natural_digit>(acc);
@@ -801,10 +808,24 @@ namespace c8 {
         auto v = src2[0];
 
         /*
-         * Now we run a long divide algorithm.
+         * Long divide.  Start with the most significant digit.
          */
-        natural_double_digit acc = 0;
-        std::size_t i = src1_num_digits;
+        std::size_t q_num_digits = src1_num_digits;
+        std::size_t i = src1_num_digits - 1;
+        auto a = src1[i];
+        natural_double_digit acc = static_cast<natural_double_digit>(a);
+        natural_double_digit q = acc / v;
+        acc = acc % v;
+        quotient[i] = static_cast<natural_digit>(q);
+        if (q == 0) {
+            q_num_digits--;
+        }
+
+        quotient_num_digits = q_num_digits;
+
+        /*
+         * Loop over all the remaining digits.
+         */
         while (i--) {
             auto a = src1[i];
             acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
@@ -820,17 +841,6 @@ namespace c8 {
         }
 
         remainder_num_digits = r_num_digits;
-
-        /*
-         * We may have a zero upper digit so account for this.
-         */
-        std::size_t q_num_digits = src1_num_digits;
-
-        if (!quotient[q_num_digits - 1]) {
-            q_num_digits--;
-        }
-
-        quotient_num_digits = q_num_digits;
     }
 
     /*
