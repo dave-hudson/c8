@@ -16,6 +16,35 @@ namespace c8 {
     };
 
     /*
+     * Convert a character to numeric value, checking against a specified base.
+     */
+    auto inline convert_char_to_natural_digit(char c, natural_digit base) -> natural_digit {
+        if (!isdigit(c)) {
+            if (base != 16) {
+                throw invalid_argument("invalid digit");
+            }
+
+            if (!isxdigit(c)) {
+                throw invalid_argument("invalid digit");
+            }
+
+            c = static_cast<char>(tolower(c));
+            c = static_cast<char>(c - ('a' - '0' - 10));
+        }
+
+        natural_digit c_digit = static_cast<natural_digit>(c) - '0';
+
+        if (base == 8) {
+            if (c_digit >= 8) {
+                throw invalid_argument("invalid digit");
+            }
+        }
+
+        return c_digit;
+    }
+
+
+    /*
      * Reserve a number of digits in this natural number.
      */
     inline auto natural::reserve(std::size_t new_digits) -> void {
@@ -164,34 +193,46 @@ namespace c8 {
         }
 
         /*
-         * We now know the base we're using and the starting index.
+         * It's much faster to compose small groups of digits together and then merge
+         * the groups.  Start with any stray characters.
          */
-        for (std::size_t i = idx; i < v_sz; i++) {
-            char c = v[i];
-            if (!isdigit(c)) {
-                if (base != 16) {
-                    throw invalid_argument("invalid digit");
-                }
-
-                if (!isxdigit(c)) {
-                    throw invalid_argument("invalid digit");
-                }
-
-                c = static_cast<char>(tolower(c));
-                c = static_cast<char>(c - ('a' - '0' - 10));
-            }
-
-            natural_digit c_digit = static_cast<natural_digit>(c) - '0';
-
-            if (base == 8) {
-                if (c_digit >= 8) {
-                    throw invalid_argument("invalid digit");
-                }
-            }
-
+        if ((v_sz - idx) & 1) {
+            natural_digit c_digit = convert_char_to_natural_digit(v[idx++], base);
             digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base, 1);
-            if (c) {
+            if (c_digit) {
                 digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &c_digit, 1);
+            }
+        }
+
+        /*
+         * Now compose pairs of characters.
+         */
+        auto base2 = base * base;
+        if ((v_sz - idx) & 2) {
+            natural_digit c_digit0 = convert_char_to_natural_digit(v[idx++], base);
+            natural_digit c_digit1 = convert_char_to_natural_digit(v[idx++], base);
+            natural_digit acc = (c_digit0 * base) + c_digit1;
+            digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base2, 1);
+            if (acc) {
+                digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &acc, 1);
+            }
+        }
+
+        /*
+         * Now compose quads of characters.
+         */
+        auto base4 = base2 * base2;
+        for (std::size_t i = idx; i < v_sz; i += 4) {
+            natural_digit c_digit0 = convert_char_to_natural_digit(v[i], base);
+            natural_digit c_digit1 = convert_char_to_natural_digit(v[i + 1], base);
+            natural_digit c_digit2 = convert_char_to_natural_digit(v[i + 2], base);
+            natural_digit c_digit3 = convert_char_to_natural_digit(v[i + 3], base);
+            natural_digit acc = (c_digit0 * base) + c_digit1;
+            acc = (acc * base) + c_digit2;
+            acc = (acc * base) + c_digit3;
+            digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base4, 1);
+            if (acc) {
+                digit_array_add(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &acc, 1);
             }
         }
 
@@ -670,18 +711,44 @@ namespace c8 {
 
         res[--res_sz] = digits[d];
 
+        auto base2 = base * base;
+        auto base4 = base2 * base2;
+
         /*
-         * Now compute any other digits.
+         * Now compute any other characters.
+         *
+         * We work in blocks of 4 characters at a time because this results in far
+         * fewer arbitrary precision divides.
          */
         while (rem_num_digits) {
             digit_array_divide_modulus(rem_digits, rem_num_digits, &modulus_digit, modulus_num_digits,
-                                       rem_digits, rem_num_digits, &base, 1);
-            unsigned int d = 0;
-            if (modulus_num_digits) {
-                d = static_cast<unsigned int>(modulus_digit);
+                                       rem_digits, rem_num_digits, &base4, 1);
+            if (modulus_num_digits == 0) {
+                modulus_digit = 0;
             }
 
-            res[--res_sz] = digits[d];
+            auto d0 = modulus_digit % base;
+            modulus_digit = modulus_digit / base;
+            res[--res_sz] = digits[d0];
+            if ((rem_num_digits == 0) && (modulus_digit == 0)) {
+                break;
+            }
+
+            auto d1 = modulus_digit % base;
+            modulus_digit = modulus_digit / base;
+            res[--res_sz] = digits[d1];
+            if ((rem_num_digits == 0) && (modulus_digit == 0)) {
+                break;
+            }
+
+            auto d2 = modulus_digit % base;
+            modulus_digit = modulus_digit / base;
+            res[--res_sz] = digits[d2];
+            if ((rem_num_digits == 0) && (modulus_digit == 0)) {
+                break;
+            }
+
+            res[--res_sz] = digits[modulus_digit];
         }
 
         /*
