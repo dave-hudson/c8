@@ -99,9 +99,7 @@ namespace c8 {
          */
         std::size_t i = src1_num_digits;
         while (i--) {
-            auto a = src1[i];
-            auto b = src2[i];
-            if (a != b) {
+            if (src1[i] != src2[i]) {
                 return false;
             }
         }
@@ -126,9 +124,7 @@ namespace c8 {
          */
         std::size_t i = src1_num_digits;
         while (i--) {
-            auto a = src1[i];
-            auto b = src2[i];
-            if (a != b) {
+            if (src1[i] != src2[i]) {
                 return true;
             }
         }
@@ -308,8 +304,7 @@ namespace c8 {
         /*
          * Add the first digit.
          */
-        auto a = src1[0];
-        natural_double_digit acc = (static_cast<natural_double_digit>(a) + static_cast<natural_double_digit>(src2[0]));
+        natural_double_digit acc = (static_cast<natural_double_digit>(src1[0]) + static_cast<natural_double_digit>(src2[0]));
         res[0] = static_cast<natural_digit>(acc);
         acc >>= natural_digit_bits;
 
@@ -361,13 +356,17 @@ namespace c8 {
         }
 
         /*
+         * Add the first digits together.
+         */
+        natural_double_digit acc = static_cast<natural_double_digit>(larger[0]) + static_cast<natural_double_digit>(smaller[0]);
+        res[0] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        /*
          * Add the parts together until we run out of digits in the smaller part.
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < smaller_num_digits; i++) {
-            auto a = static_cast<natural_double_digit>(larger[i]);
-            auto b = static_cast<natural_double_digit>(smaller[i]);
-            acc += (a + b);
+        for (std::size_t i = 1; i < smaller_num_digits; i++) {
+            acc += (static_cast<natural_double_digit>(larger[i]) + static_cast<natural_double_digit>(smaller[i]));
             res[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
@@ -421,20 +420,18 @@ namespace c8 {
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2) -> void {
         /*
-         * Subtract the digits from this number's lowest digit.
+         * Subtract the first digits.
          */
-        auto a = static_cast<natural_double_digit>(src1[0]);
-        natural_double_digit acc = (a - static_cast<natural_double_digit>(src2[0]));
+        natural_double_digit acc = (static_cast<natural_double_digit>(src1[0]) - static_cast<natural_double_digit>(src2[0]));
         res[0] = static_cast<natural_digit>(acc);
-        acc = (acc >> natural_digit_bits) & 1;
 
         /*
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = 1; i < src1_num_digits; i++) {
+            acc = (acc >> natural_digit_bits) & 1;
             acc = static_cast<natural_double_digit>(src1[i]) - acc;
             res[i] = static_cast<natural_digit>(acc);
-            acc = (acc >> natural_digit_bits) & 1;
         }
 
         /*
@@ -460,23 +457,22 @@ namespace c8 {
         /*
          * Subtract the parts together until we run out of digits in the smaller part.
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < src2_num_digits; i++) {
-            auto a = static_cast<natural_double_digit>(src1[i]);
-            auto b = static_cast<natural_double_digit>(src2[i]);
-            acc = a - b - acc;
-            res[i] = static_cast<natural_digit>(acc);
+        natural_double_digit acc = static_cast<natural_double_digit>(src1[0]) - static_cast<natural_double_digit>(src2[0]);
+        res[0] = static_cast<natural_digit>(acc);
+
+        for (std::size_t i = 1; i < src2_num_digits; i++) {
             acc = (acc >> natural_digit_bits) & 1;
+            acc = static_cast<natural_double_digit>(src1[i]) - static_cast<natural_double_digit>(src2[i]) - acc;
+            res[i] = static_cast<natural_digit>(acc);
         }
 
         /*
          * Subtract the remaining digits and any carries.
          */
         for (std::size_t i = src2_num_digits; i < src1_num_digits; i++) {
-            auto a = static_cast<natural_double_digit>(src1[i]);
-            acc = a - acc;
-            res[i] = static_cast<natural_digit>(acc);
             acc = (acc >> natural_digit_bits) & 1;
+            acc = static_cast<natural_double_digit>(src1[i]) - acc;
+            res[i] = static_cast<natural_digit>(acc);
         }
 
         /*
@@ -654,8 +650,7 @@ namespace c8 {
         /*
          * Long multiply.  Start with the first digit.
          */
-        auto a = src1[0];
-        natural_double_digit acc = (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+        natural_double_digit acc = (static_cast<natural_double_digit>(src1[0]) * static_cast<natural_double_digit>(v));
         res[0] = static_cast<natural_digit>(acc);
         acc >>= natural_digit_bits;
 
@@ -663,8 +658,7 @@ namespace c8 {
          * Multiply the remaining digits. 
          */
         for (std::size_t i = 1; i < src1_num_digits; i++) {
-            auto a = src1[i];
-            acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+            acc += (static_cast<natural_double_digit>(src1[i]) * static_cast<natural_double_digit>(v));
             res[i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
@@ -749,10 +743,12 @@ namespace c8 {
         /*
          * Long multiply, but include the digit shift in the result.
          */
-        natural_double_digit acc = 0;
-        for (std::size_t i = 0; i < src_num_digits; i++) {
-            auto a = src[i];
-            acc = acc + (static_cast<natural_double_digit>(a) * static_cast<natural_double_digit>(v));
+        natural_double_digit acc = static_cast<natural_double_digit>(src[0]) * static_cast<natural_double_digit>(v);
+        res[shift_digits] = static_cast<natural_digit>(acc);
+        acc >>= natural_digit_bits;
+
+        for (std::size_t i = 1; i < src_num_digits; i++) {
+            acc += (static_cast<natural_double_digit>(src[i]) * static_cast<natural_double_digit>(v));
             res[shift_digits + i] = static_cast<natural_digit>(acc);
             acc >>= natural_digit_bits;
         }
@@ -812,8 +808,7 @@ namespace c8 {
          */
         std::size_t q_num_digits = src1_num_digits;
         std::size_t i = src1_num_digits - 1;
-        auto a = src1[i];
-        natural_double_digit acc = static_cast<natural_double_digit>(a);
+        natural_double_digit acc = static_cast<natural_double_digit>(src1[i]);
         natural_double_digit q = acc / v;
         acc = acc % v;
         quotient[i] = static_cast<natural_digit>(q);
@@ -827,8 +822,7 @@ namespace c8 {
          * Loop over all the remaining digits.
          */
         while (i--) {
-            auto a = src1[i];
-            acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(a);
+            acc = static_cast<natural_double_digit>(acc << natural_digit_bits) + static_cast<natural_double_digit>(src1[i]);
             natural_double_digit q = acc / v;
             acc = acc % v;
             quotient[i] = static_cast<natural_digit>(q);
