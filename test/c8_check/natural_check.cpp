@@ -538,6 +538,74 @@ auto test_natural_subtract_3b() -> result {
 }
 
 /*
+ * Subtract a single digit natural number from a large natural number.
+ */
+auto test_natural_subtract_4a() -> result {
+    result r("nat sub 4a");
+    c8::natural s0("0x1000000000000000000000000000000000000000000008797000000000000000000000000000000004");
+    c8::natural s1("0x4");
+
+    r.start_clock();
+    auto s2 = s0 - s1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << s2;
+    r.check_pass("1000000000000000000000000000000000000000000008797000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Subtract a single digit natural number from a large natural number.
+ */
+auto test_natural_subtract_4b() -> result {
+    result r("nat sub 4b");
+    c8::natural s0("0x1000000000000000000000000000000000000000000008797000000000000000000000000000000004");
+    c8::natural s1("0x4");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << s0;
+    r.check_pass("1000000000000000000000000000000000000000000008797000000000000000000000000000000000");
+    return r;
+}
+
+/*
+ * Subtract a single digit natural number from a large natural number.
+ */
+auto test_natural_subtract_5a() -> result {
+    result r("nat sub 5a");
+    c8::natural s0("0x100000000000000000000000000000000000000000000000000000000000000000000000000000004");
+    c8::natural s1("0x5");
+
+    r.start_clock();
+    auto s2 = s0 - s1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << s2;
+    r.check_pass("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    return r;
+}
+
+/*
+ * Subtract a single digit natural number from a large natural number.
+ */
+auto test_natural_subtract_5b() -> result {
+    result r("nat sub 5b");
+    c8::natural s0("0x100000000000000000000000000000000000000000000000000000000000000000000000000000004");
+    c8::natural s1("0x5");
+
+    r.start_clock();
+    s0 -= s1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << s0;
+    r.check_pass("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+    return r;
+}
+
+/*
  * Compare two dissimilar 1 digit values.
  */
 auto test_natural_compare_0a() -> result {
