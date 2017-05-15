@@ -18,17 +18,28 @@ namespace c8 {
             return 0;
         }
 
-        /*
-         * We can account for trailing digits easily, but the most significant digit is
-         * more tricky.  We use __builtin_clz() to count the leadign zeros of the digit,
-         * but if the size of a digit is smaller than the size of an integer (which is
-         * what __builtin_clz() uses) then we must compensate for the extra zeros that
-         * it returns.
-         */
         natural_digit d = p[p_num_digits - 1];
-        auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
-        auto clz = static_cast<unsigned int>(__builtin_clz(d));
-        return static_cast<std::size_t>((p_num_digits + c) * natural_digit_bits) - clz;
+
+        /*
+         * This if statement is actually a bit strange.  It's comparing two things that
+         * are compile-time constants because we actually only want one of the following
+         * code paths to be retained.
+         */
+        if (sizeof(natural_digit) <= sizeof(int)) {
+            /*
+             * We can account for trailing digits easily, but the most significant digit is
+             * more tricky.  We use __builtin_clz() to count the leadign zeros of the digit,
+             * but if the size of a digit is smaller than the size of an integer (which is
+             * what __builtin_clz() uses) then we must compensate for the extra zeros that
+             * it returns.
+             */
+            auto clz = static_cast<unsigned int>(__builtin_clz(static_cast<unsigned int>(d)));
+            auto c = (sizeof(int) / sizeof(natural_digit)) - 1;
+            return static_cast<std::size_t>((p_num_digits + c) * natural_digit_bits) - clz;
+        }
+
+        auto clz = static_cast<unsigned int>(__builtin_clzll(static_cast<unsigned long long>(d)));
+        return static_cast<std::size_t>(p_num_digits * natural_digit_bits) - clz;
     }
 
     /*
@@ -399,7 +410,7 @@ namespace c8 {
     inline auto __digit_array_subtract_1_1(natural_digit *res, std::size_t &res_num_digits,
                                            const natural_digit *src1,
                                            const natural_digit *src2) -> void {
-        std::size_t r_num_digits = 1;
+        std::size_t r_num_digits = 0;
 
         natural_digit r = src1[0] - src2[0];
         if (r) {
@@ -511,9 +522,9 @@ namespace c8 {
          * Shift the original value by the remaining number of bits that we
          * need, and insert those in the result.
          */
-        auto d = static_cast<natural_double_digit>(src[0]) << shift_bits;
-        res[shift_digits] = static_cast<natural_digit>(d);
-        auto d_hi = static_cast<natural_digit>(d >> natural_digit_bits);
+        auto d = src[0];
+        res[shift_digits] = d << shift_bits;
+        auto d_hi = d >> (natural_digit_bits - shift_bits);
         if (d_hi) {
             res[r_num_digits++] = d_hi;
         }

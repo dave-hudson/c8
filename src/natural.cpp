@@ -147,12 +147,14 @@ namespace c8 {
 
         natural_digit *this_digits = digits_;
 
+        auto v_double = static_cast<natural_double_digit>(v);
+
         std::size_t i = 0;
         do {
             natural_digit m = static_cast<natural_digit>(-1);
-            this_digits[i++] = static_cast<natural_digit>(v & m);
-            v >>= natural_digit_bits;
-        } while (v);
+            this_digits[i++] = static_cast<natural_digit>(v_double & m);
+            v_double >>= natural_digit_bits;
+        } while (v_double);
 
         num_digits_ = i;
     }
@@ -173,8 +175,6 @@ namespace c8 {
             throw invalid_argument("zero size string");
         }
 
-        natural res;
-
         /*
          * Is our first character a '0'?  If it is then we may have an octal or hex number.
          */
@@ -191,6 +191,8 @@ namespace c8 {
                 }
             }
         }
+
+        natural res;
 
         /*
          * It's much faster to compose small groups of digits together and then merge
@@ -223,6 +225,8 @@ namespace c8 {
          */
         auto base4 = base2 * base2;
         for (std::size_t i = idx; i < v_sz; i += 4) {
+            res.expand(res.num_digits_ + 1);
+
             natural_digit c_digit0 = convert_char_to_natural_digit(v[i], base);
             natural_digit c_digit1 = convert_char_to_natural_digit(v[i + 1], base);
             natural_digit c_digit2 = convert_char_to_natural_digit(v[i + 2], base);

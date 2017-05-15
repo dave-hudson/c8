@@ -77,9 +77,14 @@ namespace c8 {
      *
      * typedef uint8_t natural_digit;
      * typedef uint16_t natural_double_digit;
+     *
+     * Or:
+     *
+     * typedef uint32_t natural_digit;
+     * typedef uint64_t natural_double_digit;
      */
-    typedef uint32_t natural_digit;
-    typedef uint64_t natural_double_digit;
+    typedef uint64_t natural_digit;
+    typedef unsigned __int128 natural_double_digit;
 
     const std::size_t natural_digit_bits = 8 * sizeof(natural_digit);
 
@@ -145,7 +150,7 @@ namespace c8 {
         std::size_t num_digits_;        // The number of digits in this number
         std::size_t digits_size_;       // Number of digits_ allocated
         natural_digit *digits_;         // Digits of the natural number
-        natural_digit small_digits_[16];
+        natural_digit small_digits_[32 / sizeof(natural_digit)];
                                         // Small fixed-size digit buffer
         std::unique_ptr<natural_digit[]> large_digits_;
                                         // Pointer to large digit buffer, if needed
