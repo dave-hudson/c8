@@ -57,10 +57,12 @@ namespace c8 {
         }
 
         /*
-         * Allocate a new digit array and update book-keeping info.
+         * Allocate a new digit array and update book-keeping info.  The naked new
+         * here isn't ideal, but we really don't want to have to zero the array and
+         * there's no way to do that with std::make_unique<>.
          */
         digits_size_ = new_digits;
-        large_digits_ = std::make_unique<natural_digit[]>(new_digits);
+        large_digits_ = std::unique_ptr<natural_digit[]>(new natural_digit[new_digits]);
         digits_ = large_digits_.get();
     }
 
@@ -77,9 +79,11 @@ namespace c8 {
         }
 
         /*
-         * Replace the old digit array with the new one.
+         * Replace the old digit array with the new one.  The naked new here
+         * isn't ideal, but we really don't want to have to zero the array and
+         * there's no way to do that with std::make_unique<>.
          */
-        auto d = std::make_unique<natural_digit[]>(new_digits);
+        auto d = std::unique_ptr<natural_digit[]>(new natural_digit[new_digits]);
         auto d_ptr = d.get();
         digit_array_copy(d_ptr, digits_, num_digits_);
 
@@ -193,6 +197,7 @@ namespace c8 {
         }
 
         natural res;
+        res.expand((((v_sz - idx) * 4) + 31) / 32);
 
         /*
          * It's much faster to compose small groups of digits together and then merge
@@ -225,14 +230,12 @@ namespace c8 {
          */
         auto base4 = base2 * base2;
         for (std::size_t i = idx; i < v_sz; i += 4) {
-            res.expand(res.num_digits_ + 1);
-
             natural_digit c_digit0 = convert_char_to_natural_digit(v[i], base);
             natural_digit c_digit1 = convert_char_to_natural_digit(v[i + 1], base);
-            natural_digit c_digit2 = convert_char_to_natural_digit(v[i + 2], base);
-            natural_digit c_digit3 = convert_char_to_natural_digit(v[i + 3], base);
             natural_digit acc = (c_digit0 * base) + c_digit1;
+            natural_digit c_digit2 = convert_char_to_natural_digit(v[i + 2], base);
             acc = (acc * base) + c_digit2;
+            natural_digit c_digit3 = convert_char_to_natural_digit(v[i + 3], base);
             acc = (acc * base) + c_digit3;
             digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base4, 1);
             if (acc) {
