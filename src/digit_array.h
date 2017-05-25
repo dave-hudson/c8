@@ -9,25 +9,28 @@
 #include "c8.h"
 #include "__digit_array.h"
 
+#undef INLINE
+#define INLINE inline __attribute__((always_inline))
+
 namespace c8 {
     /*
      * Return the number of bits required by this digit array.
      */
-    auto digit_array_size_bits(const natural_digit *p, std::size_t p_num_digits) noexcept -> std::size_t {
+    INLINE auto digit_array_size_bits(const natural_digit *p, std::size_t p_num_digits) noexcept -> std::size_t {
         return __digit_array_size_bits(p, p_num_digits);
     }
 
     /*
      * Copy (forwards) an array of digits.
      */
-    inline auto digit_array_copy(natural_digit *res, const natural_digit *src, std::size_t src_num_digits) -> void {
+    INLINE auto digit_array_copy(natural_digit *res, const natural_digit *src, std::size_t src_num_digits) -> void {
         return __digit_array_copy(res, src, src_num_digits);
     }
 
     /*
      * Compare if digit array src1 is equal to digit array src2.
      */
-    inline auto digit_array_compare_eq(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_eq(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_eq(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -35,7 +38,7 @@ namespace c8 {
     /*
      * Compare if digit array src1 is not equal to digit array src2.
      */
-    inline auto digit_array_compare_ne(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_ne(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_ne(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -43,7 +46,7 @@ namespace c8 {
     /*
      * Compare if digit array src1 is greater than digit array src2.
      */
-    inline auto digit_array_compare_gt(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_gt(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_gt(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -51,7 +54,7 @@ namespace c8 {
     /*
      * Compare if digit array src1 is greater than, or equal to, digit array src2.
      */
-    inline auto digit_array_compare_ge(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_ge(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_ge(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -59,7 +62,7 @@ namespace c8 {
     /*
      * Compare if digit array src1 is less than digit array src2.
      */
-    inline auto digit_array_compare_lt(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_lt(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_lt(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -67,7 +70,7 @@ namespace c8 {
     /*
      * Compare if digit array src1 is less than, or equal to, digit array src2.
      */
-    inline auto digit_array_compare_le(const natural_digit *src1, std::size_t src1_num_digits,
+    INLINE auto digit_array_compare_le(const natural_digit *src1, std::size_t src1_num_digits,
                                        const natural_digit *src2, std::size_t src2_num_digits) noexcept -> bool {
         return __digit_array_compare_le(src1, src1_num_digits, src2, src2_num_digits);
     }
@@ -77,7 +80,7 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto digit_array_add(natural_digit *res, std::size_t &res_num_digits,
+    INLINE auto digit_array_add(natural_digit *res, std::size_t &res_num_digits,
                                 const natural_digit *src1, std::size_t src1_num_digits,
                                 const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
@@ -130,7 +133,7 @@ namespace c8 {
      *
      * Note: It is OK for res and either src1, or src2, to be the same pointer.
      */
-    inline auto digit_array_subtract(natural_digit *res, std::size_t &res_num_digits,
+    INLINE auto digit_array_subtract(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
                                      const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
@@ -173,7 +176,7 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto digit_array_left_shift(natural_digit *res, std::size_t &res_num_digits,
+    INLINE auto digit_array_left_shift(natural_digit *res, std::size_t &res_num_digits,
                                        const natural_digit *src, std::size_t src_num_digits,
                                        std::size_t shift_digits, std::size_t shift_bits) -> void {
         /*
@@ -200,7 +203,7 @@ namespace c8 {
      *
      * Note: It is OK for res and src to be the same pointer.
      */
-    inline auto digit_array_right_shift(natural_digit *res, std::size_t &res_num_digits,
+    INLINE auto digit_array_right_shift(natural_digit *res, std::size_t &res_num_digits,
                                         const natural_digit *src, std::size_t src_num_digits,
                                         std::size_t shift_digits, std::size_t shift_bits) -> void {
         /*
@@ -227,7 +230,7 @@ namespace c8 {
      *
      * Both src1_num_digits and src2_num_digits must be >= 1.
      */
-    inline auto digit_array_multiply(natural_digit *res, std::size_t &res_num_digits,
+    INLINE auto digit_array_multiply(natural_digit *res, std::size_t &res_num_digits,
                                      const natural_digit *src1, std::size_t src1_num_digits,
                                      const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
@@ -272,7 +275,7 @@ namespace c8 {
      *
      * Both src1_num_digits and src2_num_digits must be >= 1.
      */
-    inline auto digit_array_divide_modulus(natural_digit *quotient, std::size_t &quotient_num_digits,
+    INLINE auto digit_array_divide_modulus(natural_digit *quotient, std::size_t &quotient_num_digits,
                                            natural_digit *remainder, std::size_t &remainder_num_digits,
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2, std::size_t src2_num_digits) -> void {
