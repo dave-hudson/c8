@@ -2133,6 +2133,60 @@ auto test_natural_divide_7c() -> result {
 }
 
 /*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_8a() -> result {
+    result r("nat div 8a");
+    c8::natural d0("0x7fffffffffffffff80000000000000000000000000000000");
+    c8::natural d1("0x8000000000000000ffffffffffffffff");
+
+    r.start_clock();
+    auto d2 = d0 / d1;
+    auto mo2 = d0 % d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d2 << ',' << mo2;
+    r.check_pass("fffffffffffffffd,3fffffffffffffffd");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_8b() -> result {
+    result r("nat div 8b");
+    c8::natural d0("0x7fffffffffffffff80000000000000000000000000000000");
+    auto mo0 = d0;
+    c8::natural d1("0x8000000000000000ffffffffffffffff");
+
+    r.start_clock();
+    d0 /= d1;
+    mo0 %= d1;
+    r.stop_clock();
+
+    r.get_stream() << std::hex << d0 << ',' << mo0;
+    r.check_pass("fffffffffffffffd,3fffffffffffffffd");
+    return r;
+}
+
+/*
+ * Divide a large natural number by another large natural number.
+ */
+auto test_natural_divide_8c() -> result {
+    result r("nat div 8c");
+    c8::natural d0("0x7fffffffffffffff80000000000000000000000000000000");
+    c8::natural d1("0x8000000000000000ffffffffffffffff");
+
+    r.start_clock();
+    auto dm = d0.divide_modulus(d1);
+    r.stop_clock();
+
+    r.get_stream() << std::hex << dm.first << ',' << dm.second;
+    r.check_pass("fffffffffffffffd,3fffffffffffffffd");
+    return r;
+}
+
+/*
  * Test greatest common divisor.
  */
 auto test_natural_gcd_0() -> result {
