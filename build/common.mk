@@ -17,7 +17,6 @@ CCPP := clang++
 CPPFLAGS = \
     -fPIC \
     -std=c++14 \
-    -fno-omit-frame-pointer \
     -fno-stack-protector \
     -g \
     -O2 \
