@@ -37,7 +37,7 @@ $(TARGET_BIN): $(OBJS) $(LIB_DEPS)
 
 clean:
 	$(RM) -f $(TARGET_BIN)
-	$(RM) -f *.ii *.s *.o *.d
+	$(RM) -f *.ii *.s *.o *.d *.bc
 
 #
 # realclean rule.
