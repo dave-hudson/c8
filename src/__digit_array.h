@@ -6,6 +6,8 @@
 
 #include "c8.h"
 
+#define C8_USE_ASM 1
+
 namespace c8 {
     /*
      * Return the number of bits actually used within this digit array.
@@ -811,9 +813,37 @@ namespace c8 {
          * Loop over all the remaining digits.
          */
         while (i--) {
-            auto acc = (static_cast<natural_double_digit>(r) << natural_digit_bits) + static_cast<natural_double_digit>(src1[i]);
-            q = static_cast<natural_digit>(acc / v);
-            r = static_cast<natural_digit>(acc % v);
+            q = src1[i];
+
+            /*
+             * We need to do a divide, but a large natural_double_digit will typically be
+             * more than a single machine register in size.  The compiler typically won't be
+             * able to generate the most optimal code in such cases so we have to resort to
+             * inline assembler.
+             *
+             * The do/while loop here isn't actually a loop - it just lets us use break to
+             * early-out.  The compiler will invariably recognize that only one path is ever
+             * taken and optimize everything else away.
+             */
+            do {
+                if (sizeof(natural_digit) == 8) {
+#if defined(C8_USE_ASM) && defined(__x86_64__)
+                    asm volatile (
+                    "       divq    %[v]                                \n\t"
+                            : [q] "+a" (q), [r] "+d" (r)
+                            : [v] "r" (v)
+                            : "cc"
+                    );
+
+                    break;
+#endif
+                }
+
+                auto acc = (static_cast<natural_double_digit>(r) << natural_digit_bits) + static_cast<natural_double_digit>(q);
+                q = static_cast<natural_digit>(acc / v);
+                r = static_cast<natural_digit>(acc % v);
+            } while (false);
+
             quotient[i] = q;
         }
 
@@ -1046,10 +1076,37 @@ namespace c8 {
                  * Estimate the next digit of the result by dividing the most significant two
                  * digits of our dividend by the most significant digit of our divisor.
                  */
-                auto d_lo_d = static_cast<natural_double_digit>(dividend[dividend_num_digits - 2]);
-                auto d_hi_d = static_cast<natural_double_digit>(d_hi);
-                auto d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
-                q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(divisor_most_sig_digit));
+                q = dividend[dividend_num_digits - 2];
+
+                /*
+                 * We need to do a divide, but a large natural_double_digit will typically be
+                 * more than a single machine register in size.  The compiler typically won't be
+                 * able to generate the most optimal code in such cases so we have to resort to
+                 * inline assembler.
+                 *
+                 * The do/while loop here isn't actually a loop - it just lets us use break to
+                 * early-out.  The compiler will invariably recognize that only one path is ever
+                 * taken and optimize everything else away.
+                 */
+                do {
+                    if (sizeof(natural_digit) == 8) {
+#if defined(C8_USE_ASM) && defined(__x86_64__)
+                        asm volatile (
+                        "       divq    %[divisor_most_sig_digit]       \n\t"
+                                : [q] "+a" (q), [d_hi] "+d" (d_hi)
+                                : [divisor_most_sig_digit] "r" (divisor_most_sig_digit)
+                                : "cc"
+                        );
+
+                        break;
+#endif
+                    }
+
+                    auto d_lo_d = static_cast<natural_double_digit>(q);
+                    auto d_hi_d = static_cast<natural_double_digit>(d_hi);
+                    auto d = static_cast<natural_double_digit>(d_hi_d << natural_digit_bits) + d_lo_d;
+                    q = static_cast<natural_digit>(d / static_cast<natural_double_digit>(divisor_most_sig_digit));
+                } while (false);
             }
 
             /*
