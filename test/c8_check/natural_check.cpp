@@ -2255,6 +2255,23 @@ auto test_natural_gcd_3() -> result {
 }
 
 /*
+ * Test greatest common divisor.
+ */
+auto test_natural_gcd_4() -> result {
+    result r("nat gcd 4");
+    c8::natural g0("0x199999999999999a");
+    c8::natural g1("0x1000000000000000");
+
+    r.start_clock();
+    c8::natural g2 = gcd(g0, g1);
+    r.stop_clock();
+
+    r.get_stream() << g2;
+    r.check_pass("2");
+    return r;
+}
+
+/*
  * Test to_unsigned_long_long functionality.
  */
 auto test_natural_to_unsigned_long_long_0() -> result {

@@ -169,6 +169,7 @@ const test tests[] = {
     test_natural_gcd_1,
     test_natural_gcd_2,
     test_natural_gcd_3,
+    test_natural_gcd_4,
     test_natural_to_unsigned_long_long_0,
     test_natural_to_unsigned_long_long_1,
     test_natural_to_unsigned_long_long_2,

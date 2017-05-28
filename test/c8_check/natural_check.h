@@ -135,6 +135,7 @@ auto test_natural_gcd_0() -> result;
 auto test_natural_gcd_1() -> result;
 auto test_natural_gcd_2() -> result;
 auto test_natural_gcd_3() -> result;
+auto test_natural_gcd_4() -> result;
 auto test_natural_to_unsigned_long_long_0() -> result;
 auto test_natural_to_unsigned_long_long_1() -> result;
 auto test_natural_to_unsigned_long_long_2() -> result;
