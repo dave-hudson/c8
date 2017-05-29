@@ -280,16 +280,9 @@ namespace c8 {
                                            const natural_digit *src1, std::size_t src1_num_digits,
                                            const natural_digit *src2, std::size_t src2_num_digits) -> void {
         /*
-         * Are we attempting to divide by zero?  If we are then throw an exception.
+         * Are we dividing a zero?
          */
-        if (src2_num_digits == 0) {
-            throw divide_by_zero();
-        }
-
-        /*
-         * Is our result going to be zero?
-         */
-        if (__digit_array_compare_lt(src1, src1_num_digits, src2, src2_num_digits)) {
+        if (src1_num_digits == 0) {
             __digit_array_copy(remainder, src1, src1_num_digits);
             remainder_num_digits = src1_num_digits;
             quotient_num_digits = 0;
@@ -297,13 +290,16 @@ namespace c8 {
         }
 
         /*
-         * Does, our divisor src2, only have one digit?  If yes, then use the fast version
-         * of divide_modulus.
+         * Are we attempting to divide by zero?  If we are then throw an exception.
+         */
+        if (src2_num_digits == 0) {
+            throw divide_by_zero();
+        }
+
+        /*
+         * Handle the various digit number permutations.
          */
         if (src2_num_digits == 1) {
-            /*
-             * Does this number have only one digit?  If yes, then divide that digit by v.
-             */
             if (src1_num_digits == 1) {
                 __digit_array_divide_modulus_1_1(quotient, quotient_num_digits, remainder, remainder_num_digits,
                                                  src1, src2);

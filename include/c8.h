@@ -70,13 +70,13 @@ namespace c8 {
      *
      * Other versions that would work here:
      *
-     * typedef uint16_t natural_digit;
-     * typedef uint32_t natural_double_digit;
+     * typedef uint8_t natural_digit;
+     * typedef uint16_t natural_double_digit;
      *
      * Or:
      *
-     * typedef uint8_t natural_digit;
-     * typedef uint16_t natural_double_digit;
+     * typedef uint16_t natural_digit;
+     * typedef uint32_t natural_double_digit;
      *
      * Or:
      *

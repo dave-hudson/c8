@@ -416,7 +416,7 @@ namespace c8 {
 
         auto acc = src1[0] - src2[0];
         if (acc) {
-            res[0] = acc;
+            res[0] = static_cast<natural_digit>(acc);
             r_num_digits = 1;
         }
 
@@ -532,10 +532,10 @@ namespace c8 {
          * need, and insert those in the result.
          */
         auto d = src[0];
-        res[shift_digits] = d << shift_bits;
+        res[shift_digits] = static_cast<natural_digit>(d << shift_bits);
         auto d_hi = d >> (natural_digit_bits - shift_bits);
         if (d_hi) {
-            res[r_num_digits++] = d_hi;
+            res[r_num_digits++] = static_cast<natural_digit>(d_hi);
         }
 
         __digit_array_zero(res, shift_digits);
@@ -569,16 +569,16 @@ namespace c8 {
         auto d = src[src_num_digits - 1];
         auto d_hi = d >> (natural_digit_bits - shift_bits);
         if (d_hi) {
-            res[r_num_digits++] = d_hi;
+            res[r_num_digits++] = static_cast<natural_digit>(d_hi);
         }
 
         for (std::size_t i = src_num_digits - 1; i > 0; i--) {
             d_hi = d << shift_bits;
             d = src[i - 1];
-            res[i + shift_digits] = d_hi | (d >> (natural_digit_bits - shift_bits));
+            res[i + shift_digits] = static_cast<natural_digit>(d_hi | (d >> (natural_digit_bits - shift_bits)));
         }
 
-        res[shift_digits] = d << shift_bits;
+        res[shift_digits] = static_cast<natural_digit>(d << shift_bits);
         __digit_array_zero(res, shift_digits);
         res_num_digits = r_num_digits;
     }
@@ -590,9 +590,9 @@ namespace c8 {
                                             const natural_digit *src, std::size_t shift_bits) -> void {
         std::size_t r_num_digits = 0;
 
-        auto r = src[0] >> shift_bits;
+        natural_digit r = src[0] >> shift_bits;
         if (r) {
-            res[0] = r;
+            res[0] = static_cast<natural_digit>(r);
             r_num_digits = 1;
         }
 
@@ -624,13 +624,13 @@ namespace c8 {
          */
         auto d_lo = src[shift_digits] >> shift_bits;
         for (std::size_t i = 1; i <= r_num_digits; i++) {
-            auto d = src[i + shift_digits];
-            res[i - 1] = d_lo | (d << (natural_digit_bits - shift_bits));
+            natural_digit d = src[i + shift_digits];
+            res[i - 1] = static_cast<natural_digit>(d_lo | (d << (natural_digit_bits - shift_bits)));
             d_lo = d >> shift_bits;
         }
 
         if (d_lo) {
-            res[r_num_digits++] = d_lo;
+            res[r_num_digits++] = static_cast<natural_digit>(d_lo);
         }
 
         res_num_digits = r_num_digits;
@@ -766,7 +766,7 @@ namespace c8 {
         std::size_t r_num_digits = 0;
 
         if (r) {
-            remainder[0] = r;
+            remainder[0] = static_cast<natural_digit>(r);
             r_num_digits = 1;
         }
 
@@ -774,7 +774,7 @@ namespace c8 {
 
         std::size_t q_num_digits = 0;
         if (q) {
-            quotient[0] = q;
+            quotient[0] = static_cast<natural_digit>(q);
             q_num_digits = 1;
         }
 
@@ -802,7 +802,7 @@ namespace c8 {
         auto q = d / v;
         auto r = d % v;
 
-        quotient[i] = q;
+        quotient[i] = static_cast<natural_digit>(q);
         if (q == 0) {
             q_num_digits--;
         }
@@ -844,12 +844,12 @@ namespace c8 {
                 r = static_cast<natural_digit>(acc % v);
             } while (false);
 
-            quotient[i] = q;
+            quotient[i] = static_cast<natural_digit>(q);
         }
 
         std::size_t r_num_digits = 0;
         if (r) {
-            remainder[0] = r;
+            remainder[0] = static_cast<natural_digit>(r);
             r_num_digits = 1;
         }
 
@@ -1028,10 +1028,15 @@ namespace c8 {
         dividend[dividend_num_digits] = 0;
 
         /*
-         * At the outset we need to compare the first digit of our dividend with the first
-         * digit of our divisor.  If the dividend is larger then our first result digit is 1,
-         * otherwise it's 0.
+         * Is our result going to be zero?  If yes then take a shortcut.
          */
+        if (divisor_num_digits > dividend_num_digits) {
+            quotient_num_digits = 0;
+            remainder_num_digits = src1_num_digits;
+            __digit_array_copy(remainder, src1, src1_num_digits);
+            return;
+        }
+
         std::size_t next_res_digit = dividend_num_digits - divisor_num_digits;
 
         /*
@@ -1045,15 +1050,18 @@ namespace c8 {
          */
         natural_digit q = 0;
         if (dividend[dividend_num_digits - 1] >= divisor_most_sig_digit) {
+            /*
+             * There's a good chance that our digit is a 1.  Try subtracting the effect of
+             * a 1 and see if we underflow.  If we do then add the effect of the 1 back.
+             */
             q = 1;
-            auto underflow = __digit_array_subtract_m_n_shifted(dividend, dividend_num_digits + 1,
+            auto underflow = __digit_array_subtract_m_n_shifted(dividend, dividend_num_digits,
                                                                 divisor, divisor_num_digits, next_res_digit);
             if (C8_UNLIKELY(underflow)) {
-                __digit_array_add_m_n_shifted(dividend, dividend_num_digits + 1,
+                __digit_array_add_m_n_shifted(dividend, dividend_num_digits,
                                               divisor, divisor_num_digits, next_res_digit);
                 q = 0;
             }
-
         }
 
         quotient[next_res_digit] = q;
@@ -1120,16 +1128,18 @@ namespace c8 {
                  * may be anything up to 2 larger than the actual value.  As a way to think about this,
                  * consider a decimal divide of 4500 by 59.  If we divide "45" by "5" we estimate that
                  * the next result digit is 9, but actually it's 7.  The vast majority of times our
-                 * estimate will be correct, however.
+                 * estimate will be correct, however.  In cases where there's an underflow after we do
+                 * our trial subtraction we compensate with small additions, reducing our estimate
+                 * accordingly.
                  */
-                auto underflow1 = __digit_array_subtract_multiplied_m_n_shifted(dividend, dividend_num_digits + 1,
+                auto underflow1 = __digit_array_subtract_multiplied_m_n_shifted(dividend, dividend_num_digits,
                                                                                 divisor, divisor_num_digits, q, next_res_digit);
                 if (C8_UNLIKELY(underflow1)) {
-                    auto underflow2 = __digit_array_add_m_n_shifted(dividend, dividend_num_digits + 1,
+                    auto underflow2 = __digit_array_add_m_n_shifted(dividend, dividend_num_digits,
                                                                     divisor, divisor_num_digits, next_res_digit);
                     q--;
                     if (C8_UNLIKELY(underflow2)) {
-                        __digit_array_add_m_n_shifted(dividend, dividend_num_digits + 1,
+                        __digit_array_add_m_n_shifted(dividend, dividend_num_digits,
                                                       divisor, divisor_num_digits, next_res_digit);
                         q--;
                     }
