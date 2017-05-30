@@ -67,24 +67,20 @@ namespace c8 {
      * A digit is much larger than a numeral, but the algorithms we use for things like
      * addition, subtraction, multiplication and division all work just the same, whether
      * our digits are 1 bit, 32 bits or range from 0 to 9.
-     *
-     * Other versions that would work here:
-     *
-     * typedef uint8_t natural_digit;
-     * typedef uint16_t natural_double_digit;
-     *
-     * Or:
-     *
-     * typedef uint16_t natural_digit;
-     * typedef uint32_t natural_double_digit;
-     *
-     * Or:
-     *
-     * typedef uint32_t natural_digit;
-     * typedef uint64_t natural_double_digit;
      */
+#if defined(C8_DIGIT_8_BITS)
+    typedef uint8_t natural_digit;
+    typedef uint16_t natural_double_digit;
+#elif defined(C8_DIGIT_16_BITS)
+    typedef uint16_t natural_digit;
+    typedef uint32_t natural_double_digit;
+#elif defined(C8_DIGIT_32_BITS)
+    typedef uint32_t natural_digit;
+    typedef uint64_t natural_double_digit;
+#else
     typedef uint64_t natural_digit;
     typedef unsigned __int128 natural_double_digit;
+#endif
 
     const std::size_t natural_digit_bits = 8 * sizeof(natural_digit);
 

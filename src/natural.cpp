@@ -32,7 +32,7 @@ namespace c8 {
             c = static_cast<char>(c - ('a' - '0' - 10));
         }
 
-        natural_digit c_digit = static_cast<natural_digit>(c) - '0';
+        natural_digit c_digit = static_cast<natural_digit>(c - '0');
 
         if (base == 8) {
             if (c_digit >= 8) {
@@ -155,11 +155,11 @@ namespace c8 {
         do {
             natural_digit m = static_cast<natural_digit>(-1);
             this_digits[i++] = static_cast<natural_digit>(v & m);
-            if (sizeof(natural_digit) == sizeof(unsigned long long)) {
-                v = 0;
-            } else {
-                v >>= natural_digit_bits;
-            }
+#if defined(C8_DIGIT_8_BITS) || defined(C8_DIGIT_16_BITS) || defined(C8_DIGIT_32_BITS)
+            v >>= natural_digit_bits;
+#else
+            v = 0;
+#endif
         } while (v);
 
         num_digits_ = i;
@@ -225,10 +225,10 @@ namespace c8 {
                 chars_per_digit = char_count - i;
             }
 
-            for (auto j = 1; j < chars_per_digit; j++) {
+            for (unsigned int j = 1; j < chars_per_digit; j++) {
                 natural_digit c_digit = convert_char_to_natural_digit(v[idx++], base);
-                acc = (acc * base) + c_digit;
-                base_div *= base;
+                acc = static_cast<natural_digit>((acc * base) + c_digit);
+                base_div = static_cast<natural_digit>(base_div * base);
             }
 
             digit_array_multiply(res.digits_, res.num_digits_, res.digits_, res.num_digits_, &base_div, 1);
@@ -715,7 +715,7 @@ namespace c8 {
         natural_digit base_div = base;
 
         if (sizeof(natural_digit) > 1) {
-            base_div *= base;
+            base_div = static_cast<natural_digit>(base_div * base);
         }
 
         /*

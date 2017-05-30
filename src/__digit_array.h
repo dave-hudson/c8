@@ -590,7 +590,7 @@ namespace c8 {
                                             const natural_digit *src, std::size_t shift_bits) -> void {
         std::size_t r_num_digits = 0;
 
-        natural_digit r = src[0] >> shift_bits;
+        auto r = src[0] >> shift_bits;
         if (r) {
             res[0] = static_cast<natural_digit>(r);
             r_num_digits = 1;
@@ -727,13 +727,13 @@ namespace c8 {
             std::size_t ti = res_column - tj;
             std::size_t num_multiplies = ((src1_num_digits - ti) < (tj + 1)) ? (src1_num_digits - ti) : (tj + 1);
             auto acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(acc1));
-            acc1 >>= natural_digit_bits;
+            acc1 = static_cast<natural_double_digit>(acc1 >> natural_digit_bits);
             for (std::size_t j = 0; j < num_multiplies; j++) {
                 auto a = static_cast<natural_double_digit>(src1_1[ti++]);
                 auto b = static_cast<natural_double_digit>(src2[tj--]);
                 auto d0 = acc0 + (a * b);
                 acc0 = static_cast<natural_double_digit>(static_cast<natural_digit>(d0));
-                acc1 += (d0 >> natural_digit_bits);
+                acc1 = static_cast<natural_double_digit>(acc1 + (d0 >> natural_digit_bits));
             }
 
             res[res_column] = static_cast<natural_digit>(acc0);
@@ -987,7 +987,7 @@ namespace c8 {
         /*
          * If we had a borrow from an earlier subtract then account for that now.
          */
-        acc_c += res[r_num_digits];
+        acc_c = static_cast<natural_digit>(acc_c + res[r_num_digits]);
         res[r_num_digits] = acc_c;
         return acc_c ? true : false;
     }
