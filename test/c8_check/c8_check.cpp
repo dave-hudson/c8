@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include <unistd.h>
 
 #include "result.h"
