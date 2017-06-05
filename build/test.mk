@@ -17,7 +17,9 @@ all: $(TARGET_BIN)
 # A counterpoint to this, however, is that using static linking causes valgrind
 # to get very upset.
 #
+ifneq ($(UNAME),Darwin)
 LDFLAGS_EXTRA := -static
+endif
 
 LIB_DEPS1 := $(patsubst -l%,lib%.a,$(LIBS))
 LIB_DEPS := $(patsubst %,$(LIB_PATH)/%,$(LIB_DEPS1))
