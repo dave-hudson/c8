@@ -47,14 +47,14 @@ public:
     }
 
     auto start_clock() -> void {
-        start_time_ = std::chrono::high_resolution_clock::now();
+        start_time_ = std::chrono::steady_clock::now();
     }
 
     auto stop_clock() -> void {
-        end_time_ = std::chrono::high_resolution_clock::now();
+        end_time_ = std::chrono::steady_clock::now();
     }
 
-    auto get_elapsed() -> std::chrono::high_resolution_clock::duration {
+    auto get_elapsed() -> std::chrono::steady_clock::duration {
         return end_time_ - start_time_;
     }
 
@@ -62,9 +62,9 @@ private:
     std::string name_;                  // Test name
     std::string expected_;              // Expected result
     bool pass_;                         // Did this test pass?
-    std::chrono::high_resolution_clock::time_point start_time_;
+    std::chrono::steady_clock::time_point start_time_;
                                         // Start time
-    std::chrono::high_resolution_clock::time_point end_time_;
+    std::chrono::steady_clock::time_point end_time_;
                                         // End time
     std::stringstream s_;               // Output string stream
 };
